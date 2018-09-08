@@ -24,7 +24,7 @@ policies:
     tag_selector: "!managedBy" # select amongst aws resources tags
     label_selector: "" # select amongst resource-specific tags (generated internally)
 
-  # Give me all taggable resources that don't have managedBy and env and owner and service tags
+  # Give me all taggable resources that don't have managedBy nor env nor owner nor service tags
   - resource_selector: "" # select amongst aws services
     tag_selector: "!managedBy,!env,!owner,!service" # select amongst aws resources tags
     label_selector: "" # select amongst resource-specific tags (generated internally)
