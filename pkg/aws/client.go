@@ -34,8 +34,8 @@ const (
 type TypeEntityLabel string
 
 // NewEntity returns a new aws entity
-func NewEntity() *Entity {
-	return &Entity{
+func NewEntity() Entity {
+	return Entity{
 		labels:    map[string]string{},
 		tags:      map[string]string{},
 		createdAt: nil,

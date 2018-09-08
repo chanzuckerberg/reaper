@@ -22,6 +22,14 @@ type S3Bucket struct {
 	name string
 }
 
+// NewS3Bucket returns a new s3 bucket entity
+func NewS3Bucket(name string) *S3Bucket {
+	return &S3Bucket{
+		Entity: NewEntity(),
+		name:   name,
+	}
+}
+
 // Delete deletes this bucket
 func (s *S3Bucket) Delete() error {
 	log.Warnf("Would delete bucket %s", s.name)
@@ -66,6 +74,10 @@ func (s *S3Client) Walk(p policy.Policy) error {
 		if err != nil {
 			return err
 		}
+		if entity == nil {
+			log.Infof("Skipping bucket %s", *bucket.Name)
+			continue
+		}
 		if p.Match(entity) {
 			log.Infof("Matched bucket %s", *bucket.Name)
 		}
@@ -79,7 +91,7 @@ func (s *S3Client) DescribeBucket(b *s3.Bucket) (*S3Bucket, error) {
 		return nil, errors.New("Nil bucket name")
 	}
 	name := *b.Name
-	bucket := &S3Bucket{}
+	bucket := NewS3Bucket(name)
 	bucket.WithCreatedAt(b.CreationDate)
 
 	locationInput := &s3.GetBucketLocationInput{}
@@ -97,7 +109,7 @@ func (s *S3Client) DescribeBucket(b *s3.Bucket) (*S3Bucket, error) {
 	tagInput.SetBucket(name)
 	c, ok := s.RegionClients[*location.LocationConstraint]
 	if !ok {
-		log.Debugf("Skipping over bucket %s because it is in unknown region %s", name, *location.LocationConstraint)
+		log.Infof("Skipping over bucket %s because it is in unknown region %s", name, *location.LocationConstraint)
 		return nil, nil
 	}
 
@@ -106,7 +118,7 @@ func (s *S3Client) DescribeBucket(b *s3.Bucket) (*S3Bucket, error) {
 		if aerr, ok := err.(awserr.Error); ok {
 			switch aerr.Code() {
 			case "NoSuchTagSet": // looks like it is not defined in the s3.Err* codes....
-				log.Debugf("Bucket %s has no tags", name)
+				log.Infof("Bucket %s has no tags", name)
 			default:
 				return nil, errors.Wrapf(err, "Error fetching tagset for bucket %s", name)
 
@@ -124,16 +136,16 @@ func (s *S3Client) DescribeBucket(b *s3.Bucket) (*S3Bucket, error) {
 	aclInput.SetBucket(name)
 	acl, err := c.GetBucketAcl(aclInput)
 	if err != nil {
-		return nil, errors.Wrapf(err, "Could not determnin ACL for %s", name)
+		return nil, errors.Wrapf(err, "Could not determnine ACL for %s", name)
 	}
 
 	for _, grant := range acl.Grants {
 		if grant != nil &&
 			grant.Grantee != nil &&
+			acl != nil &&
 			acl.Owner != nil &&
 			acl.Owner.ID != nil &&
 			(*grant.Grantee.ID != *acl.Owner.ID) {
-
 			bucket.WithLabel(s3LabelIsPublic, aws.String(""))
 			break
 		}
