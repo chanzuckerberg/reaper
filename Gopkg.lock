@@ -48,11 +48,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:1f91b4c66370f23e47c2d55e7a3aae6c66f52ea02977be17e3b3a631463fc1c4"
+  digest = "1:a9f3db0b4a5e114347ea072d43d06478ce9403aa6b1376f7e69e1cb0021a78df"
   name = "github.com/blend/go-sdk"
   packages = ["selector"]
   pruneopts = "UT"
-  revision = "e3f8d68e821a91f5b8f4cebc5561ec6d0712748b"
+  revision = "8b7bde5260fb68f17f03e941bf52fd472e5db5a9"
 
 [[projects]]
   digest = "1:5abd6a22805b1919f6a6bca0ae58b13cef1f3412812f38569978f43ef02743d4"
@@ -77,10 +77,46 @@
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
   version = "v0.8.0"
 
+[[projects]]
+  digest = "1:d867dfa6751c8d7a435821ad3b736310c2ed68945d05b50fb9d23aee0540c8cc"
+  name = "github.com/sirupsen/logrus"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "3e01752db0189b9157070a0e1668a620f9a85da2"
+  version = "v1.0.6"
+
+[[projects]]
+  branch = "master"
+  digest = "1:3f3a05ae0b95893d90b9b3b5afdb79a9b3d96e4e36e099d841ae602e4aca0da8"
+  name = "golang.org/x/crypto"
+  packages = ["ssh/terminal"]
+  pruneopts = "UT"
+  revision = "0709b304e793a5edb4a2c0145f281ecdc20838a4"
+
+[[projects]]
+  branch = "master"
+  digest = "1:0ed1788dc3845fa86e9ade2183538e920adf76fb9f8760e69236fa2cb0d7c9d9"
+  name = "golang.org/x/sys"
+  packages = [
+    "unix",
+    "windows",
+  ]
+  pruneopts = "UT"
+  revision = "917fdcba135dcbaccd57425db91723541b4427c8"
+
+[[projects]]
+  digest = "1:342378ac4dcb378a5448dd723f0784ae519383532f5e70ade24132c4c8693202"
+  name = "gopkg.in/yaml.v2"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
+  version = "v2.2.1"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/aws/aws-sdk-go/aws",
     "github.com/aws/aws-sdk-go/aws/session",
     "github.com/aws/aws-sdk-go/service/kms",
     "github.com/aws/aws-sdk-go/service/kms/kmsiface",
@@ -88,6 +124,8 @@
     "github.com/aws/aws-sdk-go/service/s3/s3iface",
     "github.com/blend/go-sdk/selector",
     "github.com/pkg/errors",
+    "github.com/sirupsen/logrus",
+    "gopkg.in/yaml.v2",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

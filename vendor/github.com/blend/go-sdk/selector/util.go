@@ -51,9 +51,6 @@ const (
 )
 
 const (
-	// ErrEmptySelector is returned if the selector to be compiled is empty.
-	ErrEmptySelector = Error("empty selector")
-
 	// ErrInvalidOperator is returned if the operator is invalid.
 	ErrInvalidOperator = Error("invalid operator")
 

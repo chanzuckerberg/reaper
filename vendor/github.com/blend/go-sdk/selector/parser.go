@@ -34,7 +34,7 @@ type Parser struct {
 func (p *Parser) Parse() (Selector, error) {
 	p.s = strings.TrimSpace(p.s)
 	if len(p.s) == 0 {
-		return nil, ErrEmptySelector
+		return Any{}, nil
 	}
 
 	var b rune
