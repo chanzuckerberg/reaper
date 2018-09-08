@@ -36,8 +36,8 @@ type KMSClient struct {
 }
 
 // NewKMS returns a KMS client
-func NewKMS(s *session.Session) KMSClient {
-	return KMSClient{kms.New(s)}
+func NewKMS(s *session.Session) *KMSClient {
+	return &KMSClient{kms.New(s)}
 }
 
 // Walk walks through all kms keys and applies the walkFun

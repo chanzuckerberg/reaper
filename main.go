@@ -14,8 +14,14 @@ func main() {
 			config.PolicyConfig{
 				ResourceSelector: "name", // All resources
 				TagSelector:      aws.String("managedBy"),
-				LabelSelector:    aws.String("s3_is_public"),
+				LabelSelector:    aws.String(""),
 			},
+		},
+		Regions: []string{
+			"us-east-1",
+			"us-east-2",
+			"us-west-1",
+			"us-west-2",
 		},
 	}
 
@@ -27,7 +33,7 @@ func main() {
 	s := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
-	awsClient, err := cziAws.NewClient(s)
+	awsClient, err := cziAws.NewClient(s, conf.Regions)
 	if err != nil {
 		panic(err)
 	}

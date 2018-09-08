@@ -30,6 +30,7 @@ type PolicyConfig struct {
 // Config is the configuration
 type Config struct {
 	Policies []PolicyConfig `yaml:"policies"`
+	Regions  []string       `yaml:"regions"`
 }
 
 // GetPolicies gets the policies from a config

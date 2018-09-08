@@ -9,8 +9,8 @@ import (
 
 // Client is an AWS client
 type Client struct {
-	KMS KMSClient
-	S3  S3Client
+	KMS *KMSClient
+	S3  *S3Client
 }
 
 // Entity is an AWS entity s3 bucket, ec2 instance, etc
@@ -94,10 +94,10 @@ func (e *Entity) WithCreatedAt(t *time.Time) *Entity {
 type WalkFun func(*Entity, error) error
 
 // NewClient returns a new aws client
-func NewClient(sess *session.Session) (*Client, error) {
+func NewClient(sess *session.Session, regions []string) (*Client, error) {
 	client := &Client{
 		KMS: NewKMS(sess),
-		S3:  NewS3(sess),
+		S3:  NewS3(sess, regions),
 	}
 	return client, nil
 }

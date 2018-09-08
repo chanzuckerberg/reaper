@@ -2,6 +2,7 @@ package aws
 
 import (
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
@@ -29,19 +30,29 @@ func (s *S3Bucket) Delete() error {
 
 // S3Client is an s3 client
 type S3Client struct {
-	Svc     s3iface.S3API
-	Session *session.Session
+	Client s3iface.S3API
+	// Per region clients
+	RegionClients map[string]s3iface.S3API
+	Session       *session.Session
 }
 
 // NewS3 returns a new s3 client
-func NewS3(s *session.Session) S3Client {
-	return S3Client{Svc: s3.New(s), Session: s}
+func NewS3(s *session.Session, regions []string) *S3Client {
+	s3Client := &S3Client{
+		Client:        s3.New(s),
+		Session:       s,
+		RegionClients: map[string]s3iface.S3API{},
+	}
+	for _, region := range regions {
+		s3Client.RegionClients[region] = s3.New(s, &aws.Config{Region: aws.String(region)})
+	}
+	return s3Client
 }
 
 // Walk walks through all s3 buckets
 func (s *S3Client) Walk(p policy.Policy) error {
 	input := &s3.ListBucketsInput{}
-	output, err := s.Svc.ListBuckets(input)
+	output, err := s.Client.ListBuckets(input)
 	if err != nil {
 		return errors.Wrap(err, "Could not list buckets")
 	}
@@ -55,11 +66,6 @@ func (s *S3Client) Walk(p policy.Policy) error {
 		if err != nil {
 			return err
 		}
-		// nothing to do here
-		if entity == nil {
-			continue
-		}
-
 		if p.Match(entity) {
 			log.Infof("Matched bucket %s", *bucket.Name)
 		}
@@ -78,18 +84,34 @@ func (s *S3Client) DescribeBucket(b *s3.Bucket) (*S3Bucket, error) {
 
 	locationInput := &s3.GetBucketLocationInput{}
 	locationInput.SetBucket(*b.Name)
-	location, err := s.Svc.GetBucketLocation(locationInput)
+	location, err := s.Client.GetBucketLocation(locationInput)
 	if err != nil {
 		return nil, errors.Wrapf(err, "Could not get bucket %s location", *b.Name)
 	}
-	if location != nil && location.LocationConstraint != nil && s.Session.Config.Region != nil {
-		log.Warnf("Bucket %s has location constraint %s", *b.Name, *location.LocationConstraint)
+	if location.LocationConstraint == nil {
+		// why we can't have nice things
+		location.LocationConstraint = aws.String("us-east-1")
 	}
+
 	tagInput := &s3.GetBucketTaggingInput{}
 	tagInput.SetBucket(name)
-	tags, err := s.Svc.GetBucketTagging(tagInput)
+	c, ok := s.RegionClients[*location.LocationConstraint]
+	if !ok {
+		log.Debugf("Skipping over bucket %s because it is in unknown region %s", name, *location.LocationConstraint)
+		return nil, nil
+	}
+
+	tags, err := c.GetBucketTagging(tagInput)
 	if err != nil {
-		return nil, err
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			case "NoSuchTagSet": // looks like it is not defined in the s3.Err* codes....
+				log.Debugf("Bucket %s has no tags", name)
+			default:
+				return nil, errors.Wrapf(err, "Error fetching tagset for bucket %s", name)
+
+			}
+		}
 	}
 	for _, tag := range tags.TagSet {
 		if tag == nil {
@@ -100,8 +122,7 @@ func (s *S3Client) DescribeBucket(b *s3.Bucket) (*S3Bucket, error) {
 
 	aclInput := &s3.GetBucketAclInput{}
 	aclInput.SetBucket(name)
-
-	acl, err := s.Svc.GetBucketAcl(aclInput)
+	acl, err := c.GetBucketAcl(aclInput)
 	if err != nil {
 		return nil, errors.Wrapf(err, "Could not determnin ACL for %s", name)
 	}
