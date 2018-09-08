@@ -14,7 +14,7 @@ func main() {
 			config.PolicyConfig{
 				ResourceSelector: "name", // All resources
 				TagSelector:      aws.String("managedBy"),
-				LabelSelector:    aws.String(""),
+				LabelSelector:    aws.String("s3_is_public"),
 			},
 		},
 	}
