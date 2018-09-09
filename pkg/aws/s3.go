@@ -1,12 +1,15 @@
 package aws
 
 import (
+	"sync"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 	"github.com/chanzuckerberg/aws-tidy/pkg/policy"
+	multierror "github.com/hashicorp/go-multierror"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
@@ -42,14 +45,16 @@ type S3Client struct {
 	// Per region clients
 	RegionClients map[string]s3iface.S3API
 	Session       *session.Session
+	numWorkers    int
 }
 
 // NewS3 returns a new s3 client
-func NewS3(s *session.Session, regions []string) *S3Client {
+func NewS3(s *session.Session, regions []string, numWorkers int) *S3Client {
 	s3Client := &S3Client{
 		Client:        s3.New(s),
 		Session:       s,
 		RegionClients: map[string]s3iface.S3API{},
+		numWorkers:    numWorkers,
 	}
 	for _, region := range regions {
 		s3Client.RegionClients[region] = s3.New(s, &aws.Config{Region: aws.String(region)})
@@ -58,31 +63,63 @@ func NewS3(s *session.Session, regions []string) *S3Client {
 }
 
 // Walk walks through all s3 buckets
-func (s *S3Client) Walk(p policy.Policy) error {
+func (s *S3Client) Walk(p *policy.Policy) error {
+	jobs := make(chan *s3.Bucket)
+	errChan := make(chan error)
+
 	input := &s3.ListBucketsInput{}
 	output, err := s.Client.ListBuckets(input)
 	if err != nil {
 		return errors.Wrap(err, "Could not list buckets")
 	}
 
+	// set up workers
+	wg := &sync.WaitGroup{}
+	for i := 0; i < s.numWorkers; i++ {
+		wg.Add(1)
+		go s.worker(wg, p, jobs, errChan)
+	}
+
+	// enqueue work
 	for _, bucket := range output.Buckets {
-		if bucket == nil {
-			continue
-		}
-		log.Infof("Considering bucket %s", *bucket.Name)
-		entity, err := s.DescribeBucket(bucket)
+		jobs <- bucket
+	}
+	close(jobs)
+	// TODO some timeout here
+	wg.Wait()
+	close(errChan)
+	var errs error
+	for err := range errChan {
 		if err != nil {
-			return err
-		}
-		if entity == nil {
-			log.Infof("Skipping bucket %s", *bucket.Name)
-			continue
-		}
-		if p.Match(entity) {
-			log.Infof("Matched bucket %s", *bucket.Name)
+			errs = multierror.Append(errs, err)
 		}
 	}
-	return nil
+	return errs
+}
+
+// worker does the work
+// TODO generalize this pattern into Entity
+func (s *S3Client) worker(
+	wg *sync.WaitGroup,
+	p *policy.Policy,
+	jobs <-chan *s3.Bucket,
+	errs chan<- error) {
+	for b := range jobs {
+		res, err := s.DescribeBucket(b)
+		// accumulate errors
+		if err != nil {
+			errs <- err
+			continue
+		}
+		if res == nil {
+			log.Debugf("Nil bucket - nothing to do")
+			continue
+		}
+		if p.Match(res) {
+			log.Infof("Matched %s", *b.Name)
+		}
+	}
+	wg.Done()
 }
 
 // DescribeBucket describes this bucket
@@ -109,7 +146,7 @@ func (s *S3Client) DescribeBucket(b *s3.Bucket) (*S3Bucket, error) {
 	tagInput.SetBucket(name)
 	c, ok := s.RegionClients[*location.LocationConstraint]
 	if !ok {
-		log.Infof("Skipping over bucket %s because it is in unknown region %s", name, *location.LocationConstraint)
+		log.Debugf("Skipping over bucket %s because it is in unknown region %s", name, *location.LocationConstraint)
 		return nil, nil
 	}
 
@@ -117,11 +154,11 @@ func (s *S3Client) DescribeBucket(b *s3.Bucket) (*S3Bucket, error) {
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
 			switch aerr.Code() {
+			// Bucket not tagged
 			case "NoSuchTagSet": // looks like it is not defined in the s3.Err* codes....
-				log.Infof("Bucket %s has no tags", name)
+				log.Debugf("Bucket %s has no tags", name)
 			default:
 				return nil, errors.Wrapf(err, "Error fetching tagset for bucket %s", name)
-
 			}
 		}
 	}
@@ -142,6 +179,7 @@ func (s *S3Client) DescribeBucket(b *s3.Bucket) (*S3Bucket, error) {
 	for _, grant := range acl.Grants {
 		if grant != nil &&
 			grant.Grantee != nil &&
+			grant.Grantee.ID != nil &&
 			acl != nil &&
 			acl.Owner != nil &&
 			acl.Owner.ID != nil &&

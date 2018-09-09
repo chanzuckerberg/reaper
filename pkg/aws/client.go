@@ -19,7 +19,6 @@ type Entity struct {
 	labels map[string]string
 	// Tags are AWS tags
 	tags map[string]string
-
 	// createdAt for this object
 	createdAt *time.Time
 }
@@ -95,9 +94,12 @@ type WalkFun func(*Entity, error) error
 
 // NewClient returns a new aws client
 func NewClient(sess *session.Session, regions []string) (*Client, error) {
+	// TODO: move this out of here
+	numWorkers := 5
+
 	client := &Client{
 		KMS: NewKMS(sess),
-		S3:  NewS3(sess, regions),
+		S3:  NewS3(sess, regions, numWorkers),
 	}
 	return client, nil
 }
