@@ -11,7 +11,7 @@ func main() {
 	conf := config.Config{
 		Policies: []config.PolicyConfig{
 			config.PolicyConfig{
-				ResourceSelector: "name in (s3)",
+				ResourceSelector: "name in (ec2_instance)",
 				TagSelector:      aws.String("managedBy == terraform"),
 				LabelSelector:    aws.String(""),
 			},
@@ -40,6 +40,13 @@ func main() {
 	for _, p := range policies {
 		if p.MatchResource(map[string]string{"name": "s3"}) {
 			err := awsClient.S3.Walk(&p)
+			if err != nil {
+				panic(err)
+			}
+		}
+
+		if p.MatchResource(map[string]string{"name": "ec2_instance"}) {
+			err := awsClient.EC2Instance.Walk(&p)
 			if err != nil {
 				panic(err)
 			}

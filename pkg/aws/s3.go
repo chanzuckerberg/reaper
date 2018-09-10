@@ -64,6 +64,7 @@ func NewS3Client(s *session.Session, regions []string, numWorkers int) *S3Client
 
 // Walk walks through all s3 buckets
 func (s *S3Client) Walk(p *policy.Policy) error {
+	log.Infof("Walking s3 buckets")
 	jobs := make(chan *s3.Bucket)
 	errChan := make(chan error)
 
@@ -104,6 +105,8 @@ func (s *S3Client) worker(
 	p *policy.Policy,
 	jobs <-chan *s3.Bucket,
 	errs chan<- error) {
+	defer wg.Done()
+
 	for b := range jobs {
 		res, err := s.DescribeBucket(b)
 		// accumulate errors
@@ -119,7 +122,6 @@ func (s *S3Client) worker(
 			log.Infof("Matched %s", *b.Name)
 		}
 	}
-	wg.Done()
 }
 
 // DescribeBucket describes this bucket

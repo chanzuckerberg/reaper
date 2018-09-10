@@ -9,8 +9,9 @@ import (
 
 // Client is an AWS client
 type Client struct {
-	KMS *KMSClient
-	S3  *S3Client
+	KMS         *KMSClient
+	S3          *S3Client
+	EC2Instance *EC2InstanceClient
 }
 
 // Entity is an AWS entity s3 bucket, ec2 instance, etc
@@ -98,8 +99,9 @@ func NewClient(sess *session.Session, regions []string) (*Client, error) {
 	numWorkers := 10
 
 	client := &Client{
-		KMS: NewKMS(sess),
-		S3:  NewS3Client(sess, regions, numWorkers),
+		KMS:         NewKMS(sess),
+		S3:          NewS3Client(sess, regions, numWorkers),
+		EC2Instance: NewEC2InstanceClient(sess, regions, numWorkers),
 	}
 	return client, nil
 }
