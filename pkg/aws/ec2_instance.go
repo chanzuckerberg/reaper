@@ -21,7 +21,8 @@ const (
 // EC2Instance is an evaluation entity representing an ec2 instance
 type EC2Instance struct {
 	Entity
-	ID string
+	ID   string
+	Name string
 }
 
 // NewEc2Instance returns a new ec2 instance entity
@@ -40,6 +41,9 @@ func NewEc2Instance(instance *ec2.Instance) *EC2Instance {
 	for _, tag := range instance.Tags {
 		if tag == nil {
 			continue
+		}
+		if tag.Key != nil && tag.Value != nil && *tag.Key == "Name" {
+			entity.Name = *tag.Value
 		}
 		entity.WithTag(tag.Key, tag.Value)
 	}
@@ -115,7 +119,7 @@ func (e *EC2InstanceClient) worker(
 			for _, instance := range reservation.Instances {
 				ec2InstanceEntity := NewEc2Instance(instance)
 				if p.Match(ec2InstanceEntity) {
-					log.Infof("Matched ec2 instance %s", ec2InstanceEntity.ID)
+					log.Infof("Matched ec2 instance %s, %s", ec2InstanceEntity.ID, ec2InstanceEntity.Name)
 				}
 			}
 		}

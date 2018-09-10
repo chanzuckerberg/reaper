@@ -1,6 +1,8 @@
 package config
 
 import (
+	"io/ioutil"
+	"os"
 	"time"
 
 	"github.com/blend/go-sdk/selector"
@@ -19,11 +21,14 @@ const (
 
 // PolicyConfig is the configuration for a policy
 type PolicyConfig struct {
-	ResourceSelector string         `yaml:"resource_selector"`
-	TagSelector      *string        `yaml:"tag_selector"`
-	LabelSelector    *string        `yaml:"label_selector"`
-	MaxAge           *time.Duration `yaml:"max_age"`
+	ResourceSelector string  `yaml:"resource_selector"`
+	TagSelector      *string `yaml:"tag_selector"`
+	LabelSelector    *string `yaml:"label_selector"`
+	// MaxAge for this resource
+	// If it matches the policy and exceeds MaxAge remediation will be taken.
+	MaxAge *time.Duration `yaml:"max_age"`
 
+	// NotificationMessage is a template for the notification message
 	NotificationMessage *string `yaml:"notification_message"`
 }
 
@@ -69,9 +74,17 @@ func (c *Config) GetPolicies() ([]policy.Policy, error) {
 	return policies, nil
 }
 
-// NewConfig parses a config
-func NewConfig(b []byte) (*Config, error) {
-	c := &Config{}
-	err := yaml.Unmarshal(b, c)
-	return c, errors.Wrap(err, "yaml: could not deserialize config")
+// FromFile reads a config from a file
+func FromFile(fileName string) (*Config, error) {
+	f, err := os.Open(fileName)
+	if err != nil {
+		return nil, errors.Wrapf(err, "Could not open file %s", fileName)
+	}
+	bytes, err := ioutil.ReadAll(f)
+	if err != nil {
+		return nil, errors.Wrapf(err, "Could not read config file %s contents", fileName)
+	}
+	config := &Config{}
+	err = yaml.Unmarshal(bytes, config)
+	return config, errors.Wrapf(err, "Could not Unmarshal config %s", fileName)
 }
