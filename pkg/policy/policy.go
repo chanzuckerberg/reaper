@@ -4,6 +4,8 @@ import (
 	"time"
 
 	"github.com/blend/go-sdk/selector"
+	"github.com/hashicorp/go-multierror"
+	log "github.com/sirupsen/logrus"
 )
 
 // Subject is gets evaluated by a policy
@@ -12,6 +14,31 @@ type Subject interface {
 	GetTags() map[string]string
 	GetCreatedAt() *time.Time
 	Delete() error
+}
+
+// Notification is a notification
+type Notification struct {
+	Slack *SlackNotification
+}
+
+// Notify notifies
+func (n *Notification) Notify() (errs error) {
+	if n.Slack != nil {
+		errs = multierror.Append(errs, n.Slack.Notify())
+	}
+	return errs
+}
+
+// SlackNotification is a slack notification
+type SlackNotification struct {
+	Channel string
+}
+
+// Notify notifies slack
+func (sn *SlackNotification) Notify() error {
+	// TODO actually notify
+	log.Infof("Would notify slack channel %s", sn.Channel)
+	return nil
 }
 
 // Policy is an enforcement policy
@@ -23,7 +50,8 @@ type Policy struct {
 	// LabelSelector selects on custom generated object labels
 	LabelSelector selector.Selector
 	// MaxAge how old can this object be and still be selected by this policy
-	MaxAge *time.Duration
+	MaxAge        *time.Duration
+	Notifications []Notification
 }
 
 // Notify runs the notification logic on this resource
@@ -49,25 +77,14 @@ func (p *Policy) MatchResource(resource map[string]string) bool {
 
 // Match matches a policy against a resource
 func (p *Policy) Match(s Subject) bool {
-	// labelsMatch := false
-	// labels := s.GetLabels()
-	// if labels != nil {
-	// 	labelsMatch = p.LabelSelector.Matches(labels)
-	// }
-
-	// tagsMatch := false
-	// TODO: double check nil labels
-
 	labelsMatch := false
 	if p.LabelSelector != nil {
 		labelsMatch = p.LabelSelector.Matches(s.GetLabels())
 	}
-
 	tagsMatch := false
 	if p.TagSelector != nil {
 		tagsMatch = p.TagSelector.Matches(s.GetTags())
 	}
-
 	return labelsMatch && tagsMatch
 }
 

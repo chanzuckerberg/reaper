@@ -48,8 +48,8 @@ type S3Client struct {
 	numWorkers    int
 }
 
-// NewS3 returns a new s3 client
-func NewS3(s *session.Session, regions []string, numWorkers int) *S3Client {
+// NewS3Client returns a new s3 client
+func NewS3Client(s *session.Session, regions []string, numWorkers int) *S3Client {
 	s3Client := &S3Client{
 		Client:        s3.New(s),
 		Session:       s,

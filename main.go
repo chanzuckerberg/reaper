@@ -7,13 +7,12 @@ import (
 	"github.com/chanzuckerberg/aws-tidy/pkg/config"
 )
 
-// main
 func main() {
 	conf := config.Config{
 		Policies: []config.PolicyConfig{
 			config.PolicyConfig{
-				ResourceSelector: "name", // All resources
-				TagSelector:      aws.String("managedBy"),
+				ResourceSelector: "name in (s3)",
+				TagSelector:      aws.String("managedBy == terraform"),
 				LabelSelector:    aws.String(""),
 			},
 		},
@@ -40,7 +39,7 @@ func main() {
 
 	for _, p := range policies {
 		if p.MatchResource(map[string]string{"name": "s3"}) {
-			err := awsClient.S3.Walk(p)
+			err := awsClient.S3.Walk(&p)
 			if err != nil {
 				panic(err)
 			}

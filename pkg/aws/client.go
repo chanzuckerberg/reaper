@@ -95,11 +95,11 @@ type WalkFun func(*Entity, error) error
 // NewClient returns a new aws client
 func NewClient(sess *session.Session, regions []string) (*Client, error) {
 	// TODO: move this out of here
-	numWorkers := 5
+	numWorkers := 10
 
 	client := &Client{
 		KMS: NewKMS(sess),
-		S3:  NewS3(sess, regions, numWorkers),
+		S3:  NewS3Client(sess, regions, numWorkers),
 	}
 	return client, nil
 }
