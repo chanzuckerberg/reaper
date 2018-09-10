@@ -14,7 +14,7 @@ const (
 )
 
 func init() {
-	runCmd.Flags().StringP(flagConfig, "c", "config.yml", "Use this to override the fogg config file.")
+	runCmd.Flags().StringP(flagConfig, "c", "config.yml", "Use this to override the aws-tidy config file.")
 	rootCmd.AddCommand(runCmd)
 }
 
@@ -31,7 +31,8 @@ var runCmd = &cobra.Command{
 	},
 }
 
-// Run runs
+// Run runs aws tidy
+// TODO: mv this so this can be imported as a library as well
 func Run(cmd *cobra.Command, args []string) error {
 	configFile, err := cmd.Flags().GetString("config")
 	if err != nil {
@@ -49,13 +50,13 @@ func Run(cmd *cobra.Command, args []string) error {
 	s := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
-	awsClient, err := cziAws.NewClient(s, conf.Regions)
+	awsClient, err := cziAws.NewClient(s, conf.AWSRegions)
 	if err != nil {
 		return err
 	}
 
 	for _, p := range policies {
-		log.Infof("Executing polify: \n %s \n=================", p.String())
+		log.Infof("Executing polify: \n%s \n=================", p.String())
 		if p.MatchResource(map[string]string{"name": "s3"}) {
 			err := awsClient.S3.Walk(&p)
 			if err != nil {

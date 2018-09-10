@@ -14,7 +14,7 @@ func init() {
 }
 
 var rootCmd = &cobra.Command{
-	Use:   "fogg",
+	Use:   "aws-tidy",
 	Short: "",
 }
 
