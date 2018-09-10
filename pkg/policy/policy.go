@@ -1,6 +1,8 @@
 package policy
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/blend/go-sdk/selector"
@@ -52,6 +54,21 @@ type Policy struct {
 	// MaxAge how old can this object be and still be selected by this policy
 	MaxAge        *time.Duration
 	Notifications []Notification
+}
+
+// String satisfies Stringer interface
+func (p *Policy) String() string {
+	res := []string{}
+	if p.ResourceSelector != nil {
+		res = append(res, fmt.Sprintf("ResourceSelector: %s", p.ResourceSelector.String()))
+	}
+	if p.TagSelector != nil {
+		res = append(res, fmt.Sprintf("TagSelector: %s", p.TagSelector.String()))
+	}
+	if p.LabelSelector != nil {
+		res = append(res, fmt.Sprintf("LabelSelector: %s", p.LabelSelector.String()))
+	}
+	return strings.Join(res, "\n")
 }
 
 // Notify runs the notification logic on this resource

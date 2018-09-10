@@ -119,7 +119,7 @@ func (s *S3Client) worker(
 			continue
 		}
 		if p.Match(res) {
-			log.Infof("Matched %s", *b.Name)
+			log.Infof("s3: Matched %s", *b.Name)
 		}
 	}
 }
