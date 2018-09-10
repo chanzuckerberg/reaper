@@ -8,6 +8,7 @@ import (
 	"github.com/blend/go-sdk/selector"
 	"github.com/chanzuckerberg/aws-tidy/pkg/policy"
 	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -23,11 +24,13 @@ const (
 type Duration time.Duration
 
 // UnmarshalYAML custom unmarshal logic
-func (d *Duration) UnmarshalYAML(data []byte) error {
-	if data == nil {
-		return nil
+func (d *Duration) UnmarshalYAML(unmarshal func(v interface{}) error) error {
+	log.Warn("JERE")
+	var s string
+	err := unmarshal(&s)
+	if err != nil {
+		return errors.Wrap(err, "yaml: Unmarshal error")
 	}
-	s := string(data)
 	t, err := time.ParseDuration(s)
 	if err != nil {
 		return errors.Wrapf(err, "Could not parse duration: %s", s)

@@ -16,6 +16,7 @@ type Subject interface {
 	GetTags() map[string]string
 	GetCreatedAt() *time.Time
 	Delete() error
+	GetID() string
 }
 
 // Notification is a notification
@@ -72,7 +73,8 @@ func (p *Policy) String() string {
 }
 
 // Notify runs the notification logic on this resource
-func (p *Policy) Notify() error {
+func (p *Policy) Notify(s Subject) error {
+	log.Warnf("Notify on %s", s.GetID())
 	return nil
 }
 
@@ -82,7 +84,7 @@ func (p *Policy) Enforce(s Subject) error {
 		if p.Expired(s) {
 			return s.Delete()
 		}
-		return p.Notify()
+		return p.Notify(s)
 	}
 	return nil
 }
@@ -119,16 +121,7 @@ func New() *Policy {
 	return &Policy{}
 }
 
-// MustWithTagSelector panics if there is an error
-func (p *Policy) MustWithTagSelector(query string) *Policy {
-	p, err := p.WithTagSelector(query)
-	if err != nil {
-		panic(err)
-	}
-	return p
-}
-
-// WithTagSelector panics if there is an error
+// WithTagSelector adds a tag selector
 func (p *Policy) WithTagSelector(query string) (*Policy, error) {
 	s, err := selector.Parse(query)
 	if err != nil {
@@ -138,16 +131,7 @@ func (p *Policy) WithTagSelector(query string) (*Policy, error) {
 	return p, nil
 }
 
-// MustWithLabelSelector panics if there is an error
-func (p *Policy) MustWithLabelSelector(query string) *Policy {
-	p, err := p.WithLabelSelector(query)
-	if err != nil {
-		panic(err)
-	}
-	return p
-}
-
-// WithLabelSelector panics if there is an error
+// WithLabelSelector adds a label selector
 func (p *Policy) WithLabelSelector(query string) (*Policy, error) {
 	s, err := selector.Parse(query)
 	if err != nil {
