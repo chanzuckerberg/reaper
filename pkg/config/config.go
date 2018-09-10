@@ -19,6 +19,32 @@ const (
 	TypeResourceS3 TypeResource = "s3"
 )
 
+// Duration because I really love writing time un/marshal logic
+type Duration time.Duration
+
+// UnmarshalYAML custom unmarshal logic
+func (d *Duration) UnmarshalYAML(data []byte) error {
+	if data == nil {
+		return nil
+	}
+	s := string(data)
+	t, err := time.ParseDuration(s)
+	if err != nil {
+		return errors.Wrapf(err, "Could not parse duration: %s", s)
+	}
+	*d = Duration(t)
+	return nil
+}
+
+// Duration returns our custom type as a time.Duration handling nils when needed
+func (d *Duration) Duration() *time.Duration {
+	if d == nil {
+		return nil
+	}
+	duration := time.Duration(*d)
+	return &duration
+}
+
 // PolicyConfig is the configuration for a policy
 type PolicyConfig struct {
 	ResourceSelector string  `yaml:"resource_selector"`
@@ -26,7 +52,7 @@ type PolicyConfig struct {
 	LabelSelector    *string `yaml:"label_selector"`
 	// MaxAge for this resource
 	// If it matches the policy and exceeds MaxAge remediation will be taken.
-	MaxAge *time.Duration `yaml:"max_age"`
+	MaxAge *Duration `yaml:"max_age"`
 
 	// NotificationMessage is a template for the notification message
 	NotificationMessage *string `yaml:"notification_message"`
@@ -34,8 +60,8 @@ type PolicyConfig struct {
 
 // Config is the configuration
 type Config struct {
-	Policies []PolicyConfig `yaml:"policies"`
-	Regions  []string       `yaml:"regions"`
+	Policies   []PolicyConfig `yaml:"policies"`
+	AWSRegions []string       `yaml:"aws_regions"`
 }
 
 // GetPolicies gets the policies from a config
@@ -67,7 +93,7 @@ func (c *Config) GetPolicies() ([]policy.Policy, error) {
 			ResourceSelector: rs,
 			LabelSelector:    ls,
 			TagSelector:      ts,
-			MaxAge:           cp.MaxAge,
+			MaxAge:           cp.MaxAge.Duration(),
 		}
 		policies[i] = p
 	}

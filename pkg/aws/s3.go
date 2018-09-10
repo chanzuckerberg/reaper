@@ -1,6 +1,7 @@
 package aws
 
 import (
+	"strings"
 	"sync"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -50,6 +51,7 @@ type S3Client struct {
 
 // NewS3Client returns a new s3 client
 func NewS3Client(s *session.Session, regions []string, numWorkers int) *S3Client {
+	log.Warnf("Regiosn: %s", strings.Join(regions, ","))
 	s3Client := &S3Client{
 		Client:        s3.New(s),
 		Session:       s,
@@ -86,6 +88,7 @@ func (s *S3Client) Walk(p *policy.Policy) error {
 		jobs <- bucket
 	}
 	close(jobs)
+
 	// TODO some timeout here
 	wg.Wait()
 	close(errChan)
@@ -118,6 +121,7 @@ func (s *S3Client) worker(
 			log.Debugf("Nil bucket - nothing to do")
 			continue
 		}
+		log.Warnf("HERE")
 		if p.Match(res) {
 			log.Infof("s3: Matched %s", *b.Name)
 		}
@@ -129,6 +133,7 @@ func (s *S3Client) DescribeBucket(b *s3.Bucket) (*S3Bucket, error) {
 	if b.Name == nil {
 		return nil, errors.New("Nil bucket name")
 	}
+	log.Debugf("Describing bucket %s", *b.Name)
 	name := *b.Name
 	bucket := NewS3Bucket(name)
 	bucket.WithCreatedAt(b.CreationDate)
