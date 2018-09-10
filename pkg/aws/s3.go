@@ -1,7 +1,6 @@
 package aws
 
 import (
-	"strings"
 	"sync"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -51,7 +50,6 @@ type S3Client struct {
 
 // NewS3Client returns a new s3 client
 func NewS3Client(s *session.Session, regions []string, numWorkers int) *S3Client {
-	log.Warnf("Regiosn: %s", strings.Join(regions, ","))
 	s3Client := &S3Client{
 		Client:        s3.New(s),
 		Session:       s,
@@ -121,7 +119,6 @@ func (s *S3Client) worker(
 			log.Debugf("Nil bucket - nothing to do")
 			continue
 		}
-		log.Warnf("HERE")
 		if p.Match(res) {
 			log.Infof("s3: Matched %s", *b.Name)
 		}
