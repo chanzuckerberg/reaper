@@ -1,6 +1,7 @@
 package aws
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -23,6 +24,11 @@ type EC2Instance struct {
 	Entity
 	ID   string
 	Name string
+}
+
+// GetID returns the ec2_instance id
+func (e *EC2Instance) GetID() string {
+	return fmt.Sprintf("ec2_instance: %s, %s", e.ID, e.Name)
 }
 
 // NewEc2Instance returns a new ec2 instance entity

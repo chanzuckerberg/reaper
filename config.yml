@@ -2,7 +2,7 @@ policies:
   - resource_selector: ""
     tag_selector: "!managedBy"
     label_selector: ""
-    # max_age: 3d
+    max_age: 3h
 
     notification_message: >
       Resource {{.Name}} does not have a managedBy tag.

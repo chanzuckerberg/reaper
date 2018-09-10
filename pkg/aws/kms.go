@@ -1,6 +1,8 @@
 package aws
 
 import (
+	"fmt"
+
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-sdk-go/service/kms/kmsiface"
@@ -24,6 +26,10 @@ type kmsKey struct {
 func (k *kmsKey) Delete() error {
 	log.Warnf("Would delete KMS key %s", k.keyID)
 	return nil
+}
+
+func (k *kmsKey) GetID() string {
+	return fmt.Sprintf("kms: %s", k.keyID)
 }
 
 func newKMSKeyEntity(keyID string) *kmsKey {
@@ -62,7 +68,8 @@ func (k *KMSClient) Walk(p policy.Policy) error {
 		if err != nil {
 			return errors.Wrapf(err, "error describing kms key %s", keyID)
 		}
-		entity := newKMSKeyEntity(keyID).
+		entity := newKMSKeyEntity(keyID)
+		entity.
 			WithLabel(labelARN, keyMetadata.Arn).
 			WithLabel(labelID, keyMetadata.KeyId).
 			WithLabel(labelKMSKeyDescription, keyMetadata.Description).

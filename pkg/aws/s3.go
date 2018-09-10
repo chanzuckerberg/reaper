@@ -1,6 +1,7 @@
 package aws
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -37,6 +38,11 @@ func NewS3Bucket(name string) *S3Bucket {
 func (s *S3Bucket) Delete() error {
 	log.Warnf("Would delete bucket %s", s.name)
 	return nil
+}
+
+// GetID returns the s3 bucket id
+func (s *S3Bucket) GetID() string {
+	return fmt.Sprintf("s3: %s", s.name)
 }
 
 // S3Client is an s3 client
@@ -119,8 +125,9 @@ func (s *S3Client) worker(
 			log.Debugf("Nil bucket - nothing to do")
 			continue
 		}
-		if p.Match(res) {
-			log.Infof("s3: Matched %s", *b.Name)
+		err = p.Enforce(res)
+		if err != nil {
+			errs <- err
 		}
 	}
 }
