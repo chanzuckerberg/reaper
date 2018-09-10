@@ -63,12 +63,21 @@ func Run(cmd *cobra.Command, args []string) error {
 				return err
 			}
 		}
+
 		if p.MatchResource(map[string]string{"name": "ec2_instance"}) {
 			err := awsClient.EC2Instance.Walk(&p)
 			if err != nil {
 				return err
 			}
 		}
+
+		if p.MatchResource(map[string]string{"name": "ec2_ebs_vol"}) {
+			err := awsClient.EC2EBSVol.Walk(&p)
+			if err != nil {
+				return err
+			}
+		}
+
 	}
 	return nil
 }

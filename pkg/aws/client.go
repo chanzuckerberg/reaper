@@ -2,8 +2,10 @@ package aws
 
 import (
 	"errors"
+	"strconv"
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 )
 
@@ -12,6 +14,7 @@ type Client struct {
 	KMS         *KMSClient
 	S3          *S3Client
 	EC2Instance *EC2InstanceClient
+	EC2EBSVol   *EC2EBSVolClient
 }
 
 // Entity is an AWS entity s3 bucket, ec2 instance, etc
@@ -73,6 +76,22 @@ func (e *Entity) WithLabel(key TypeEntityLabel, value *string) *Entity {
 	return e
 }
 
+// WithBoolLabel adds a label if the value is true
+func (e *Entity) WithBoolLabel(key TypeEntityLabel, value *bool) *Entity {
+	if value != nil && *value {
+		return e.WithLabel(key, aws.String(""))
+	}
+	return e
+}
+
+// WithInt64Label adds a label if the value is not nil
+func (e *Entity) WithInt64Label(key TypeEntityLabel, value *int64) *Entity {
+	if value != nil {
+		return e.WithLabel(key, aws.String(strconv.FormatInt(*value, 10)))
+	}
+	return e
+}
+
 // WithTag adds a tag if the value is not nill
 func (e *Entity) WithTag(key *string, value *string) *Entity {
 	if e.tags == nil {
@@ -102,6 +121,7 @@ func NewClient(sess *session.Session, regions []string) (*Client, error) {
 		KMS:         NewKMS(sess),
 		S3:          NewS3Client(sess, regions, numWorkers),
 		EC2Instance: NewEC2InstanceClient(sess, regions, numWorkers),
+		EC2EBSVol:   NewEC2EBSVolClient(sess, regions, numWorkers),
 	}
 	return client, nil
 }
