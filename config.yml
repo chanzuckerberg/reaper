@@ -2,7 +2,7 @@ policies:
   - resource_selector: ""
     tag_selector: "!managedBy"
     label_selector: ""
-    max_age: 3000h
+    max_age: 2000h
 
     notifications:
       - message_template: >
