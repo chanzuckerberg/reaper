@@ -42,11 +42,11 @@ func Run(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-
 	policies, err := conf.GetPolicies()
 	if err != nil {
 		return err
 	}
+
 	s := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
