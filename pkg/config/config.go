@@ -8,7 +8,6 @@ import (
 	"github.com/blend/go-sdk/selector"
 	"github.com/chanzuckerberg/aws-tidy/pkg/policy"
 	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -25,7 +24,6 @@ type Duration time.Duration
 
 // UnmarshalYAML custom unmarshal logic
 func (d *Duration) UnmarshalYAML(unmarshal func(v interface{}) error) error {
-	log.Warn("JERE")
 	var s string
 	err := unmarshal(&s)
 	if err != nil {
@@ -48,6 +46,11 @@ func (d *Duration) Duration() *time.Duration {
 	return &duration
 }
 
+// NotificationConfig is a notification config
+type NotificationConfig struct {
+	MessageTemplate *string `yaml:"message_template"`
+}
+
 // PolicyConfig is the configuration for a policy
 type PolicyConfig struct {
 	ResourceSelector string  `yaml:"resource_selector"`
@@ -57,8 +60,7 @@ type PolicyConfig struct {
 	// If it matches the policy and exceeds MaxAge remediation will be taken.
 	MaxAge *Duration `yaml:"max_age"`
 
-	// NotificationMessage is a template for the notification message
-	NotificationMessage *string `yaml:"notification_message"`
+	Notifications []NotificationConfig `yaml:"notifications"`
 }
 
 // Config is the configuration
@@ -92,11 +94,19 @@ func (c *Config) GetPolicies() ([]policy.Policy, error) {
 			}
 		}
 
+		notifications := make([]policy.Notification, len(cp.Notifications))
+		for j, n := range cp.Notifications {
+			notification := policy.Notification{}
+			notification.MessageTemplate = n.MessageTemplate
+			notifications[j] = notification
+		}
+
 		p := policy.Policy{
 			ResourceSelector: rs,
 			LabelSelector:    ls,
 			TagSelector:      ts,
 			MaxAge:           cp.MaxAge.Duration(),
+			Notifications:    notifications,
 		}
 		policies[i] = p
 	}

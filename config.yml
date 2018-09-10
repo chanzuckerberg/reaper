@@ -2,12 +2,14 @@ policies:
   - resource_selector: ""
     tag_selector: "!managedBy"
     label_selector: ""
-    max_age: 3h
+    max_age: 3000h
 
-    notification_message: >
-      Resource {{.Name}} does not have a managedBy tag.
-      Resource was created approximately {{.Age}} ago.
-      It will be automatically deleted in {{.TTL}} if managedBy tag not added.
+    notifications:
+      - message_template: >
+          Resource {{.ID}} does not have a managedBy tag.
+          Resource was created approximately {{.Age}} ago.
+          It will be automatically deleted in {{.TTL}} if managedBy tag not added.
+
 aws_regions:
   - us-east-1
   - us-east-2
