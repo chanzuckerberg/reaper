@@ -28,7 +28,7 @@ type EC2Instance struct {
 
 // GetID returns the ec2_instance id
 func (e *EC2Instance) GetID() string {
-	return fmt.Sprintf("ec2_instance: %s, %s", e.ID, e.Name)
+	return fmt.Sprintf("ec2_instance: %s", e.ID)
 }
 
 // NewEc2Instance returns a new ec2 instance entity
@@ -124,14 +124,14 @@ func (e *EC2InstanceClient) worker(
 			}
 			for _, instance := range reservation.Instances {
 				ec2InstanceEntity := NewEc2Instance(instance)
-				if p.Match(ec2InstanceEntity) {
-					log.Infof("Matched ec2 instance %s, %s", ec2InstanceEntity.ID, ec2InstanceEntity.Name)
+				err := p.Enforce(ec2InstanceEntity)
+				if err != nil {
+					errChan <- err
 				}
 			}
 		}
 		return true
 	})
-
 	if err != nil {
 		errChan <- errors.Wrap(err, "Error describing ec2 instances")
 	}
