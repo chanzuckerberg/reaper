@@ -80,7 +80,7 @@ func NewEC2InstanceClient(s *session.Session, regions []string, numWorkers int) 
 }
 
 // Walk walks through all ec2 instances
-func (e *EC2InstanceClient) Walk(p *policy.Policy) (errs error) {
+func (e *EC2InstanceClient) Walk(p *policy.Policy, mode string) (errs error) {
 	log.Infof("Walking ec2_instance")
 	errChan := make(chan error)
 	wg := &sync.WaitGroup{}

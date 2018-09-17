@@ -84,7 +84,7 @@ func NewEC2EBSVolClient(s *session.Session, regions []string, numWorkers int) *E
 }
 
 // Walk walks through all ec2 instances
-func (e *EC2EBSVolClient) Walk(p *policy.Policy) (errs error) {
+func (e *EC2EBSVolClient) Walk(p *policy.Policy, mode string) (errs error) {
 	log.Infof("Walking ec2_instance")
 	errChan := make(chan error)
 	wg := &sync.WaitGroup{}
