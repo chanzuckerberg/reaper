@@ -1,12 +1,12 @@
 policies:
   - resource_selector: ""
-    tag_selector: "!managedBy"
+    tag_selector: "!owner"
     label_selector: ""
-    max_age: 2000h
+    max_age: 20000h
 
     notifications:
       - message_template: >
-          Resource {{.ID}} does not have a managedBy tag.
+          Resource {{.ID}} does not have an owner tag.
           Resource was created approximately {{.Age}} ago.
           It will be automatically deleted in {{.TTL}} if managedBy tag not added.
 
