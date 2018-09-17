@@ -22,12 +22,8 @@ var runCmd = &cobra.Command{
 	Use:   "run",
 	Short: "Run aws-tidy",
 	Long:  "Will run aws-tidy and execute any policies defined in the config",
-	Run: func(cmd *cobra.Command, args []string) {
-
-		err := Run(cmd, args)
-		if err != nil {
-			panic(err)
-		}
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return Run(cmd, args)
 	},
 }
 
