@@ -2,9 +2,6 @@ package cmd
 
 import (
 	"github.com/apex/log"
-	"github.com/aws/aws-sdk-go/aws/session"
-	cziAws "github.com/chanzuckerberg/aws-tidy/pkg/aws"
-	"github.com/chanzuckerberg/aws-tidy/pkg/config"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -42,29 +39,22 @@ func Run(cmd *cobra.Command, args []string) error {
 		return errors.Wrap(err, "mode must be one of [dry, interactive].")
 	}
 
-	configFile, err := cmd.Flags().GetString("config")
+	conf, err := getConfig(cmd)
 	if err != nil {
-		return errors.Wrapf(err, "Missing required argument %s", flagConfig)
-	}
-	conf, err := config.FromFile(configFile)
-	if err != nil {
-		return err
+		return errors.Wrap(err, "could not read config")
 	}
 	policies, err := conf.GetPolicies()
 	if err != nil {
 		return err
 	}
 
-	s := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	}))
-	awsClient, err := cziAws.NewClient(s, conf.AWSRegions)
+	awsClient, err := awsClient(conf.AWSRegions)
 	if err != nil {
 		return err
 	}
 
 	for _, p := range policies {
-		log.Infof("Executing polify: \n%s \n=================", p.String())
+		log.Infof("Executing policy: \n%s \n=================", p.String())
 		if p.MatchResource(map[string]string{"name": "s3"}) {
 			err := awsClient.S3.Walk(&p, mode)
 			if err != nil {
