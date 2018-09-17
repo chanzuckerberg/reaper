@@ -8,10 +8,7 @@ policies:
       - message_template: >
           Resource {{.ID}} does not have an owner tag.
           Resource was created approximately {{.Age}} ago.
-          It will be automatically deleted in {{.TTL}} if managedBy tag not added.
+          It will be automatically deleted in {{.TTL}} if owner tag not added.
 
 aws_regions:
   - us-east-1
-  - us-east-2
-  - us-west-1
-  - us-west-2
