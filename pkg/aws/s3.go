@@ -69,7 +69,7 @@ func NewS3Client(s *session.Session, regions []string, numWorkers int) *S3Client
 }
 
 // Walk walks through all s3 buckets
-func (s *S3Client) Walk(p *policy.Policy) error {
+func (s *S3Client) Walk(p *policy.Policy, mode string) error {
 	log.Infof("Walking s3 buckets")
 	jobs := make(chan *s3.Bucket)
 	errChan := make(chan error)
