@@ -63,7 +63,7 @@
   name = "github.com/blend/go-sdk"
   packages = ["selector"]
   pruneopts = "UT"
-  revision = "8b7bde5260fb68f17f03e941bf52fd472e5db5a9"
+  revision = "0fe7167552eba28627ce978ac64025aa409975bd"
 
 [[projects]]
   digest = "1:6f82cacd0af5921e99bf3f46748705239b36489464f4529a1589bc895764fb18"
