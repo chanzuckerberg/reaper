@@ -1,8 +1,9 @@
 package cmd
 
 import (
-	"github.com/apex/log"
+	"github.com/chanzuckerberg/aws-tidy/pkg/policy"
 	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -53,10 +54,12 @@ func Run(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	var violations []*policy.Violation
 	for _, p := range policies {
 		log.Infof("Executing policy: \n%s \n=================", p.String())
 		if p.MatchResource(map[string]string{"name": "s3"}) {
-			err := awsClient.S3.Eval(&p, mode)
+			v, err := awsClient.S3.Eval(&p)
+			violations = append(violations, v...)
 			if err != nil {
 				return err
 			}
@@ -76,6 +79,12 @@ func Run(cmd *cobra.Command, args []string) error {
 		// 	}
 		// }
 
+	}
+
+	log.Info("VIOLATIONS")
+
+	for _, v := range violations {
+		log.Infof("violation %s", v)
 	}
 	return nil
 }

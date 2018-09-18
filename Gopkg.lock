@@ -2,15 +2,7 @@
 
 
 [[projects]]
-  digest = "1:40261f597e43f31aaf9f8658b85c082773217943056f1be137635e769c0798c9"
-  name = "github.com/apex/log"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "0296d6eb16bb28f8a0c55668affcf4876dc269be"
-  version = "v1.0.0"
-
-[[projects]]
-  digest = "1:63d7644abc6220e5d49b515c520f395609a6133ea218fa2fd72adf203a309577"
+  digest = "1:a24ea94d676f4630b55f6330570febf1128359ca922b42160485cccbe4e33890"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -113,6 +105,22 @@
   revision = "0b12d6b5"
 
 [[projects]]
+  digest = "1:cdb899c199f907ac9fb50495ec71212c95cb5b0e0a8ee0800da0238036091033"
+  name = "github.com/mattn/go-runewidth"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "ce7b0b5c7b45a81508558cd1dba6bb1e4ddb51bb"
+  version = "v0.0.3"
+
+[[projects]]
+  branch = "master"
+  digest = "1:f611266e3ac01ab4adb6f1d67f6c1be82998d02f452faff450596658712d860b"
+  name = "github.com/olekukonko/tablewriter"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "be2c049b30ccd4d3fd795d6bf7dce74e42eeedaa"
+
+[[projects]]
   digest = "1:40e195917a951a8bf867cd05de2a46aaf1806c50cf92eebf4c16f78cd196f747"
   name = "github.com/pkg/errors"
   packages = ["."]
@@ -175,7 +183,6 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/apex/log",
     "github.com/aws/aws-sdk-go/aws",
     "github.com/aws/aws-sdk-go/aws/awserr",
     "github.com/aws/aws-sdk-go/aws/session",
@@ -188,6 +195,7 @@
     "github.com/blend/go-sdk/selector",
     "github.com/docker/go-units",
     "github.com/hashicorp/go-multierror",
+    "github.com/olekukonko/tablewriter",
     "github.com/pkg/errors",
     "github.com/sirupsen/logrus",
     "github.com/spf13/cobra",

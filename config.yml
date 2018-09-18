@@ -1,5 +1,6 @@
 policies:
-  - resource_selector: ""
+  - name: s3-owner
+    resource_selector: ""
     tag_selector: "!owner"
     label_selector: ""
     max_age: 20000h
