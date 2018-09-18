@@ -53,6 +53,7 @@ type NotificationConfig struct {
 
 // PolicyConfig is the configuration for a policy
 type PolicyConfig struct {
+	Name             string  `yaml:"name"`
 	ResourceSelector string  `yaml:"resource_selector"`
 	TagSelector      *string `yaml:"tag_selector"`
 	LabelSelector    *string `yaml:"label_selector"`
@@ -102,6 +103,7 @@ func (c *Config) GetPolicies() ([]policy.Policy, error) {
 		}
 
 		p := policy.Policy{
+			Name:             cp.Name,
 			ResourceSelector: rs,
 			LabelSelector:    ls,
 			TagSelector:      ts,

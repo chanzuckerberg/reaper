@@ -41,7 +41,7 @@ func (s *S3Bucket) Delete() error {
 
 // GetID returns the s3 bucket id
 func (s *S3Bucket) GetID() string {
-	return fmt.Sprintf("s3: %s", s.name)
+	return fmt.Sprintf("s3:%s", s.name)
 }
 
 // S3Client is an s3 client
@@ -68,17 +68,17 @@ func NewS3Client(s *session.Session, regions []string, numWorkers int) *S3Client
 }
 
 // Eval walks through all s3 buckets
-func (s *S3Client) Eval(p *policy.Policy, mode string) error {
+func (s *S3Client) Eval(p *policy.Policy) ([]*policy.Violation, error) {
 	log.Infof("Walking s3 buckets")
+	var violations []*policy.Violation
 	var errs error
 
 	input := &s3.ListBucketsInput{}
 	output, err := s.Client.ListBuckets(input)
 	if err != nil {
-		return errors.Wrap(err, "Could not list buckets")
+		return nil, errors.Wrap(err, "Could not list buckets")
 	}
 
-	// enqueue work
 	for _, bucket := range output.Buckets {
 		res, err := s.DescribeBucket(bucket)
 		// accumulate errors
@@ -90,12 +90,16 @@ func (s *S3Client) Eval(p *policy.Policy, mode string) error {
 			log.Debugf("Nil bucket - nothing to do")
 			continue
 		}
-		err = p.Enforce(res)
+		violation, err := p.Eval(res)
 		if err != nil {
 			errs = multierror.Append(errs, err)
+			continue
+		}
+		if violation != nil {
+			violations = append(violations, violation)
 		}
 	}
-	return errs
+	return violations, errs
 }
 
 // DescribeBucket describes this bucket
