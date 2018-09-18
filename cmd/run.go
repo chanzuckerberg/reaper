@@ -56,7 +56,7 @@ func Run(cmd *cobra.Command, args []string) error {
 	for _, p := range policies {
 		log.Infof("Executing policy: \n%s \n=================", p.String())
 		if p.MatchResource(map[string]string{"name": "s3"}) {
-			err := awsClient.S3.Walk(&p, mode)
+			err := awsClient.S3.Eval(&p, mode)
 			if err != nil {
 				return err
 			}

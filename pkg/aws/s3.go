@@ -2,7 +2,6 @@ package aws
 
 import (
 	"fmt"
-	"sync"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -68,11 +67,10 @@ func NewS3Client(s *session.Session, regions []string, numWorkers int) *S3Client
 	return s3Client
 }
 
-// Walk walks through all s3 buckets
-func (s *S3Client) Walk(p *policy.Policy, mode string) error {
+// Eval walks through all s3 buckets
+func (s *S3Client) Eval(p *policy.Policy, mode string) error {
 	log.Infof("Walking s3 buckets")
-	jobs := make(chan *s3.Bucket)
-	errChan := make(chan error)
+	var errs error
 
 	input := &s3.ListBucketsInput{}
 	output, err := s.Client.ListBuckets(input)
@@ -80,45 +78,12 @@ func (s *S3Client) Walk(p *policy.Policy, mode string) error {
 		return errors.Wrap(err, "Could not list buckets")
 	}
 
-	// set up workers
-	wg := &sync.WaitGroup{}
-	for i := 0; i < s.numWorkers; i++ {
-		wg.Add(1)
-		go s.worker(wg, p, jobs, errChan)
-	}
-
 	// enqueue work
 	for _, bucket := range output.Buckets {
-		jobs <- bucket
-	}
-	close(jobs)
-
-	// TODO some timeout here
-	wg.Wait()
-	close(errChan)
-	var errs error
-	for err := range errChan {
-		if err != nil {
-			errs = multierror.Append(errs, err)
-		}
-	}
-	return errs
-}
-
-// worker does the work
-// TODO generalize this pattern into Entity
-func (s *S3Client) worker(
-	wg *sync.WaitGroup,
-	p *policy.Policy,
-	jobs <-chan *s3.Bucket,
-	errs chan<- error) {
-	defer wg.Done()
-
-	for b := range jobs {
-		res, err := s.DescribeBucket(b)
+		res, err := s.DescribeBucket(bucket)
 		// accumulate errors
 		if err != nil {
-			errs <- err
+			errs = multierror.Append(errs, err)
 			continue
 		}
 		if res == nil {
@@ -127,9 +92,10 @@ func (s *S3Client) worker(
 		}
 		err = p.Enforce(res)
 		if err != nil {
-			errs <- err
+			errs = multierror.Append(errs, err)
 		}
 	}
+	return errs
 }
 
 // DescribeBucket describes this bucket
