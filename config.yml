@@ -1,3 +1,7 @@
+accounts:
+  - name: czi-id
+    id: 416703108729
+
 policies:
   - name: s3-owner
     resource_selector: ""

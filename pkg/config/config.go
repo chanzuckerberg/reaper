@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/blend/go-sdk/selector"
+	"github.com/chanzuckerberg/aws-tidy/pkg/aws"
 	"github.com/chanzuckerberg/aws-tidy/pkg/policy"
 	"github.com/pkg/errors"
 	yaml "gopkg.in/yaml.v2"
@@ -64,10 +65,17 @@ type PolicyConfig struct {
 	Notifications []NotificationConfig `yaml:"notifications"`
 }
 
+//AccountConfig identifies an AWS account we want to monitor
+type AccountConfig struct {
+	Name string `yaml:"name"`
+	ID   int64  `yaml:"id"`
+}
+
 // Config is the configuration
 type Config struct {
-	Policies   []PolicyConfig `yaml:"policies"`
-	AWSRegions []string       `yaml:"aws_regions"`
+	Policies   []PolicyConfig  `yaml:"policies"`
+	AWSRegions []string        `yaml:"aws_regions"`
+	Accounts   []AccountConfig `yaml:"accounts"`
 }
 
 // GetPolicies gets the policies from a config
@@ -113,6 +121,15 @@ func (c *Config) GetPolicies() ([]policy.Policy, error) {
 		policies[i] = p
 	}
 	return policies, nil
+}
+
+//GetAccounts will return aws.Account objects
+func (c *Config) GetAccounts() ([]aws.Account, error) {
+	accounts := make([]aws.Account, len(c.Accounts))
+	for _, a := range c.Accounts {
+		accounts = append(accounts, aws.Account{Name: a.Name, ID: a.ID})
+	}
+	return accounts, nil
 }
 
 // FromFile reads a config from a file

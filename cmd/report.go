@@ -3,7 +3,7 @@ package cmd
 import (
 	"os"
 
-	"github.com/chanzuckerberg/aws-tidy/pkg/policy"
+	"github.com/chanzuckerberg/aws-tidy/pkg/runner"
 	"github.com/olekukonko/tablewriter"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
@@ -31,32 +31,15 @@ to quickly create a Cobra application.`,
 		if err != nil {
 			return errors.Wrap(err, "could not read config")
 		}
-		policies, err := conf.GetPolicies()
+
+		runner := runner.New(conf)
+		violations, err := runner.Run()
+
 		if err != nil {
 			return err
-		}
-
-		awsClient, err := awsClient(conf.AWSRegions)
-		if err != nil {
-			return err
-		}
-
-		var violations []*policy.Violation
-		for _, p := range policies {
-			log.Infof("Executing policy: \n%s \n=================", p.String())
-			if p.MatchResource(map[string]string{"name": "s3"}) {
-				v, err := awsClient.S3.Eval(&p)
-				if err != nil {
-					return err
-				}
-				if v != nil {
-					violations = append(violations, v...)
-				}
-			}
 		}
 
 		log.Info("VIOLATIONS")
-
 		table := tablewriter.NewWriter(os.Stdout)
 		table.SetHeader([]string{"Entity", "Policy"})
 

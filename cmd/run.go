@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/chanzuckerberg/aws-tidy/pkg/policy"
+	"github.com/chanzuckerberg/aws-tidy/pkg/runner"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -44,42 +44,8 @@ func Run(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return errors.Wrap(err, "could not read config")
 	}
-	policies, err := conf.GetPolicies()
-	if err != nil {
-		return err
-	}
-
-	awsClient, err := awsClient(conf.AWSRegions)
-	if err != nil {
-		return err
-	}
-
-	var violations []*policy.Violation
-	for _, p := range policies {
-		log.Infof("Executing policy: \n%s \n=================", p.String())
-		if p.MatchResource(map[string]string{"name": "s3"}) {
-			v, err := awsClient.S3.Eval(&p)
-			violations = append(violations, v...)
-			if err != nil {
-				return err
-			}
-		}
-
-		// if p.MatchResource(map[string]string{"name": "ec2_instance"}) {
-		// 	err := awsClient.EC2Instance.Walk(&p, mode)
-		// 	if err != nil {
-		// 		return err
-		// 	}
-		// }
-
-		// if p.MatchResource(map[string]string{"name": "ec2_ebs_vol"}) {
-		// 	err := awsClient.EC2EBSVol.Walk(&p, mode)
-		// 	if err != nil {
-		// 		return err
-		// 	}
-		// }
-
-	}
+	runner := runner.New(conf)
+	violations, err := runner.Run()
 
 	log.Info("VIOLATIONS")
 
