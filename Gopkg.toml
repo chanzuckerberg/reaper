@@ -7,7 +7,7 @@
   name = "github.com/blend/go-sdk"
 
 [[constraint]]
-  branch = "edu/more-aws"
+  branch = "master"
   name = "github.com/chanzuckerberg/go-misc"
 
 [[constraint]]

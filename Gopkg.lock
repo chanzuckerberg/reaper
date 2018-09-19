@@ -64,12 +64,12 @@
   revision = "e84d302c8c8a0e653237490ac62512d6ee210abb"
 
 [[projects]]
-  branch = "edu/more-aws"
+  branch = "master"
   digest = "1:0af29e9e90605d74f51dc0d164bc728ffb11f3bbf7dc748cbfcff10e510bb728"
   name = "github.com/chanzuckerberg/go-misc"
   packages = ["aws"]
   pruneopts = "UT"
-  revision = "8e344fc791f36b63b1744db6d27a86a5a8f3d192"
+  revision = "635e542f4910afb2bcf506e9cc3e35948f9224a7"
 
 [[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
