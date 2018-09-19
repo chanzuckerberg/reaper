@@ -1,7 +1,6 @@
 package runner
 
 import (
-	"github.com/aws/aws-sdk-go/aws/session"
 	cziAws "github.com/chanzuckerberg/aws-tidy/pkg/aws"
 	"github.com/chanzuckerberg/aws-tidy/pkg/config"
 	"github.com/chanzuckerberg/aws-tidy/pkg/policy"
@@ -26,7 +25,12 @@ func (r *Runner) Run() ([]*policy.Violation, error) {
 		return nil, err
 	}
 
-	awsClient, err := awsClient(r.Config.AWSRegions)
+	accounts, err := r.Config.GetAccounts()
+	if err != nil {
+		return nil, nil
+	}
+
+	awsClient, err := cziAws.NewClient(accounts, r.Config.AWSRegions)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +39,7 @@ func (r *Runner) Run() ([]*policy.Violation, error) {
 	for _, p := range policies {
 		log.Infof("Executing policy: \n%s \n=================", p.String())
 		if p.MatchResource(map[string]string{"name": "s3"}) {
-			v, err := awsClient.EvalS3(&p)
+			v, err := awsClient.EvalS3(accounts, &p)
 			if err != nil {
 				return nil, err
 			}
@@ -46,11 +50,4 @@ func (r *Runner) Run() ([]*policy.Violation, error) {
 	}
 
 	return violations, err
-}
-
-func awsClient(regions []string) (*cziAws.Client, error) {
-	s := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	}))
-	return cziAws.NewClient(s, regions)
 }

@@ -43,41 +43,46 @@ func (s *S3Bucket) GetID() string {
 }
 
 // EvalS3 walks through all s3 buckets
-func (c *Client) EvalS3(p *policy.Policy) ([]*policy.Violation, error) {
+func (c *Client) EvalS3(accounts []*Account, p *policy.Policy) ([]*policy.Violation, error) {
 	log.Infof("Walking s3 buckets")
 	var violations []*policy.Violation
 	var errs error
+	for _, account := range accounts {
+		log.Infof("walking account %s (%d)", account.Name, account.ID)
+		listOutput, err := c.Get(account.ID, account.Role, DefaultRegion).S3.ListBuckets()
+		if err != nil {
+			return nil, errors.Wrap(err, "Could not list buckets")
+		}
+		for _, bucket := range listOutput.Buckets {
+			res, err := c.DescribeS3Bucket(account.ID, account.Role, bucket)
+			// accumulate errors
+			if err != nil {
+				errs = multierror.Append(errs, err)
+				continue
+			}
+			if res == nil {
+				log.Debugf("Nil bucket - nothing to do")
+				continue
+			}
+			if p.Match(res) {
+				violation := policy.NewViolation(p, res, false, account.ID, account.Name)
+				if err != nil {
+					errs = multierror.Append(errs, err)
+					continue
+				}
+				if violation != nil {
+					violations = append(violations, violation)
+				}
+			}
 
-	output, err := c.Default.S3.ListBuckets()
-	if err != nil {
-		return nil, errors.Wrap(err, "Could not list buckets")
+		}
 	}
 
-	for _, bucket := range output.Buckets {
-		res, err := c.DescribeS3Bucket(bucket)
-		// accumulate errors
-		if err != nil {
-			errs = multierror.Append(errs, err)
-			continue
-		}
-		if res == nil {
-			log.Debugf("Nil bucket - nothing to do")
-			continue
-		}
-		violation, err := p.Eval(res)
-		if err != nil {
-			errs = multierror.Append(errs, err)
-			continue
-		}
-		if violation != nil {
-			violations = append(violations, violation)
-		}
-	}
 	return violations, errs
 }
 
 // DescribeS3Bucket describes the bucket
-func (c *Client) DescribeS3Bucket(b *s3.Bucket) (*S3Bucket, error) {
+func (c *Client) DescribeS3Bucket(accountID int64, roleName string, b *s3.Bucket) (*S3Bucket, error) {
 	if b.Name == nil {
 		return nil, errors.New("Nil bucket name")
 	}
@@ -86,15 +91,15 @@ func (c *Client) DescribeS3Bucket(b *s3.Bucket) (*S3Bucket, error) {
 	bucket := NewS3Bucket(name)
 	bucket.WithCreatedAt(b.CreationDate)
 
-	location, err := c.Default.S3.GetBucketLocation(name)
+	location, err := c.Get(accountID, roleName, DefaultRegion).S3.GetBucketLocation(name)
 	if err != nil {
 		return nil, err
 	}
 
 	tagInput := &s3.GetBucketTaggingInput{}
 	tagInput.SetBucket(name)
-	regionalClient, ok := c.Regional[location]
-	if !ok || regionalClient == nil {
+	regionalClient := c.Get(accountID, roleName, location)
+	if regionalClient == nil {
 		log.Debugf("Skipping over bucket %s because it is in unknown region %s", name, location)
 		return nil, nil
 	}

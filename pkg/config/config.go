@@ -69,6 +69,7 @@ type PolicyConfig struct {
 type AccountConfig struct {
 	Name string `yaml:"name"`
 	ID   int64  `yaml:"id"`
+	Role string `yaml:"role"`
 }
 
 // Config is the configuration
@@ -124,10 +125,10 @@ func (c *Config) GetPolicies() ([]policy.Policy, error) {
 }
 
 //GetAccounts will return aws.Account objects
-func (c *Config) GetAccounts() ([]aws.Account, error) {
-	accounts := make([]aws.Account, len(c.Accounts))
+func (c *Config) GetAccounts() ([]*aws.Account, error) {
+	var accounts []*aws.Account
 	for _, a := range c.Accounts {
-		accounts = append(accounts, aws.Account{Name: a.Name, ID: a.ID})
+		accounts = append(accounts, &aws.Account{Name: a.Name, ID: a.ID, Role: a.Role})
 	}
 	return accounts, nil
 }

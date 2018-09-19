@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"os"
+	"strconv"
 
 	"github.com/chanzuckerberg/aws-tidy/pkg/runner"
 	"github.com/olekukonko/tablewriter"
@@ -41,12 +42,12 @@ to quickly create a Cobra application.`,
 
 		log.Info("VIOLATIONS")
 		table := tablewriter.NewWriter(os.Stdout)
-		table.SetHeader([]string{"Entity", "Policy"})
+		table.SetHeader([]string{"Entity", "Policy", "Account ID", "Account Name"})
 
 		for _, v := range violations {
 			// fmt.Printf("%#v\n", v)
 			// fmt.Printf("%#v\n", v.Subject)
-			table.Append([]string{v.Subject.GetID(), v.Policy.Name})
+			table.Append([]string{v.Subject.GetID(), v.Policy.Name, strconv.FormatInt(v.AccountID, 10), v.AccountName})
 		}
 		table.Render()
 		return nil

@@ -1,6 +1,19 @@
 accounts:
   - name: czi-id
     id: 416703108729
+    role: czi-admin
+  - name: czi-corp
+    id: 252147947505
+    role: czi-admin
+  - name: czi-si
+    id: 626314663667
+    role: czi-admin
+  - name: czi-logs
+    id: 724328632434
+    role: czi-admin
+  - name: meta-2
+    id: 607813682535
+    role: czi-admin
 
 policies:
   - name: s3-owner

@@ -123,11 +123,12 @@ func (e *EC2EBSVolClient) worker(
 	input := &ec2.DescribeVolumesInput{}
 	err := client.DescribeVolumesPages(input, func(output *ec2.DescribeVolumesOutput, lastPage bool) bool {
 		for _, vol := range output.Volumes {
-			ebsVolEntity := NewEc2EBSVol(vol)
-			_, err := p.Eval(ebsVolEntity)
-			if err != nil {
-				errChan <- err
-			}
+			// ebsVolEntity := NewEc2EBSVol(vol)
+			NewEc2EBSVol(vol)
+			// _, err := p.Eval(ebsVolEntity)
+			// if err != nil {
+			// errChan <- err
+			// }
 		}
 		return true
 	})

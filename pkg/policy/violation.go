@@ -12,14 +12,18 @@ type Violation struct {
 	Subject       Subject
 	Expired       bool
 	Notifications []Notification
+	AccountID     int64
+	AccountName   string
 }
 
 // NewViolation creates a new Violation struct
-func NewViolation(policy *Policy, subject Subject, expired bool) *Violation {
+func NewViolation(policy *Policy, subject Subject, expired bool, accountID int64, accountName string) *Violation {
 	return &Violation{
-		Policy:  policy,
-		Subject: subject,
-		Expired: expired,
+		Policy:      policy,
+		Subject:     subject,
+		Expired:     expired,
+		AccountID:   accountID,
+		AccountName: accountName,
 	}
 }
 
