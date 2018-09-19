@@ -118,6 +118,7 @@ type WalkFun func(*Entity, error) error
 func NewClient(sess *session.Session, regions []string) (*Client, error) {
 	client := &Client{
 		numWorkers: 10, // TODO: configure this elsewhere
+		Regional:   map[string]*cziAws.Client{},
 	}
 	client.Default = cziAws.New(sess).WithAllServices(nil)
 	// Create a client for all regions
