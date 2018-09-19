@@ -7,14 +7,16 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+	cziAws "github.com/chanzuckerberg/go-misc/aws"
 )
 
 // Client is an AWS client
 type Client struct {
-	KMS         *KMSClient
-	S3          *S3Client
-	EC2Instance *EC2InstanceClient
-	EC2EBSVol   *EC2EBSVolClient
+	Default *cziAws.Client
+	// map of regions to client
+	Regional map[string]*cziAws.Client
+
+	numWorkers int
 }
 
 // Entity is an AWS entity s3 bucket, ec2 instance, etc
@@ -114,14 +116,16 @@ type WalkFun func(*Entity, error) error
 
 // NewClient returns a new aws client
 func NewClient(sess *session.Session, regions []string) (*Client, error) {
-	// TODO: move this out of here
-	numWorkers := 10
-
 	client := &Client{
-		KMS:         NewKMS(sess),
-		S3:          NewS3Client(sess, regions, numWorkers),
-		EC2Instance: NewEC2InstanceClient(sess, regions, numWorkers),
-		EC2EBSVol:   NewEC2EBSVolClient(sess, regions, numWorkers),
+		numWorkers: 10, // TODO: configure this elsewhere
+	}
+	client.Default = cziAws.New(sess).WithAllServices(nil)
+	// Create a client for all regions
+	for _, region := range regions {
+		conf := &aws.Config{
+			Region: aws.String(region),
+		}
+		client.Regional[region] = cziAws.New(sess).WithAllServices(conf)
 	}
 	return client, nil
 }

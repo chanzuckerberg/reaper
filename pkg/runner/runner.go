@@ -35,7 +35,7 @@ func (r *Runner) Run() ([]*policy.Violation, error) {
 	for _, p := range policies {
 		log.Infof("Executing policy: \n%s \n=================", p.String())
 		if p.MatchResource(map[string]string{"name": "s3"}) {
-			v, err := awsClient.S3.Eval(&p)
+			v, err := awsClient.EvalS3(&p)
 			if err != nil {
 				return nil, err
 			}

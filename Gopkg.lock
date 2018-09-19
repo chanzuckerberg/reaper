@@ -2,7 +2,7 @@
 
 
 [[projects]]
-  digest = "1:a24ea94d676f4630b55f6330570febf1128359ca922b42160485cccbe4e33890"
+  digest = "1:094d0bf4c89cb517c538108d8d7abe0c47cfd575e5aaffcc8b31f1f513bf18c5"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -35,19 +35,25 @@
     "private/protocol/query",
     "private/protocol/query/queryutil",
     "private/protocol/rest",
+    "private/protocol/restjson",
     "private/protocol/restxml",
     "private/protocol/xml/xmlutil",
     "service/ec2",
     "service/ec2/ec2iface",
+    "service/iam",
+    "service/iam/iamiface",
     "service/kms",
     "service/kms/kmsiface",
+    "service/lambda",
+    "service/lambda/lambdaiface",
     "service/s3",
     "service/s3/s3iface",
     "service/sts",
+    "service/sts/stsiface",
   ]
   pruneopts = "UT"
-  revision = "34699de98eac41fa94737f6ce7b83d7a621c2634"
-  version = "v1.15.36"
+  revision = "3dd4f56d3cb9d194293525540562216f81bd3f27"
+  version = "v1.15.37"
 
 [[projects]]
   branch = "master"
@@ -55,7 +61,23 @@
   name = "github.com/blend/go-sdk"
   packages = ["selector"]
   pruneopts = "UT"
-  revision = "0fe7167552eba28627ce978ac64025aa409975bd"
+  revision = "e84d302c8c8a0e653237490ac62512d6ee210abb"
+
+[[projects]]
+  branch = "edu/more-aws"
+  digest = "1:0af29e9e90605d74f51dc0d164bc728ffb11f3bbf7dc748cbfcff10e510bb728"
+  name = "github.com/chanzuckerberg/go-misc"
+  packages = ["aws"]
+  pruneopts = "UT"
+  revision = "8e344fc791f36b63b1744db6d27a86a5a8f3d192"
+
+[[projects]]
+  digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
+  name = "github.com/davecgh/go-spew"
+  packages = ["spew"]
+  pruneopts = "UT"
+  revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
+  version = "v1.1.1"
 
 [[projects]]
   digest = "1:6f82cacd0af5921e99bf3f46748705239b36489464f4529a1589bc895764fb18"
@@ -129,6 +151,14 @@
   version = "v0.8.0"
 
 [[projects]]
+  digest = "1:0028cb19b2e4c3112225cd871870f2d9cf49b9b4276531f03438a88e94be86fe"
+  name = "github.com/pmezard/go-difflib"
+  packages = ["difflib"]
+  pruneopts = "UT"
+  revision = "792786c7400a136282c1664665ae0a8db921c6c2"
+  version = "v1.0.0"
+
+[[projects]]
   digest = "1:d867dfa6751c8d7a435821ad3b736310c2ed68945d05b50fb9d23aee0540c8cc"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
@@ -153,23 +183,42 @@
   version = "v1.0.2"
 
 [[projects]]
+  digest = "1:ac83cf90d08b63ad5f7e020ef480d319ae890c208f8524622a2f3136e2686b02"
+  name = "github.com/stretchr/objx"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "477a77ecc69700c7cdeb1fa9e129548e1c1c393c"
+  version = "v0.1.1"
+
+[[projects]]
+  digest = "1:15a4a7e5afac3cea801fa24831fce3bf3b5bd3620cbf8355a07b7dbf06877883"
+  name = "github.com/stretchr/testify"
+  packages = [
+    "assert",
+    "mock",
+  ]
+  pruneopts = "UT"
+  revision = "f35b8ab0b5a2cef36673838d662e249dd9c94686"
+  version = "v1.2.2"
+
+[[projects]]
   branch = "master"
   digest = "1:3f3a05ae0b95893d90b9b3b5afdb79a9b3d96e4e36e099d841ae602e4aca0da8"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
   pruneopts = "UT"
-  revision = "0709b304e793a5edb4a2c0145f281ecdc20838a4"
+  revision = "0e37d006457bf46f9e6692014ba72ef82c33022c"
 
 [[projects]]
   branch = "master"
-  digest = "1:0ed1788dc3845fa86e9ade2183538e920adf76fb9f8760e69236fa2cb0d7c9d9"
+  digest = "1:49edbccdd6fb213dcf45486b0c939b788740451e5f2ff77aa42ca742d10da449"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = "UT"
-  revision = "917fdcba135dcbaccd57425db91723541b4427c8"
+  revision = "1561086e645b2809fb9f8a1e2a38160bf8d53bf4"
 
 [[projects]]
   digest = "1:342378ac4dcb378a5448dd723f0784ae519383532f5e70ade24132c4c8693202"
@@ -191,8 +240,8 @@
     "github.com/aws/aws-sdk-go/service/kms",
     "github.com/aws/aws-sdk-go/service/kms/kmsiface",
     "github.com/aws/aws-sdk-go/service/s3",
-    "github.com/aws/aws-sdk-go/service/s3/s3iface",
     "github.com/blend/go-sdk/selector",
+    "github.com/chanzuckerberg/go-misc/aws",
     "github.com/docker/go-units",
     "github.com/hashicorp/go-multierror",
     "github.com/olekukonko/tablewriter",

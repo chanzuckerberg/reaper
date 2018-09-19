@@ -5,9 +5,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 	"github.com/chanzuckerberg/aws-tidy/pkg/policy"
 	multierror "github.com/hashicorp/go-multierror"
 	"github.com/pkg/errors"
@@ -44,43 +42,19 @@ func (s *S3Bucket) GetID() string {
 	return fmt.Sprintf("s3:%s", s.name)
 }
 
-// S3Client is an s3 client
-type S3Client struct {
-	Client s3iface.S3API
-	// Per region clients
-	RegionClients map[string]s3iface.S3API
-	Session       *session.Session
-	numWorkers    int
-}
-
-// NewS3Client returns a new s3 client
-func NewS3Client(s *session.Session, regions []string, numWorkers int) *S3Client {
-	s3Client := &S3Client{
-		Client:        s3.New(s),
-		Session:       s,
-		RegionClients: map[string]s3iface.S3API{},
-		numWorkers:    numWorkers,
-	}
-	for _, region := range regions {
-		s3Client.RegionClients[region] = s3.New(s, &aws.Config{Region: aws.String(region)})
-	}
-	return s3Client
-}
-
-// Eval walks through all s3 buckets
-func (s *S3Client) Eval(p *policy.Policy) ([]*policy.Violation, error) {
+// EvalS3 walks through all s3 buckets
+func (c *Client) EvalS3(p *policy.Policy) ([]*policy.Violation, error) {
 	log.Infof("Walking s3 buckets")
 	var violations []*policy.Violation
 	var errs error
 
-	input := &s3.ListBucketsInput{}
-	output, err := s.Client.ListBuckets(input)
+	output, err := c.Default.S3.ListBuckets()
 	if err != nil {
 		return nil, errors.Wrap(err, "Could not list buckets")
 	}
 
 	for _, bucket := range output.Buckets {
-		res, err := s.DescribeBucket(bucket)
+		res, err := c.DescribeS3Bucket(bucket)
 		// accumulate errors
 		if err != nil {
 			errs = multierror.Append(errs, err)
@@ -102,8 +76,8 @@ func (s *S3Client) Eval(p *policy.Policy) ([]*policy.Violation, error) {
 	return violations, errs
 }
 
-// DescribeBucket describes this bucket
-func (s *S3Client) DescribeBucket(b *s3.Bucket) (*S3Bucket, error) {
+// DescribeS3Bucket describes the bucket
+func (c *Client) DescribeS3Bucket(b *s3.Bucket) (*S3Bucket, error) {
 	if b.Name == nil {
 		return nil, errors.New("Nil bucket name")
 	}
@@ -112,26 +86,20 @@ func (s *S3Client) DescribeBucket(b *s3.Bucket) (*S3Bucket, error) {
 	bucket := NewS3Bucket(name)
 	bucket.WithCreatedAt(b.CreationDate)
 
-	locationInput := &s3.GetBucketLocationInput{}
-	locationInput.SetBucket(*b.Name)
-	location, err := s.Client.GetBucketLocation(locationInput)
+	location, err := c.Default.S3.GetBucketLocation(name)
 	if err != nil {
-		return nil, errors.Wrapf(err, "Could not get bucket %s location", *b.Name)
-	}
-	if location.LocationConstraint == nil {
-		// why we can't have nice things
-		location.LocationConstraint = aws.String("us-east-1")
+		return nil, err
 	}
 
 	tagInput := &s3.GetBucketTaggingInput{}
 	tagInput.SetBucket(name)
-	c, ok := s.RegionClients[*location.LocationConstraint]
-	if !ok {
-		log.Debugf("Skipping over bucket %s because it is in unknown region %s", name, *location.LocationConstraint)
+	regionalClient, ok := c.Regional[location]
+	if !ok || regionalClient == nil {
+		log.Debugf("Skipping over bucket %s because it is in unknown region %s", name, location)
 		return nil, nil
 	}
 
-	tags, err := c.GetBucketTagging(tagInput)
+	tags, err := regionalClient.S3.GetBucketTagging(name)
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
 			switch aerr.Code() {
@@ -150,11 +118,9 @@ func (s *S3Client) DescribeBucket(b *s3.Bucket) (*S3Bucket, error) {
 		bucket.WithTag(tag.Key, tag.Value)
 	}
 
-	aclInput := &s3.GetBucketAclInput{}
-	aclInput.SetBucket(name)
-	acl, err := c.GetBucketAcl(aclInput)
+	acl, err := regionalClient.S3.GetBucketACL(name)
 	if err != nil {
-		return nil, errors.Wrapf(err, "Could not determnine ACL for %s", name)
+		return nil, err
 	}
 
 	for _, grant := range acl.Grants {
