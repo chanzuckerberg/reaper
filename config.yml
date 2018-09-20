@@ -14,6 +14,18 @@ accounts:
   - name: meta-2
     id: 607813682535
     role: czi-admin
+  - name: edinnovationlabs
+    id: 805813389673
+    role: czi-admin
+  - name: czi-sec
+    id: 871040364337
+    role: czi-admin
+  - name: czi-domains
+    id: 382303590750
+    role: czi-admin
+  - name: czi-physec
+    id: 728896018347
+    role: czi-admin
 
 policies:
   - name: s3-owner
