@@ -64,12 +64,12 @@
   revision = "e84d302c8c8a0e653237490ac62512d6ee210abb"
 
 [[projects]]
-  branch = "master"
-  digest = "1:0af29e9e90605d74f51dc0d164bc728ffb11f3bbf7dc748cbfcff10e510bb728"
+  branch = "ryanking/ec2"
+  digest = "1:46b8734c7f83c88bc052793172c4df7fd93d3149dd60a2abc0f0c6a514e5616f"
   name = "github.com/chanzuckerberg/go-misc"
   packages = ["aws"]
   pruneopts = "UT"
-  revision = "635e542f4910afb2bcf506e9cc3e35948f9224a7"
+  revision = "61d778152e07abeb6e11ee912aaf5c0214ac6e29"
 
 [[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
@@ -159,12 +159,12 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:d867dfa6751c8d7a435821ad3b736310c2ed68945d05b50fb9d23aee0540c8cc"
+  digest = "1:36a75ab002c1cfb43bcc5d2ec10fbdc2a1136e9246a65e535f1d827435f28f17"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
   pruneopts = "UT"
-  revision = "3e01752db0189b9157070a0e1668a620f9a85da2"
-  version = "v1.0.6"
+  revision = "418b41d23a1bf978c06faea5313ba194650ac088"
+  version = "v0.8.7"
 
 [[projects]]
   digest = "1:645cabccbb4fa8aab25a956cbcbdf6a6845ca736b2c64e197ca7cbb9d210b939"
@@ -202,25 +202,6 @@
   version = "v1.2.2"
 
 [[projects]]
-  branch = "master"
-  digest = "1:3f3a05ae0b95893d90b9b3b5afdb79a9b3d96e4e36e099d841ae602e4aca0da8"
-  name = "golang.org/x/crypto"
-  packages = ["ssh/terminal"]
-  pruneopts = "UT"
-  revision = "0e37d006457bf46f9e6692014ba72ef82c33022c"
-
-[[projects]]
-  branch = "master"
-  digest = "1:49edbccdd6fb213dcf45486b0c939b788740451e5f2ff77aa42ca742d10da449"
-  name = "golang.org/x/sys"
-  packages = [
-    "unix",
-    "windows",
-  ]
-  pruneopts = "UT"
-  revision = "1561086e645b2809fb9f8a1e2a38160bf8d53bf4"
-
-[[projects]]
   digest = "1:342378ac4dcb378a5448dd723f0784ae519383532f5e70ade24132c4c8693202"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
@@ -234,6 +215,7 @@
   input-imports = [
     "github.com/aws/aws-sdk-go/aws",
     "github.com/aws/aws-sdk-go/aws/awserr",
+    "github.com/aws/aws-sdk-go/aws/credentials/stscreds",
     "github.com/aws/aws-sdk-go/aws/session",
     "github.com/aws/aws-sdk-go/service/ec2",
     "github.com/aws/aws-sdk-go/service/ec2/ec2iface",
