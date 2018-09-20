@@ -20,7 +20,6 @@ func New(c *config.Config) *Runner {
 
 // Run will evaluate all the polices against the accounts in the config and return violations
 func (r *Runner) Run() ([]policy.Violation, error) {
-	var errs error
 	policies, err := r.Config.GetPolicies()
 	if err != nil {
 		return nil, err
@@ -38,14 +37,15 @@ func (r *Runner) Run() ([]policy.Violation, error) {
 
 	regions := r.Config.AWSRegions
 
+	var errs *multierror.Error
 	var violations []policy.Violation
 	for _, p := range policies {
 		log.Infof("Executing policy: \n%s \n=================", p.String())
 		if p.MatchResource(map[string]string{"name": "s3"}) {
 			v, err := awsClient.EvalS3(accounts, p)
-			if err != nil {
-				return nil, err
-			}
+
+			err = multierror.Append(errs, err)
+
 			if v != nil {
 				violations = append(violations, v...)
 			}
@@ -62,9 +62,9 @@ func (r *Runner) Run() ([]policy.Violation, error) {
 		if p.MatchResource(map[string]string{"name": "iam_user"}) {
 			log.Infof("Evaluating policy: %s", p.Name)
 			v, err := awsClient.EvalIAMUser(accounts, p, regions)
-			if err != nil {
-				return nil, err
-			}
+
+			errs = multierror.Append(errs, err)
+
 			if v != nil {
 				violations = append(violations, v...)
 			}
@@ -72,5 +72,5 @@ func (r *Runner) Run() ([]policy.Violation, error) {
 
 	}
 
-	return violations, nil
+	return violations, errs.ErrorOrNil()
 }
