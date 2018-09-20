@@ -28,7 +28,7 @@ accounts:
     role: czi-admin
 
 policies:
-  - name: s3-owner
+  - name: owner
     resource_selector: ""
     tag_selector: "!owner"
     label_selector: ""
@@ -42,3 +42,5 @@ policies:
 
 aws_regions:
   - us-east-1
+  - us-west-2
+  - us-west-1

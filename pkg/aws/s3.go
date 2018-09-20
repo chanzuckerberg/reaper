@@ -66,10 +66,6 @@ func (c *Client) EvalS3(accounts []*Account, p *policy.Policy) ([]*policy.Violat
 			}
 			if p.Match(res) {
 				violation := policy.NewViolation(p, res, false, account.ID, account.Name)
-				if err != nil {
-					errs = multierror.Append(errs, err)
-					continue
-				}
 				if violation != nil {
 					violations = append(violations, violation)
 				}

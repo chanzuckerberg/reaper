@@ -35,11 +35,24 @@ func (r *Runner) Run() ([]*policy.Violation, error) {
 		return nil, err
 	}
 
+	regions := r.Config.AWSRegions
+
 	var violations []*policy.Violation
 	for _, p := range policies {
 		log.Infof("Executing policy: \n%s \n=================", p.String())
 		if p.MatchResource(map[string]string{"name": "s3"}) {
 			v, err := awsClient.EvalS3(accounts, &p)
+			if err != nil {
+				return nil, err
+			}
+			if v != nil {
+				violations = append(violations, v...)
+			}
+		}
+
+		if p.MatchResource(map[string]string{"name": "ec2:instance"}) {
+			log.Infof("Evaluating policy: \n %s \n=================", p.String())
+			v, err := awsClient.EvalEc2Instance(accounts, &p, regions)
 			if err != nil {
 				return nil, err
 			}
