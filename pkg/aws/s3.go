@@ -43,9 +43,9 @@ func (s *S3Bucket) GetID() string {
 }
 
 // EvalS3 walks through all s3 buckets
-func (c *Client) EvalS3(accounts []*Account, p *policy.Policy) ([]*policy.Violation, error) {
+func (c *Client) EvalS3(accounts []*Account, p policy.Policy) ([]policy.Violation, error) {
 	log.Infof("Walking s3 buckets")
-	var violations []*policy.Violation
+	var violations []policy.Violation
 	var errs error
 	for _, account := range accounts {
 		log.Infof("walking account %s (%d)", account.Name, account.ID)
@@ -66,9 +66,7 @@ func (c *Client) EvalS3(accounts []*Account, p *policy.Policy) ([]*policy.Violat
 			}
 			if p.Match(res) {
 				violation := policy.NewViolation(p, res, false, account.ID, account.Name)
-				if violation != nil {
-					violations = append(violations, violation)
-				}
+				violations = append(violations, violation)
 			}
 
 		}

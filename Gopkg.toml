@@ -7,7 +7,7 @@
   name = "github.com/blend/go-sdk"
 
 [[constraint]]
-  branch = "ryanking/ec2"
+  branch = "ryanking/login_profile"
   name = "github.com/chanzuckerberg/go-misc"
 
 [[constraint]]

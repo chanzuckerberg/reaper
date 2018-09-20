@@ -34,6 +34,7 @@ type Policy struct {
 // String satisfies Stringer interface
 func (p *Policy) String() string {
 	res := []string{}
+	res = append(res, fmt.Sprintf("Name: %s", p.Name))
 	if p.ResourceSelector != nil {
 		res = append(res, fmt.Sprintf("ResourceSelector: %s", p.ResourceSelector.String()))
 	}
