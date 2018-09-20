@@ -5,6 +5,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/chanzuckerberg/aws-tidy/pkg/policy"
+	multierror "github.com/hashicorp/go-multierror"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -24,7 +25,7 @@ type EC2Instance struct {
 
 // GetID returns the ec2_instance id
 func (e *EC2Instance) GetID() string {
-	return fmt.Sprintf("ec2_instance: %s", e.ID)
+	return fmt.Sprintf("%s", e.ID)
 }
 
 // NewEc2Instance returns a new ec2 instance entity
@@ -59,26 +60,23 @@ func NewEc2Instance(instance *ec2.Instance) *EC2Instance {
 }
 
 // EvalEc2Instance walks through all ec2 instances
-func (c *Client) EvalEc2Instance(accounts []*Account, p *policy.Policy, regions []string) ([]*policy.Violation, error) {
-	var violations []*policy.Violation
+func (c *Client) EvalEc2Instance(accounts []*Account, p policy.Policy, regions []string, f func(policy.Violation)) error {
 	var errs error
 	for _, account := range accounts {
 		log.Infof("Walking ec2_instance for %s", account.Name)
 		for _, region := range regions {
 			log.Infof("scanning %s", region)
 			client := c.Get(account.ID, account.Role, region)
-			client.EC2.GetAllInstances(func(instance *ec2.Instance) {
+			err := client.EC2.GetAllInstances(func(instance *ec2.Instance) {
 				i := NewEc2Instance(instance)
 				if p.Match(i) {
 					violation := policy.NewViolation(p, i, false, account.ID, account.Name)
-					if violation != nil {
-						violations = append(violations, violation)
-					}
+					f(violation)
 				}
 			})
-
+			errs = multierror.Append(errs, err)
 		}
 
 	}
-	return violations, errs
+	return errs
 }

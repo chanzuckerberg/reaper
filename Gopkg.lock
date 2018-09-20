@@ -64,12 +64,12 @@
   revision = "e84d302c8c8a0e653237490ac62512d6ee210abb"
 
 [[projects]]
-  branch = "ryanking/ec2"
-  digest = "1:46b8734c7f83c88bc052793172c4df7fd93d3149dd60a2abc0f0c6a514e5616f"
+  branch = "ryanking/login_profile"
+  digest = "1:ae8dfe4a11100e6021a12b9f24287b1f2fa848e1c5f76c2410897866fa86b4fd"
   name = "github.com/chanzuckerberg/go-misc"
   packages = ["aws"]
   pruneopts = "UT"
-  revision = "61d778152e07abeb6e11ee912aaf5c0214ac6e29"
+  revision = "72a70dcab6d36f44367c555f0b6f63693077697d"
 
 [[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
@@ -219,6 +219,7 @@
     "github.com/aws/aws-sdk-go/aws/session",
     "github.com/aws/aws-sdk-go/service/ec2",
     "github.com/aws/aws-sdk-go/service/ec2/ec2iface",
+    "github.com/aws/aws-sdk-go/service/iam",
     "github.com/aws/aws-sdk-go/service/kms",
     "github.com/aws/aws-sdk-go/service/kms/kmsiface",
     "github.com/aws/aws-sdk-go/service/s3",

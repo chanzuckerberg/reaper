@@ -50,7 +50,7 @@ func Run(cmd *cobra.Command, args []string) error {
 	log.Info("VIOLATIONS")
 
 	for _, v := range violations {
-		log.Infof("violation %s", v)
+		log.Infof("violation %#v", v)
 	}
 	return nil
 }
