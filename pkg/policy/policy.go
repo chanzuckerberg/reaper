@@ -46,14 +46,6 @@ func (p *Policy) String() string {
 	return strings.Join(res, "\n")
 }
 
-// Eval enforces this policy
-func (p *Policy) Eval(s Subject) (*Violation, error) {
-	if p.Match(s) {
-		return NewViolation(p, s, p.Expired(s)), nil
-	}
-	return nil, nil
-}
-
 // MatchResource determines if we match an aws resource such as s3 or cloudfront
 func (p *Policy) MatchResource(resource map[string]string) bool {
 	return p.ResourceSelector.Matches(resource)
