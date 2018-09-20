@@ -123,11 +123,12 @@ func (e *EC2InstanceClient) worker(
 				continue
 			}
 			for _, instance := range reservation.Instances {
-				ec2InstanceEntity := NewEc2Instance(instance)
-				_, err := p.Eval(ec2InstanceEntity)
-				if err != nil {
-					errChan <- err
-				}
+				// ec2InstanceEntity := NewEc2Instance(instance)
+				NewEc2Instance(instance)
+				// _, err := p.Eval(ec2InstanceEntity)
+				// if err != nil {
+				// errChan <- err
+				// }
 			}
 		}
 		return true

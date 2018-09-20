@@ -77,10 +77,10 @@ func (k *KMSClient) Walk(p policy.Policy) error {
 			WithCreatedAt(keyMetadata.CreationDate)
 
 		// Need to not fail on err here
-		_, err = p.Eval(entity)
-		if err != nil {
-			return err
-		}
+		// _, err = p.Eval(entity)
+		// if err != nil {
+		// return err
+		// }
 	}
 	return nil
 }
