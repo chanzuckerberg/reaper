@@ -18,7 +18,7 @@ type Notification struct {
 }
 
 // GetMessage gets the notification message
-func (n *Notification) GetMessage(s Subject, p *Policy) (string, error) {
+func (n *Notification) GetMessage(s Subject, p Policy) (string, error) {
 	message := s.GetID()
 	if n.MessageTemplate != nil {
 		createdAt := s.GetCreatedAt()
@@ -46,7 +46,7 @@ func (n *Notification) GetMessage(s Subject, p *Policy) (string, error) {
 }
 
 // Notify notifies
-func (n *Notification) Notify(s Subject, p *Policy) (errs error) {
+func (n *Notification) Notify(s Subject, p Policy) (errs error) {
 	message, err := n.GetMessage(s, p)
 	if err != nil {
 		return err

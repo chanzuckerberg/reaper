@@ -1,14 +1,12 @@
 package policy
 
 import (
-	"fmt"
-
 	multierror "github.com/hashicorp/go-multierror"
 )
 
 // Violation represents a specific resource's lack of compliance to a given policy.
 type Violation struct {
-	Policy        *Policy
+	Policy        Policy
 	Subject       Subject
 	Expired       bool
 	Notifications []Notification
@@ -17,8 +15,8 @@ type Violation struct {
 }
 
 // NewViolation creates a new Violation struct
-func NewViolation(policy *Policy, subject Subject, expired bool, accountID int64, accountName string) *Violation {
-	return &Violation{
+func NewViolation(policy Policy, subject Subject, expired bool, accountID int64, accountName string) Violation {
+	return Violation{
 		Policy:      policy,
 		Subject:     subject,
 		Expired:     expired,
@@ -37,7 +35,4 @@ func (v *Violation) Notify() error {
 		}
 	}
 	return errs
-}
-func (v *Violation) String() string {
-	return fmt.Sprintf("subject: %s", v.Subject.GetID())
 }

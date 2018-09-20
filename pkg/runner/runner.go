@@ -4,6 +4,7 @@ import (
 	cziAws "github.com/chanzuckerberg/aws-tidy/pkg/aws"
 	"github.com/chanzuckerberg/aws-tidy/pkg/config"
 	"github.com/chanzuckerberg/aws-tidy/pkg/policy"
+	"github.com/hashicorp/go-multierror"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -18,8 +19,8 @@ func New(c *config.Config) *Runner {
 }
 
 // Run will evaluate all the polices against the accounts in the config and return violations
-func (r *Runner) Run() ([]*policy.Violation, error) {
-
+func (r *Runner) Run() ([]policy.Violation, error) {
+	var errs error
 	policies, err := r.Config.GetPolicies()
 	if err != nil {
 		return nil, err
@@ -37,11 +38,11 @@ func (r *Runner) Run() ([]*policy.Violation, error) {
 
 	regions := r.Config.AWSRegions
 
-	var violations []*policy.Violation
+	var violations []policy.Violation
 	for _, p := range policies {
 		log.Infof("Executing policy: \n%s \n=================", p.String())
 		if p.MatchResource(map[string]string{"name": "s3"}) {
-			v, err := awsClient.EvalS3(accounts, &p)
+			v, err := awsClient.EvalS3(accounts, p)
 			if err != nil {
 				return nil, err
 			}
@@ -50,9 +51,17 @@ func (r *Runner) Run() ([]*policy.Violation, error) {
 			}
 		}
 
-		if p.MatchResource(map[string]string{"name": "ec2:instance"}) {
-			log.Infof("Evaluating policy: \n %s \n=================", p.String())
-			v, err := awsClient.EvalEc2Instance(accounts, &p, regions)
+		if p.MatchResource(map[string]string{"name": "ec2_instance"}) {
+			log.Infof("Evaluating policy: %s ", p.Name)
+			err := awsClient.EvalEc2Instance(accounts, p, regions, func(v policy.Violation) {
+				violations = append(violations, v)
+			})
+			errs = multierror.Append(errs, err)
+		}
+
+		if p.MatchResource(map[string]string{"name": "iam_user"}) {
+			log.Infof("Evaluating policy: %s", p.Name)
+			v, err := awsClient.EvalIAMUser(accounts, p, regions)
 			if err != nil {
 				return nil, err
 			}
@@ -60,7 +69,8 @@ func (r *Runner) Run() ([]*policy.Violation, error) {
 				violations = append(violations, v...)
 			}
 		}
+
 	}
 
-	return violations, err
+	return violations, nil
 }
