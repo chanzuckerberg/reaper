@@ -45,8 +45,6 @@ to quickly create a Cobra application.`,
 		table.SetHeader([]string{"Entity", "Policy", "Account ID", "Account Name"})
 
 		for _, v := range violations {
-			// fmt.Printf("%#v\n", v)
-			// fmt.Printf("%#v\n", v.Subject)
 			table.Append([]string{v.Subject.GetID(), v.Policy.Name, strconv.FormatInt(v.AccountID, 10), v.AccountName})
 		}
 		table.Render()
