@@ -6,7 +6,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/chanzuckerberg/aws-tidy/pkg/policy"
+	"github.com/chanzuckerberg/reaper/pkg/policy"
 	"github.com/hashicorp/go-multierror"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"

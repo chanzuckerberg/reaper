@@ -4,7 +4,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/chanzuckerberg/aws-tidy/pkg/runner"
+	"github.com/chanzuckerberg/reaper/pkg/runner"
 	"github.com/olekukonko/tablewriter"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	reportCmd.Flags().StringP(flagConfig, "c", "config.yml", "Use this to override the aws-tidy config file.")
+	reportCmd.Flags().StringP(flagConfig, "c", "config.yml", "Use this to override the reaper config file.")
 	rootCmd.AddCommand(reportCmd)
 }
 

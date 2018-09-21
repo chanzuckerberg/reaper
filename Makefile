@@ -2,7 +2,7 @@ SHA=$(shell git rev-parse --short HEAD)
 VERSION=$(shell cat VERSION)
 DIRTY=$(shell if `git diff-index --quiet HEAD --`; then echo false; else echo true;  fi)
 # TODO add release flag
-LDFLAGS=-ldflags "-w -s -X github.com/chanzuckerberg/aws-tidy/util.GitSha=${SHA} -X github.com/chanzuckerberg/aws-tidy/util.Version=${VERSION} -X github.com/chanzuckerberg/aws-tidy/util.Dirty=${DIRTY}"
+LDFLAGS=-ldflags "-w -s -X github.com/chanzuckerberg/reaper/util.GitSha=${SHA} -X github.com/chanzuckerberg/reaper/util.Version=${VERSION} -X github.com/chanzuckerberg/reaper/util.Dirty=${DIRTY}"
 
 all: test install
 
@@ -31,7 +31,7 @@ coverage: ## run the go coverage tool, reading file coverage.out
 test: #packr ## run the tests
 	gotest -cover ./...
 
-install: #packr ## install the aws-tidy binary in $GOPATH/bin
+install: #packr ## install the reaper binary in $GOPATH/bin
 	go install ${LDFLAGS} .
 
 help: ## display help for this makefile

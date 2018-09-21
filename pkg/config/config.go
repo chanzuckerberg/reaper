@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/blend/go-sdk/selector"
-	"github.com/chanzuckerberg/aws-tidy/pkg/aws"
-	"github.com/chanzuckerberg/aws-tidy/pkg/policy"
+	"github.com/chanzuckerberg/reaper/pkg/aws"
+	"github.com/chanzuckerberg/reaper/pkg/policy"
 	"github.com/pkg/errors"
 	yaml "gopkg.in/yaml.v2"
 )

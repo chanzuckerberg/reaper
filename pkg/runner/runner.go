@@ -1,9 +1,9 @@
 package runner
 
 import (
-	cziAws "github.com/chanzuckerberg/aws-tidy/pkg/aws"
-	"github.com/chanzuckerberg/aws-tidy/pkg/config"
-	"github.com/chanzuckerberg/aws-tidy/pkg/policy"
+	cziAws "github.com/chanzuckerberg/reaper/pkg/aws"
+	"github.com/chanzuckerberg/reaper/pkg/config"
+	"github.com/chanzuckerberg/reaper/pkg/policy"
 	"github.com/hashicorp/go-multierror"
 	log "github.com/sirupsen/logrus"
 )
