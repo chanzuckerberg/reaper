@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/chanzuckerberg/aws-tidy/pkg/config"
+	"github.com/chanzuckerberg/reaper/pkg/config"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
