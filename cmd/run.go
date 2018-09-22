@@ -1,6 +1,10 @@
 package cmd
 
 import (
+	"fmt"
+	"os"
+
+	"github.com/chanzuckerberg/reaper/notifier"
 	"github.com/chanzuckerberg/reaper/pkg/runner"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
@@ -27,8 +31,7 @@ var runCmd = &cobra.Command{
 	},
 }
 
-// Run runs aws tidy
-// TODO: mv this so this can be imported as a library as well
+// Run runs the policies and potentially takes action on them.
 func Run(cmd *cobra.Command, args []string) error {
 
 	// TODO maybe turn this to an enum with https://github.com/alvaroloes/enumer
@@ -44,13 +47,19 @@ func Run(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return errors.Wrap(err, "could not read config")
 	}
+
+	notifier := notifier.New(os.Getenv("SLACK_TOKEN"))
+
 	runner := runner.New(conf)
 	violations, err := runner.Run()
 
 	log.Info("VIOLATIONS")
-
 	for _, v := range violations {
-		log.Infof("violation %#v", v)
+		fmt.Printf("resource %s is in violation of policy %s\n", v.Subject.GetID(), v.Policy.Name)
+		err = notifier.Send(v)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

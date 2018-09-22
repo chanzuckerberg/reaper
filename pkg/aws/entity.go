@@ -56,6 +56,17 @@ func (e *Entity) GetCreatedAt() *time.Time {
 	return e.createdAt
 }
 
+// GetOwner will return this entity's owner as indicated by the 'owner' tag.
+func (e *Entity) GetOwner() string {
+	if e.tags != nil {
+		o, ok := e.tags["owner"]
+		if ok {
+			return o
+		}
+	}
+	return ""
+}
+
 // WithLabel adds a label if the value is not nil
 func (e *Entity) WithLabel(key TypeEntityLabel, value *string) *Entity {
 	if e.labels == nil {

@@ -42,10 +42,10 @@ to quickly create a Cobra application.`,
 
 		log.Info("VIOLATIONS")
 		table := tablewriter.NewWriter(os.Stdout)
-		table.SetHeader([]string{"Entity", "Policy", "Account ID", "Account Name"})
+		table.SetHeader([]string{"Entity", "Policy", "owner", "Account ID", "Account Name"})
 
 		for _, v := range violations {
-			table.Append([]string{v.Subject.GetID(), v.Policy.Name, strconv.FormatInt(v.AccountID, 10), v.AccountName})
+			table.Append([]string{v.Subject.GetID(), v.Policy.Name, v.Subject.GetOwner(), strconv.FormatInt(v.AccountID, 10), v.AccountName})
 		}
 		table.Render()
 		return nil

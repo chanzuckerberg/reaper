@@ -20,6 +20,11 @@ func (u *IAMUser) GetID() string {
 	return fmt.Sprintf("iam:user:%s", u.ID)
 }
 
+// GetOwner will return the username as owner
+func (u IAMUser) GetOwner() string {
+	return u.ID
+}
+
 // NewIAMUser returns a new ec2 instance entity
 // I don't like that I have to pass accountId and roleName all the way down here.
 func (c *Client) NewIAMUser(user *iam.User, accountID int64, roleName string) *IAMUser {
