@@ -1,8 +1,6 @@
 package notifier
 
 import (
-	"strings"
-
 	"github.com/chanzuckerberg/go-misc/slack"
 	"github.com/chanzuckerberg/reaper/pkg/policy"
 	slackClient "github.com/nlopes/slack"
@@ -23,14 +21,6 @@ func New(slackToken string) *Notifier {
 	}
 }
 
-func parseRecipient(s string) (string, string, error) {
-	a := strings.Split(s, "/")
-	if len(a) == 2 {
-		return a[0], a[1], nil
-	}
-	return "", "", errors.Errorf("could not parse notification recipient %s", s)
-}
-
 func (n *Notifier) lookupUserByUsername(username string) (*slackClient.User, error) {
 	users, err := n.slack.Slack.GetUsers()
 	if err != nil {
@@ -48,24 +38,15 @@ func (n *Notifier) lookupUserByUsername(username string) (*slackClient.User, err
 // Send will transmit all violations for the given violation
 func (n *Notifier) Send(v policy.Violation) error {
 	for _, notif := range v.Policy.Notifications {
-		method, rec, _ := parseRecipient(notif.Recipient)
 		msg, err := notif.GetMessage(v.Subject, v.Policy)
 		if err != nil {
-			return err
+			return errors.Wrap(err, "could not get message for notification")
 		}
-		if method == "slack" {
-			switch string(rec[0]) {
-			case "@":
-				user, err := n.lookupUserByUsername(rec[1:])
-				if err != nil {
-					return err
-				}
-				n.slack.SendMessageToUser(user.ID, msg)
-			case "#":
-			default:
-				return errors.Errorf("don't know how to send to %s", notif.Recipient)
-			}
+		err = n.slack.SendMessageToUserByEmail(notif.Recipient, msg, []slackClient.Attachment{})
+		if err != nil {
+			return errors.Wrapf(err, "could not send message to %s", notif.Recipient)
 		}
+		// TODO sending to channels and owners
 	}
 	return nil
 }
