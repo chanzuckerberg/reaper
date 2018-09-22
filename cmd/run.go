@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/chanzuckerberg/aws-tidy/pkg/runner"
+	"github.com/chanzuckerberg/reaper/pkg/runner"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -13,15 +13,15 @@ const (
 )
 
 func init() {
-	runCmd.Flags().StringP(flagConfig, "c", "config.yml", "Use this to override the aws-tidy config file.")
+	runCmd.Flags().StringP(flagConfig, "c", "config.yml", "Use this to override the reaper config file.")
 	runCmd.Flags().StringP(modeConfig, "m", "dry", "Run mode, must be one of [dry, interactive].")
 	rootCmd.AddCommand(runCmd)
 }
 
 var runCmd = &cobra.Command{
 	Use:   "run",
-	Short: "Run aws-tidy",
-	Long:  "Will run aws-tidy and execute any policies defined in the config",
+	Short: "Run reaper",
+	Long:  "Will run reaper and execute any policies defined in the config",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return Run(cmd, args)
 	},

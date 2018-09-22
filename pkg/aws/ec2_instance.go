@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/chanzuckerberg/aws-tidy/pkg/policy"
+	"github.com/chanzuckerberg/reaper/pkg/policy"
 	multierror "github.com/hashicorp/go-multierror"
 	log "github.com/sirupsen/logrus"
 )
