@@ -14,7 +14,7 @@ func init() {
 }
 
 var rootCmd = &cobra.Command{
-	Use:   "aws-tidy",
+	Use:   "reaper",
 	Short: "",
 }
 

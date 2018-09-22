@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/service/iam"
-	"github.com/chanzuckerberg/aws-tidy/pkg/policy"
+	"github.com/chanzuckerberg/reaper/pkg/policy"
 	log "github.com/sirupsen/logrus"
 )
 
