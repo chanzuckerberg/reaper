@@ -15,6 +15,7 @@ type Subject interface {
 	GetCreatedAt() *time.Time
 	Delete() error
 	GetID() string
+	GetOwner() string
 }
 
 // Policy is an enforcement policy

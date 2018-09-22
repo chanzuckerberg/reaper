@@ -2,6 +2,17 @@
 
 
 [[projects]]
+  branch = "master"
+  digest = "1:315c5f2f60c76d89b871c73f9bd5fe689cad96597afd50fb9992228ef80bdd34"
+  name = "github.com/alecthomas/template"
+  packages = [
+    ".",
+    "parse",
+  ]
+  pruneopts = "UT"
+  revision = "a0175ee3bccc567396460bf5acd36800cb10c49c"
+
+[[projects]]
   digest = "1:094d0bf4c89cb517c538108d8d7abe0c47cfd575e5aaffcc8b31f1f513bf18c5"
   name = "github.com/aws/aws-sdk-go"
   packages = [
@@ -64,12 +75,15 @@
   revision = "e84d302c8c8a0e653237490ac62512d6ee210abb"
 
 [[projects]]
-  branch = "ryanking/login_profile"
-  digest = "1:ae8dfe4a11100e6021a12b9f24287b1f2fa848e1c5f76c2410897866fa86b4fd"
+  branch = "ryanking/slack"
+  digest = "1:46ca3cdd0f3ae923ebd3c0272c9bacd8b21d7238f17bf03f02705c7fa0286f53"
   name = "github.com/chanzuckerberg/go-misc"
-  packages = ["aws"]
+  packages = [
+    "aws",
+    "slack",
+  ]
   pruneopts = "UT"
-  revision = "72a70dcab6d36f44367c555f0b6f63693077697d"
+  revision = "0f239bb524e4ee4bbf3cc8fa1a7e14df93b2ccba"
 
 [[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
@@ -94,6 +108,14 @@
   pruneopts = "UT"
   revision = "5cf292cae48347c2490ac1a58fe36735fb78df7e"
   version = "v1.38.2"
+
+[[projects]]
+  digest = "1:7b5c6e2eeaa9ae5907c391a91c132abfd5c9e8a784a341b5625e750c67e6825d"
+  name = "github.com/gorilla/websocket"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "66b9c49e59c6c48f0ffce28c2d8b8a5678502c6d"
+  version = "v1.4.0"
 
 [[projects]]
   digest = "1:0ade334594e69404d80d9d323445d2297ff8161637f9b2d347cc6973d2d6f05b"
@@ -133,6 +155,14 @@
   pruneopts = "UT"
   revision = "ce7b0b5c7b45a81508558cd1dba6bb1e4ddb51bb"
   version = "v0.0.3"
+
+[[projects]]
+  digest = "1:ace662a36243b5cdc2f71e654175dc192f903fafbf3411a95bc910c1cad53ce7"
+  name = "github.com/nlopes/slack"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "0db1d5eae1116bf7c8ed96c6749acfbf4daaec3e"
+  version = "v0.3.0"
 
 [[projects]]
   branch = "master"
@@ -213,6 +243,7 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/alecthomas/template",
     "github.com/aws/aws-sdk-go/aws",
     "github.com/aws/aws-sdk-go/aws/awserr",
     "github.com/aws/aws-sdk-go/aws/credentials/stscreds",
@@ -225,8 +256,11 @@
     "github.com/aws/aws-sdk-go/service/s3",
     "github.com/blend/go-sdk/selector",
     "github.com/chanzuckerberg/go-misc/aws",
+    "github.com/chanzuckerberg/go-misc/slack",
+    "github.com/davecgh/go-spew/spew",
     "github.com/docker/go-units",
     "github.com/hashicorp/go-multierror",
+    "github.com/nlopes/slack",
     "github.com/olekukonko/tablewriter",
     "github.com/pkg/errors",
     "github.com/sirupsen/logrus",

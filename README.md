@@ -5,5 +5,5 @@ You can find an example config [here](config.yml)
 Running:
 ```
 go build
-AWS_PROFILE=<your profile> ./aws-tidy -c config.yml
+AWS_PROFILE=<your profile> ./reaper -c config.yml
 ```

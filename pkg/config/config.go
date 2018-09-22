@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/blend/go-sdk/selector"
-	"github.com/chanzuckerberg/aws-tidy/pkg/aws"
-	"github.com/chanzuckerberg/aws-tidy/pkg/policy"
+	"github.com/chanzuckerberg/reaper/pkg/aws"
+	"github.com/chanzuckerberg/reaper/pkg/policy"
 	"github.com/pkg/errors"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -49,7 +49,8 @@ func (d *Duration) Duration() *time.Duration {
 
 // NotificationConfig is a notification config
 type NotificationConfig struct {
-	MessageTemplate *string `yaml:"message_template"`
+	Recipient       string `yaml:"recipient"`
+	MessageTemplate string `yaml:"message_template"`
 }
 
 // PolicyConfig is the configuration for a policy
@@ -108,6 +109,7 @@ func (c *Config) GetPolicies() ([]policy.Policy, error) {
 		for j, n := range cp.Notifications {
 			notification := policy.Notification{}
 			notification.MessageTemplate = n.MessageTemplate
+			notification.Recipient = n.Recipient
 			notifications[j] = notification
 		}
 
