@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/service/iam"
-	"github.com/chanzuckerberg/aws-tidy/pkg/policy"
+	"github.com/chanzuckerberg/reaper/pkg/policy"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -18,6 +18,11 @@ type IAMUser struct {
 // GetID returns the ec2_instance id
 func (u *IAMUser) GetID() string {
 	return fmt.Sprintf("iam:user:%s", u.ID)
+}
+
+// GetOwner will return the username as owner
+func (u IAMUser) GetOwner() string {
+	return u.ID
 }
 
 // NewIAMUser returns a new ec2 instance entity
