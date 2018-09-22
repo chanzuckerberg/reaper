@@ -28,18 +28,18 @@ accounts:
     role: czi-admin
 
 policies:
-  # - name: owner
-  #   resource_selector: "name in (s3, ec2_instance)"
-  #   tag_selector: "!owner"
-  #   label_selector: ""
-  #   max_age: 20000h
+  - name: owner
+    resource_selector: "name in (s3, ec2_instance)"
+    tag_selector: "!owner"
+    label_selector: ""
+    max_age: 20000h
 
-  #   notifications:
-  #     - recipient: slack/@rking
-  #       message_template: >
-  #         Resource {{.ID}} does not have an owner tag.
-  #         Resource was created approximately {{.Age}} ago.
-  #         It will be automatically deleted in {{.TTL}} if owner tag not added.
+    notifications:
+      - recipient: rking@chanzuckerberg.com
+        message_template: >
+          Resource {{.ID}} does not have an owner tag.
+          Resource was created approximately {{.Age}} ago.
+          It will be automatically deleted in {{.TTL}} if owner tag not added.
   
   - name: iam-user-mfa
     resource_selector: "name=iam_user"
@@ -48,7 +48,7 @@ policies:
     max_age: 20000h
 
     notifications:
-      - recipient: slack/@rking
+      - recipient: rking@chanzuckerberg.com
         message_template: >
           IAM User {{.ID}} has a password and no MFA device. Please add an MFA device.
 

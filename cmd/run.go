@@ -49,8 +49,6 @@ func Run(cmd *cobra.Command, args []string) error {
 	}
 
 	notifier := notifier.New(os.Getenv("SLACK_TOKEN"))
-	// api.SetDebug(true)
-	// resp, err := api.AuthTest()
 
 	runner := runner.New(conf)
 	violations, err := runner.Run()
@@ -58,11 +56,10 @@ func Run(cmd *cobra.Command, args []string) error {
 	log.Info("VIOLATIONS")
 	for _, v := range violations {
 		fmt.Printf("resource %s is in violation of policy %s\n", v.Subject.GetID(), v.Policy.Name)
-		owner := v.Subject.GetOwner()
-		if owner != "" {
-			log.Infof("owner is %s", owner)
+		err = notifier.Send(v)
+		if err != nil {
+			return err
 		}
-		notifier.Send(v)
 	}
 	return nil
 }

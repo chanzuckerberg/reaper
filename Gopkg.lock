@@ -75,15 +75,15 @@
   revision = "e84d302c8c8a0e653237490ac62512d6ee210abb"
 
 [[projects]]
-  branch = "ryanking/slack"
-  digest = "1:46ca3cdd0f3ae923ebd3c0272c9bacd8b21d7238f17bf03f02705c7fa0286f53"
+  branch = "ryanking/slack-send-by-email"
+  digest = "1:2751560d82a41a243b7a710176a5b4adf5ef1c64a784b94f0a5e3078e864605e"
   name = "github.com/chanzuckerberg/go-misc"
   packages = [
     "aws",
     "slack",
   ]
   pruneopts = "UT"
-  revision = "0f239bb524e4ee4bbf3cc8fa1a7e14df93b2ccba"
+  revision = "464a1109bed5c6a156794bcb3f890c10b47b56d6"
 
 [[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
@@ -257,7 +257,6 @@
     "github.com/blend/go-sdk/selector",
     "github.com/chanzuckerberg/go-misc/aws",
     "github.com/chanzuckerberg/go-misc/slack",
-    "github.com/davecgh/go-spew/spew",
     "github.com/docker/go-units",
     "github.com/hashicorp/go-multierror",
     "github.com/nlopes/slack",

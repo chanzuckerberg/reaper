@@ -7,7 +7,6 @@ import (
 
 	units "github.com/docker/go-units"
 	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
 )
 
 // Notification is a notification
@@ -18,7 +17,6 @@ type Notification struct {
 
 // GetMessage gets the notification message
 func (n *Notification) GetMessage(s Subject, p Policy) (string, error) {
-	log.Infof("message template: %s", n.MessageTemplate)
 	message := s.GetID()
 
 	createdAt := s.GetCreatedAt()
