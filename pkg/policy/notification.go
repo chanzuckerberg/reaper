@@ -37,6 +37,7 @@ func (n *Notification) GetMessage(s Subject, p Policy) (string, error) {
 	if err != nil {
 		return "", errors.Wrapf(err, "Could not template message")
 	}
+
 	message := messageBytes.String()
 
 	return message, nil
