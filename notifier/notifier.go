@@ -21,20 +21,6 @@ func New(slackToken string) *Notifier {
 	}
 }
 
-func (n *Notifier) lookupUserByUsername(username string) (*slackClient.User, error) {
-	users, err := n.slack.Slack.GetUsers()
-	if err != nil {
-		return nil, err
-	}
-	for _, u := range users {
-		if u.Name == username {
-			return &u, nil
-		}
-
-	}
-	return nil, nil
-}
-
 // Send will transmit all violations for the given violation
 func (n *Notifier) Send(v policy.Violation) error {
 	for _, notif := range v.Policy.Notifications {

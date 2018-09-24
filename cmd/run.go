@@ -52,6 +52,9 @@ func Run(cmd *cobra.Command, args []string) error {
 
 	runner := runner.New(conf)
 	violations, err := runner.Run()
+	if err != nil {
+		return err
+	}
 
 	log.Info("VIOLATIONS")
 	for _, v := range violations {
