@@ -31,14 +31,37 @@ func (n *Notifier) Send(v policy.Violation) error {
 		if err != nil {
 			return errors.Wrap(err, "could not get message for notification")
 		}
-
-		if n.ui.Prompt(msg, notif.Recipient, "slack") {
-			err = n.slack.SendMessageToUserByEmail(notif.Recipient, msg, []slackClient.Attachment{})
+		switch detectRecipientType(notif.Recipient) {
+		case "email":
+			err = n.sendSlackToEmail(msg, notif.Recipient)
 			if err != nil {
-				return errors.Wrapf(err, "could not send message to %s", notif.Recipient)
+				return err
+			}
+		case "owner":
+			log.Infof("owner: %#v", v.Subject.GetOwner())
+			err = n.sendSlackToEmail(msg, v.Subject.GetOwner())
+			if err != nil {
+				return err
 			}
 		}
-		// TODO sending to channels and owners
+		// TODO sending to channels
+	}
+	return nil
+}
+
+func detectRecipientType(recipient string) string { // TODO change return type to enum maybe
+	if recipient == "$owner" {
+		return "owner"
+	}
+	return "email"
+}
+
+func (n *Notifier) sendSlackToEmail(msg, recipient string) error {
+	if n.ui.Prompt(msg, recipient, "slack") {
+		err := n.slack.SendMessageToUserByEmail(recipient, msg, []slackClient.Attachment{})
+		if err != nil {
+			return errors.Wrapf(err, "could not send message to %s", recipient)
+		}
 	}
 	return nil
 }
