@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/chanzuckerberg/reaper/notifier"
+	"github.com/chanzuckerberg/reaper/pkg/notifier"
 	"github.com/chanzuckerberg/reaper/pkg/runner"
+	"github.com/chanzuckerberg/reaper/pkg/ui"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -48,7 +49,8 @@ func Run(cmd *cobra.Command, args []string) error {
 		return errors.Wrap(err, "could not read config")
 	}
 
-	notifier := notifier.New(os.Getenv("SLACK_TOKEN"))
+	ui := ui.NewInteractive()
+	notifier := notifier.New(os.Getenv("SLACK_TOKEN"), ui)
 
 	runner := runner.New(conf)
 	violations, err := runner.Run()
