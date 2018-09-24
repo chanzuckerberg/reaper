@@ -27,7 +27,7 @@ func New(slackToken string, ui ui.UI) *Notifier {
 // Send will transmit all violations for the given violation
 func (n *Notifier) Send(v policy.Violation) error {
 	for _, notif := range v.Policy.Notifications {
-		msg, err := notif.GetMessage(v.Subject, v.Policy)
+		msg, err := notif.GetMessage(v)
 		if err != nil {
 			return errors.Wrap(err, "could not get message for notification")
 		}

@@ -2,6 +2,7 @@ package policy
 
 import (
 	"bytes"
+	"strconv"
 	"text/template"
 	"time"
 
@@ -16,12 +17,14 @@ type Notification struct {
 }
 
 // GetMessage gets the notification message
-func (n *Notification) GetMessage(s Subject, p Policy) (string, error) {
-	createdAt := s.GetCreatedAt()
-	maxAge := p.MaxAge
+func (n *Notification) GetMessage(v Violation) (string, error) {
+	createdAt := v.Subject.GetCreatedAt()
+	maxAge := v.Policy.MaxAge
 
 	data := map[string]string{
-		"ID": s.GetID(),
+		"ID":          v.Subject.GetID(),
+		"AccountName": v.AccountName,
+		"AccountID":   strconv.FormatInt(v.AccountID, 10),
 	}
 	if createdAt != nil && maxAge != nil {
 		data["Age"] = units.HumanDuration(time.Since(*createdAt))
