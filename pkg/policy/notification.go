@@ -17,8 +17,6 @@ type Notification struct {
 
 // GetMessage gets the notification message
 func (n *Notification) GetMessage(s Subject, p Policy) (string, error) {
-	message := s.GetID()
-
 	createdAt := s.GetCreatedAt()
 	maxAge := p.MaxAge
 
@@ -39,7 +37,7 @@ func (n *Notification) GetMessage(s Subject, p Policy) (string, error) {
 	if err != nil {
 		return "", errors.Wrapf(err, "Could not template message")
 	}
-	message = messageBytes.String()
+	message := messageBytes.String()
 
 	return message, nil
 }
