@@ -3,7 +3,7 @@ package notifier
 import (
 	"github.com/chanzuckerberg/go-misc/slack"
 	"github.com/chanzuckerberg/reaper/pkg/policy"
-	"github.com/chanzuckerberg/reaper/ui"
+	"github.com/chanzuckerberg/reaper/pkg/ui"
 	slackClient "github.com/nlopes/slack"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"

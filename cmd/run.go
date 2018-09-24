@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/chanzuckerberg/reaper/notifier"
+	"github.com/chanzuckerberg/reaper/pkg/notifier"
 	"github.com/chanzuckerberg/reaper/pkg/runner"
-	"github.com/chanzuckerberg/reaper/ui"
+	"github.com/chanzuckerberg/reaper/pkg/ui"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
