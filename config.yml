@@ -37,7 +37,7 @@ policies:
     notifications:
       - recipient: rking@chanzuckerberg.com
         message_template: >
-          Resource {{.ID}} in account `{{.AccountName}}` does not have an owner tag.
+          Resource {{.ResourceID}} in account `{{.AccountName}}` does not have an owner tag.
           Resource was created approximately {{.Age}} ago.
           It will be automatically deleted in {{.TTL}} if owner tag not added.
   
@@ -51,9 +51,10 @@ policies:
     notifications:
       - recipient: rking@chanzuckerberg.com
         message_template: >
-          Resource {{.ID}} in account `{{.AccountName}}` does not have an owner tag.
-          Resource was created approximately {{.Age}} ago.
-          It will be automatically deleted in {{.TTL}} if owner tag not added.
+          A VPC in account `{{.AccountName}}` does not have an owner tag.
+          Name:	{{.Resource.GetName}}
+          ID:	{{.ResourceID}}  
+          Default:	{{.Resource.GetLabelOr "is_default" "false"}}
   
   - name: iam-user-mfa
     resource_selector: "name=iam_user"
