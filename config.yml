@@ -52,8 +52,11 @@ policies:
       - recipient: rking@chanzuckerberg.com
         message_template: >
           A VPC in account `{{.AccountName}}` does not have an owner tag.
+          
           Name:	{{.Resource.GetName}}
+          
           ID:	{{.ResourceID}}  
+          
           Default:	{{.Resource.GetLabelOr "is_default" "false"}}
   
   - name: iam-user-mfa
