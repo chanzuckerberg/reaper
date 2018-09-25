@@ -10,12 +10,13 @@ import (
 
 // Subject is gets evaluated by a policy
 type Subject interface {
-	GetLabels() map[string]string
-	GetTags() map[string]string
-	GetCreatedAt() *time.Time
 	Delete() error
+	GetCreatedAt() *time.Time
 	GetID() string
+	GetLabels() map[string]string
+	GetName() string
 	GetOwner() string
+	GetTags() map[string]string
 }
 
 // Policy is an enforcement policy
@@ -90,8 +91,8 @@ func (p *Policy) WithTagSelector(query string) (*Policy, error) {
 	return p, nil
 }
 
-// WithLabelSelector adds a label selector
-func (p *Policy) WithLabelSelector(query string) (*Policy, error) {
+// AddLabelSelector adds a label selector
+func (p *Policy) AddLabelSelector(query string) (*Policy, error) {
 	s, err := selector.Parse(query)
 	if err != nil {
 		return nil, err

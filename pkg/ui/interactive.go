@@ -1,9 +1,12 @@
 package ui
 
 import (
-	"fmt"
+	"bytes"
 	"os"
+	"text/tabwriter"
+	"text/template"
 
+	"github.com/Masterminds/sprig"
 	log "github.com/sirupsen/logrus"
 	input "github.com/tcnksm/go-input"
 )
@@ -23,14 +26,43 @@ func NewInteractive() *Interactive {
 
 func (i *Interactive) Prompt(msg, recipient, method string) bool {
 	log.Info(msg)
-	a := fmt.Sprintf("---------------\nI want to send:\n\n\t%s\n\nto: %s\nvia %s.\n\nShould I?", msg, recipient, method)
-	yes, err := i.prompt.Ask(a, &input.Options{
+
+	data := map[string]string{
+		"msg":       msg,
+		"recipient": recipient,
+		"method":    method,
+	}
+
+	tmpl := "---------------\nI want to send:\n\n{{.msg | indent 4}}\n\nto: {{.recipient}}\nvia {{.method}}.\n\nShould I?"
+
+	t, err := template.New("message").Funcs(sprig.TxtFuncMap()).Parse(tmpl)
+	if err != nil {
+		// FIXME
+		panic(err)
+	}
+
+	messageBytes := bytes.NewBuffer(nil)
+	// tabwriter will take consectutive lines with tabs in them
+	// and do a column alignment
+	w := tabwriter.NewWriter(messageBytes, 4, 4, 4, ' ', 0)
+	err = t.Execute(w, data)
+	if err != nil {
+		panic("Could not template message")
+	}
+
+	message := messageBytes.String()
+
+	yes, err := i.prompt.Ask(message, &input.Options{
 		Required: true,
 		Default:  "Y",
 	})
 
 	if err != nil {
-		log.Debugf("error: %#v", err)
+		if err.Error() == "interrupted" {
+			// FIXME this is def not what we really want to do
+			os.Exit(-1)
+		}
+		log.Infof("error: %#v", err)
 		return false
 	}
 	return yes == "Y" || yes == "y"

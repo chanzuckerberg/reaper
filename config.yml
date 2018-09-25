@@ -29,7 +29,7 @@ accounts:
 
 policies:
   - name: owner
-    resource_selector: "name in (s3, ec2_instance)"
+    resource_selector: "name in (vpc)"
     tag_selector: "!owner"
     label_selector: ""
     max_age: 20000h
@@ -37,25 +37,29 @@ policies:
     notifications:
       - recipient: rking@chanzuckerberg.com
         message_template: >
-          Resource {{.ID}} in account `{{.AccountName}}` does not have an owner tag.
-          Resource was created approximately {{.Age}} ago.
-          It will be automatically deleted in {{.TTL}} if owner tag not added.
-  
-  - name: iam-user-mfa
-    resource_selector: "name=iam_user"
-    tag_selector: ""
-    label_selector: "has_password,!has_mfa"
-    max_age: 20000h
+          A VPC in account `{{.AccountName}}` does not have an owner tag.
 
-    notifications:
-      - recipient: rking@chanzuckerberg.com
-        message_template: >
-          IAM User {{.ID}} in account `{{.AccountName}}` has a password and no MFA device. <https://www.google.com/|google>
-      - recipient: $owner
-        message_template: >
-          Your IAM user in account `{{.AccountName}}` has a password but no MFA device. Please add an MFA device ASAP.
-          See AWS docs for this <https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa_enable_virtual.html|here>
-          And ask in <#help-infra> if you need assistance.
+          Name:	{{.Resource.GetName}}
+
+          ID:	{{.ResourceID}}  
+
+          Default:	{{.Resource.GetLabelOr "is_default" "false"}}
+  
+  # - name: iam-user-mfa
+  #   resource_selector: "name=iam_user"
+  #   tag_selector: ""
+  #   label_selector: "has_password,!has_mfa"
+  #   max_age: 20000h
+
+  #   notifications:
+  #     - recipient: rking@chanzuckerberg.com
+  #       message_template: >
+  #         IAM User {{.ResourceID}} in account `{{.AccountName}}` has a password and no MFA device. <https://www.google.com/|google>
+  #     - recipient: $owner
+  #       message_template: >
+  #         Your IAM user in account `{{.AccountName}}` has a password but no MFA device. Please add an MFA device ASAP.
+  #         See AWS docs for this <https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa_enable_virtual.html|here>
+  #         And ask in <#help-infra> if you need assistance.
 
 aws_regions:
   - us-east-1

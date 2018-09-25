@@ -1,12 +1,13 @@
 package aws
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/service/ec2"
+	cziAws "github.com/chanzuckerberg/go-misc/aws"
 	"github.com/chanzuckerberg/reaper/pkg/policy"
 	multierror "github.com/hashicorp/go-multierror"
-	log "github.com/sirupsen/logrus"
 )
 
 // ec2_instance specific labels
@@ -19,8 +20,6 @@ const (
 // EC2Instance is an evaluation entity representing an ec2 instance
 type EC2Instance struct {
 	Entity
-	ID   string
-	Name string
 }
 
 // GetID returns the ec2_instance id
@@ -48,13 +47,13 @@ func NewEc2Instance(instance *ec2.Instance) *EC2Instance {
 		if tag.Key != nil && tag.Value != nil && *tag.Key == "Name" {
 			entity.Name = *tag.Value
 		}
-		entity.WithTag(tag.Key, tag.Value)
+		entity.AddTag(tag.Key, tag.Value)
 	}
 	entity.
-		WithLabel(ec2InstanceLabelVpcID, instance.VpcId).
-		WithLabel(ec2InstanceLabelPublicIP, instance.PublicIpAddress).
-		WithLabel(ec2InstanceLabelPrivateIP, instance.PrivateIpAddress).
-		WithCreatedAt(instance.LaunchTime)
+		AddLabel(ec2InstanceLabelVpcID, instance.VpcId).
+		AddLabel(ec2InstanceLabelPublicIP, instance.PublicIpAddress).
+		AddLabel(ec2InstanceLabelPrivateIP, instance.PrivateIpAddress).
+		AddCreatedAt(instance.LaunchTime)
 
 	return entity
 }
@@ -62,21 +61,16 @@ func NewEc2Instance(instance *ec2.Instance) *EC2Instance {
 // EvalEc2Instance walks through all ec2 instances
 func (c *Client) EvalEc2Instance(accounts []*Account, p policy.Policy, regions []string, f func(policy.Violation)) error {
 	var errs error
-	for _, account := range accounts {
-		log.Infof("Walking ec2_instance for %s", account.Name)
-		for _, region := range regions {
-			log.Infof("scanning %s", region)
-			client := c.Get(account.ID, account.Role, region)
-			err := client.EC2.GetAllInstances(func(instance *ec2.Instance) {
-				i := NewEc2Instance(instance)
-				if p.Match(i) {
-					violation := policy.NewViolation(p, i, false, account.ID, account.Name)
-					f(violation)
-				}
-			})
-			errs = multierror.Append(errs, err)
-		}
-
-	}
+	ctx := context.Background()
+	c.WalkAccountsAndRegions(accounts, regions, func(client *cziAws.Client, account *Account) {
+		err := client.EC2.GetAllInstances(ctx, func(instance *ec2.Instance) {
+			i := NewEc2Instance(instance)
+			if p.Match(i) {
+				violation := policy.NewViolation(p, i, false, account.ID, account.Name)
+				f(violation)
+			}
+		})
+		errs = multierror.Append(errs, err)
+	})
 	return errs
 }

@@ -70,11 +70,11 @@ func (k *KMSClient) Walk(p policy.Policy) error {
 		}
 		entity := newKMSKeyEntity(keyID)
 		entity.
-			WithLabel(labelARN, keyMetadata.Arn).
-			WithLabel(labelID, keyMetadata.KeyId).
-			WithLabel(labelKMSKeyDescription, keyMetadata.Description).
-			WithLabel(labelKMSKeyState, keyMetadata.KeyState).
-			WithCreatedAt(keyMetadata.CreationDate)
+			AddLabel(labelARN, keyMetadata.Arn).
+			AddLabel(labelID, keyMetadata.KeyId).
+			AddLabel(labelKMSKeyDescription, keyMetadata.Description).
+			AddLabel(labelKMSKeyState, keyMetadata.KeyState).
+			AddCreatedAt(keyMetadata.CreationDate)
 
 		// Need to not fail on err here
 		// _, err = p.Eval(entity)
