@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/blend/go-sdk/selector"
-	"github.com/chanzuckerberg/reaper/pkg/aws"
 	"github.com/chanzuckerberg/reaper/pkg/policy"
 	"github.com/pkg/errors"
 	yaml "gopkg.in/yaml.v2"
@@ -68,9 +67,10 @@ type PolicyConfig struct {
 
 //AccountConfig identifies an AWS account we want to monitor
 type AccountConfig struct {
-	Name string `yaml:"name"`
-	ID   int64  `yaml:"id"`
-	Role string `yaml:"role"`
+	Name  string `yaml:"name"`
+	ID    int64  `yaml:"id"`
+	Role  string `yaml:"role"`
+	Owner string `yaml:"owner"`
 }
 
 // Config is the configuration
@@ -126,11 +126,11 @@ func (c *Config) GetPolicies() ([]policy.Policy, error) {
 	return policies, nil
 }
 
-//GetAccounts will return aws.Account objects
-func (c *Config) GetAccounts() ([]*aws.Account, error) {
-	var accounts []*aws.Account
+//GetAccounts will return policy.Account objects
+func (c *Config) GetAccounts() ([]*policy.Account, error) {
+	var accounts []*policy.Account
 	for _, a := range c.Accounts {
-		accounts = append(accounts, &aws.Account{Name: a.Name, ID: a.ID, Role: a.Role})
+		accounts = append(accounts, &policy.Account{Name: a.Name, ID: a.ID, Role: a.Role, Owner: a.Owner})
 	}
 	return accounts, nil
 }

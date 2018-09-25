@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 	"github.com/aws/aws-sdk-go/aws/session"
 	cziAws "github.com/chanzuckerberg/go-misc/aws"
+	"github.com/chanzuckerberg/reaper/pkg/policy"
 )
 
 const (
@@ -21,7 +22,7 @@ type Client struct {
 type WalkFun func(*Entity, error) error
 
 // NewClient returns a new aws client
-func NewClient(accounts []*Account, regions []string) (*Client, error) {
+func NewClient(accounts []*policy.Account, regions []string) (*Client, error) {
 	return &Client{}, nil
 }
 

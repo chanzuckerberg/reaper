@@ -7,15 +7,17 @@ type Violation struct {
 	Expired     bool
 	AccountID   int64
 	AccountName string
+	Account     *Account
 }
 
 // NewViolation creates a new Violation struct
-func NewViolation(policy Policy, subject Subject, expired bool, accountID int64, accountName string) Violation {
+func NewViolation(policy Policy, subject Subject, expired bool, account *Account) Violation {
 	return Violation{
 		Policy:      policy,
 		Subject:     subject,
 		Expired:     expired,
-		AccountID:   accountID,
-		AccountName: accountName,
+		AccountID:   account.ID,
+		AccountName: account.Name,
+		Account:     account,
 	}
 }

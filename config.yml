@@ -2,30 +2,39 @@ accounts:
   - name: czi-id
     id: 416703108729
     role: czi-admin
+    owner: shared-infra@chanzuckerberg.com
   - name: czi-corp
     id: 252147947505
     role: czi-admin
+    owner: alin@chanzuckerberg.com
   - name: czi-si
     id: 626314663667
     role: czi-admin
+    owner: shared-infra@chanzuckerberg.com
   - name: czi-logs
     id: 724328632434
     role: czi-admin
+    owner: shared-infra@chanzuckerberg.com
   - name: meta-2
     id: 607813682535
     role: czi-admin
+    owner: meta-infra@chanzuckerberg.com
   - name: edinnovationlabs
     id: 805813389673
     role: czi-admin
+    owner: shared-infra@chanzuckerberg.com
   - name: czi-sec
     id: 871040364337
     role: czi-admin
+    owner: shared-infra@chanzuckerberg.com
   - name: czi-domains
     id: 382303590750
     role: czi-admin
+    owner: shared-infra@chanzuckerberg.com
   - name: czi-physec
     id: 728896018347
     role: czi-admin
+    owner: alin@chanzuckerberg.com
 
 policies:
   - name: owner
@@ -35,7 +44,7 @@ policies:
     max_age: 20000h
 
     notifications:
-      - recipient: rking@chanzuckerberg.com
+      - recipient: $owner
         message_template: >
           Resource {{.ID}} in account `{{.AccountName}}` does not have an owner tag.
           Resource was created approximately {{.Age}} ago.
@@ -59,5 +68,5 @@ policies:
 
 aws_regions:
   - us-east-1
-  - us-west-2
   - us-west-1
+  - us-west-2

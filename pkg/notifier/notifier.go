@@ -28,9 +28,12 @@ func New(slackToken string, ui ui.UI) *Notifier {
 func (n *Notifier) Send(v policy.Violation) error {
 	for _, notif := range v.Policy.Notifications {
 		msg, err := notif.GetMessage(v)
-		recipient := notif.GetRecipient(v)
 		if err != nil {
 			return errors.Wrap(err, "could not get message for notification")
+		}
+		recipient, err := n.Recipient(notif, v)
+		if err != nil {
+			return err
 		}
 
 		if n.ui.Prompt(msg, recipient, "slack") {
@@ -43,4 +46,25 @@ func (n *Notifier) Send(v policy.Violation) error {
 		// TODO sending to channels and owners
 	}
 	return nil
+}
+
+// Recipient is here because it requires querying slack
+func (n *Notifier) Recipient(notification policy.Notification, v policy.Violation) (string, error) {
+	var email string
+	if notification.Recipient == "$owner" {
+		owner := v.Subject.GetOwner()
+		if owner != "" {
+			email = owner
+		} else {
+			email = v.Account.Owner
+		}
+	} else {
+		email = notification.Recipient
+	}
+	slackChan, err := n.slack.GetSlackChannelID(email)
+	log.Infof("slackChan: %#v", slackChan)
+	if err == nil {
+		return email, nil
+	}
+	return "", nil
 }
