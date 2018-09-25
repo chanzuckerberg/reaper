@@ -31,9 +31,5 @@
   name = "github.com/olekukonko/tablewriter"
 
 [[constraint]]
-  branch = "master"
-  name = "github.com/goware/prefixer"
-
-[[constraint]]
   name = "github.com/Masterminds/sprig"
   version = "2.16.0"
