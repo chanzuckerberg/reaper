@@ -21,10 +21,12 @@ func (n *Notification) GetMessage(v Violation) (string, error) {
 	createdAt := v.Subject.GetCreatedAt()
 	maxAge := v.Policy.MaxAge
 
-	data := map[string]string{
-		"ID":          v.Subject.GetID(),
-		"AccountName": v.AccountName,
-		"AccountID":   strconv.FormatInt(v.AccountID, 10),
+	data := map[string]interface{}{
+		"ResourceID":   v.Subject.GetID(),
+		"ResourceName": v.Subject.GetName(),
+		"AccountName":  v.AccountName,
+		"AccountID":    strconv.FormatInt(v.AccountID, 10),
+		"Resource":     v.Subject,
 	}
 	if createdAt != nil && maxAge != nil {
 		data["Age"] = units.HumanDuration(time.Since(*createdAt))

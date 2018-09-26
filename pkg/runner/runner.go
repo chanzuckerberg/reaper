@@ -58,6 +58,13 @@ func (r *Runner) Run() ([]policy.Violation, error) {
 			})
 			errs = multierror.Append(errs, err)
 		}
+		if p.MatchResource(map[string]string{"name": "vpc"}) {
+			log.Infof("Evaluating policy: %s ", p.Name)
+			err := awsClient.EvalVPC(accounts, p, regions, func(v policy.Violation) {
+				violations = append(violations, v)
+			})
+			errs = multierror.Append(errs, err)
+		}
 
 		if p.MatchResource(map[string]string{"name": "iam_user"}) {
 			log.Infof("Evaluating policy: %s", p.Name)

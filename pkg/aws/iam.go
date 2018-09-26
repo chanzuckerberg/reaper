@@ -1,6 +1,8 @@
 package aws
 
 import (
+	"context"
+
 	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/chanzuckerberg/reaper/pkg/policy"
 	log "github.com/sirupsen/logrus"
@@ -19,13 +21,14 @@ func (u *IAMUser) GetID() string {
 }
 
 // GetOwner will return the username as owner
-func (u IAMUser) GetOwner() string {
+func (u *IAMUser) GetOwner() string {
 	return u.ID
 }
 
 // NewIAMUser returns a new ec2 instance entity
 // I don't like that I have to pass accountId and roleName all the way down here.
 func (c *Client) NewIAMUser(user *iam.User, accountID int64, roleName string) *IAMUser {
+	ctx := context.Background()
 	t := "true"
 	entity := &IAMUser{
 		Entity: NewEntity(),
@@ -39,16 +42,16 @@ func (c *Client) NewIAMUser(user *iam.User, accountID int64, roleName string) *I
 	}
 
 	client := c.Get(accountID, roleName, DefaultRegion)
-	_, e := client.IAM.GetAnMFASerial(user.UserName)
+	_, e := client.IAM.GetAnMFASerial(ctx, user.UserName)
 
 	if !(e != nil && e.Error() == "No MFA serial Configured") {
-		entity.WithLabel("has_mfa", &t)
+		entity.AddLabel("has_mfa", &t)
 	}
 
-	login, e := client.IAM.GetLoginProfile(*user.UserName)
+	login, e := client.IAM.GetLoginProfile(ctx, *user.UserName)
 
 	if login != nil {
-		entity.WithLabel("has_password", &t)
+		entity.AddLabel("has_password", &t)
 	}
 
 	return entity
@@ -58,11 +61,12 @@ func (c *Client) NewIAMUser(user *iam.User, accountID int64, roleName string) *I
 func (c *Client) EvalIAMUser(accounts []*Account, p policy.Policy, regions []string) ([]policy.Violation, error) {
 	var violations []policy.Violation
 	var errs error
+	ctx := context.Background()
 	for _, account := range accounts {
 		log.Infof("Walking iam users for %s", account.Name)
 		region := DefaultRegion
 		client := c.Get(account.ID, account.Role, region)
-		client.IAM.ListAllUsers(func(user *iam.User) {
+		client.IAM.ListAllUsers(ctx, func(user *iam.User) {
 			i := c.NewIAMUser(user, account.ID, account.Role)
 			if p.Match(i) {
 				violation := policy.NewViolation(p, i, false, account.ID, account.Name)
