@@ -16,6 +16,8 @@ type Entity struct {
 	tags map[string]string
 	// createdAt for this object
 	createdAt *time.Time
+	ID        string
+	Name      string
 }
 
 // common labels
@@ -46,6 +48,15 @@ func (e *Entity) GetLabels() map[string]string {
 	return e.labels
 }
 
+//GetLabelOr will return the label value (if defined). otherwise `or`. Useful for templates.
+func (e *Entity) GetLabelOr(label string, or string) string {
+	l, ok := e.labels[label]
+	if ok {
+		return l
+	}
+	return or
+}
+
 // GetTags returns the tags
 func (e *Entity) GetTags() map[string]string {
 	return e.tags
@@ -54,6 +65,10 @@ func (e *Entity) GetTags() map[string]string {
 // GetCreatedAt returns createdAt
 func (e *Entity) GetCreatedAt() *time.Time {
 	return e.createdAt
+}
+
+func (e *Entity) GetName() string {
+	return e.Name
 }
 
 // GetOwner will return this entity's owner as indicated by the 'owner' tag.
@@ -67,8 +82,8 @@ func (e *Entity) GetOwner() string {
 	return ""
 }
 
-// WithLabel adds a label if the value is not nil
-func (e *Entity) WithLabel(key TypeEntityLabel, value *string) *Entity {
+// AddLabel adds a label if the value is not nil
+func (e *Entity) AddLabel(key TypeEntityLabel, value *string) *Entity {
 	if e.labels == nil {
 		e.labels = map[string]string{}
 	}
@@ -78,24 +93,24 @@ func (e *Entity) WithLabel(key TypeEntityLabel, value *string) *Entity {
 	return e
 }
 
-// WithBoolLabel adds a label if the value is true
-func (e *Entity) WithBoolLabel(key TypeEntityLabel, value *bool) *Entity {
+// AddBoolLabel adds a label if the value is true
+func (e *Entity) AddBoolLabel(key TypeEntityLabel, value *bool) *Entity {
 	if value != nil && *value {
-		return e.WithLabel(key, aws.String(""))
+		return e.AddLabel(key, aws.String("true"))
 	}
 	return e
 }
 
-// WithInt64Label adds a label if the value is not nil
-func (e *Entity) WithInt64Label(key TypeEntityLabel, value *int64) *Entity {
+// AddInt64Label adds a label if the value is not nil
+func (e *Entity) AddInt64Label(key TypeEntityLabel, value *int64) *Entity {
 	if value != nil {
-		return e.WithLabel(key, aws.String(strconv.FormatInt(*value, 10)))
+		return e.AddLabel(key, aws.String(strconv.FormatInt(*value, 10)))
 	}
 	return e
 }
 
-// WithTag adds a tag if the value is not nill
-func (e *Entity) WithTag(key *string, value *string) *Entity {
+// AddTag adds a tag if the value is not nill
+func (e *Entity) AddTag(key *string, value *string) *Entity {
 	if e.tags == nil {
 		e.tags = map[string]string{}
 	}
@@ -105,8 +120,8 @@ func (e *Entity) WithTag(key *string, value *string) *Entity {
 	return e
 }
 
-// WithCreatedAt adds a createdAt
-func (e *Entity) WithCreatedAt(t *time.Time) *Entity {
+// AddCreatedAt adds a createdAt
+func (e *Entity) AddCreatedAt(t *time.Time) *Entity {
 	e.createdAt = t
 	return e
 }

@@ -7,7 +7,7 @@
   name = "github.com/blend/go-sdk"
 
 [[constraint]]
-  branch = "ryanking/slack-send-by-email"
+  branch = "ryanking/vpc"
   name = "github.com/chanzuckerberg/go-misc"
 
 [[constraint]]
@@ -29,3 +29,7 @@
 [[constraint]]
   branch = "master"
   name = "github.com/olekukonko/tablewriter"
+
+[[constraint]]
+  name = "github.com/Masterminds/sprig"
+  version = "2.16.0"

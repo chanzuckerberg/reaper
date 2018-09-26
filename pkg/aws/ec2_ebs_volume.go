@@ -53,15 +53,15 @@ func NewEc2EBSVol(vol *ec2.Volume) *EC2EBSVol {
 		if tag.Key != nil && tag.Value != nil && *tag.Key == "Name" {
 			entity.Name = *tag.Value
 		}
-		entity.WithTag(tag.Key, tag.Value)
+		entity.AddTag(tag.Key, tag.Value)
 	}
 	entity.
-		WithLabel(ec2EBSVolLabelAz, vol.AvailabilityZone).
-		WithBoolLabel(ec2EBSVolLabelIsEncrypted, vol.Encrypted).
-		WithInt64Label(ec2EBSVolLabelSize, vol.Size).
-		WithLabel(ec2EBSVolLabelState, vol.State).
-		WithLabel(ec2EBSVolLabelType, vol.VolumeType).
-		WithCreatedAt(vol.CreateTime)
+		AddLabel(ec2EBSVolLabelAz, vol.AvailabilityZone).
+		AddBoolLabel(ec2EBSVolLabelIsEncrypted, vol.Encrypted).
+		AddInt64Label(ec2EBSVolLabelSize, vol.Size).
+		AddLabel(ec2EBSVolLabelState, vol.State).
+		AddLabel(ec2EBSVolLabelType, vol.VolumeType).
+		AddCreatedAt(vol.CreateTime)
 
 	return entity
 }
