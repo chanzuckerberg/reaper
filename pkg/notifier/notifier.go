@@ -28,14 +28,16 @@ func New(slackToken string, ui ui.UI) *Notifier {
 func (n *Notifier) Send(v policy.Violation) error {
 	for _, notif := range v.Policy.Notifications {
 		msg, err := notif.GetMessage(v)
+		recipient := notif.GetRecipient(v)
 		if err != nil {
 			return errors.Wrap(err, "could not get message for notification")
 		}
 
-		if n.ui.Prompt(msg, notif.Recipient, "slack") {
-			err = n.slack.SendMessageToUserByEmail(notif.Recipient, msg, []slackClient.Attachment{})
+		if n.ui.Prompt(msg, recipient, "slack") {
+			err = n.slack.SendMessageToUserByEmail(recipient, msg, []slackClient.Attachment{})
 			if err != nil {
-				return errors.Wrapf(err, "could not send message to %s", notif.Recipient)
+				log.Infof("error sending to slack for %s", recipient)
+				return errors.Wrapf(err, "could not send message to %s", recipient)
 			}
 		}
 		// TODO sending to channels and owners
