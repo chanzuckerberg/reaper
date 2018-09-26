@@ -1,6 +1,7 @@
 package aws
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -47,9 +48,10 @@ func (c *Client) EvalS3(accounts []*Account, p policy.Policy) ([]policy.Violatio
 	log.Infof("Walking s3 buckets")
 	var violations []policy.Violation
 	var errs error
+	ctx := context.Background()
 	for _, account := range accounts {
 		log.Infof("walking account %s (%d)", account.Name, account.ID)
-		listOutput, err := c.Get(account.ID, account.Role, DefaultRegion).S3.ListBuckets()
+		listOutput, err := c.Get(account.ID, account.Role, DefaultRegion).S3.ListBuckets(ctx)
 		if err != nil {
 			return nil, errors.Wrap(err, "Could not list buckets")
 		}
@@ -77,15 +79,16 @@ func (c *Client) EvalS3(accounts []*Account, p policy.Policy) ([]policy.Violatio
 
 // DescribeS3Bucket describes the bucket
 func (c *Client) DescribeS3Bucket(accountID int64, roleName string, b *s3.Bucket) (*S3Bucket, error) {
+	ctx := context.Background()
 	if b.Name == nil {
 		return nil, errors.New("Nil bucket name")
 	}
 	log.Debugf("Describing bucket %s", *b.Name)
 	name := *b.Name
 	bucket := NewS3Bucket(name)
-	bucket.WithCreatedAt(b.CreationDate)
+	bucket.AddCreatedAt(b.CreationDate)
 
-	location, err := c.Get(accountID, roleName, DefaultRegion).S3.GetBucketLocation(name)
+	location, err := c.Get(accountID, roleName, DefaultRegion).S3.GetBucketLocation(ctx, name)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +101,7 @@ func (c *Client) DescribeS3Bucket(accountID int64, roleName string, b *s3.Bucket
 		return nil, nil
 	}
 
-	tags, err := regionalClient.S3.GetBucketTagging(name)
+	tags, err := regionalClient.S3.GetBucketTagging(ctx, name)
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
 			switch aerr.Code() {
@@ -114,10 +117,10 @@ func (c *Client) DescribeS3Bucket(accountID int64, roleName string, b *s3.Bucket
 		if tag == nil {
 			continue
 		}
-		bucket.WithTag(tag.Key, tag.Value)
+		bucket.AddTag(tag.Key, tag.Value)
 	}
 
-	acl, err := regionalClient.S3.GetBucketACL(name)
+	acl, err := regionalClient.S3.GetBucketACL(ctx, name)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +133,7 @@ func (c *Client) DescribeS3Bucket(accountID int64, roleName string, b *s3.Bucket
 			acl.Owner != nil &&
 			acl.Owner.ID != nil &&
 			(*grant.Grantee.ID != *acl.Owner.ID) {
-			bucket.WithLabel(s3LabelIsPublic, aws.String(""))
+			bucket.AddLabel(s3LabelIsPublic, aws.String(""))
 			break
 		}
 	}
