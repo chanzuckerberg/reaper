@@ -47,3 +47,13 @@ func (c *Client) Get(accountID int64, roleName, region string) *cziAws.Client {
 func roleArn(accountID int64, roleName string) string {
 	return fmt.Sprintf("arn:aws:iam::%d:role/%s", accountID, roleName)
 }
+
+func (c *Client) WalkAccountsAndRegions(accounts []*policy.Account, regions []string, f func(*cziAws.Client, *policy.Account)) error {
+	for _, account := range accounts {
+		for _, region := range regions {
+			client := c.Get(account.ID, account.Role, region)
+			f(client, account)
+		}
+	}
+	return nil
+}
