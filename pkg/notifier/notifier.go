@@ -35,14 +35,15 @@ func (n *Notifier) Send(v policy.Violation) error {
 			return errors.Wrap(err, "could not get message for notification")
 		}
 
-		recipient, c, err := n.Recipient(notif, v)
+		recipient, channel, err := n.Recipient(notif, v)
 		if err != nil {
 			return err
 		}
 
 		if n.ui.Prompt(msg, recipient, "slack") {
-			if c {
-				n.slack.Slack.PostMessage(recipient, msg, slackClient.NewPostMessageParameters())
+			if channel {
+				resp, _, err := n.slack.Slack.PostMessage(recipient, msg, slackClient.NewPostMessageParameters())
+				log.Infof("slack PostMessage response: %s, err: %#v", resp, err)
 			} else {
 				err = n.slack.SendMessageToUserByEmail(recipient, msg, []slackClient.Attachment{})
 				if err != nil {
@@ -57,7 +58,7 @@ func (n *Notifier) Send(v policy.Violation) error {
 	return nil
 }
 
-// Recipient is here because it requires querying slack
+// Recipient is here because it requires querying slack. Second parameter will be true if the recipient is a channel, otherwise a user/IM.
 func (n *Notifier) Recipient(notification policy.Notification, v policy.Violation) (string, bool, error) {
 	var email string
 	if notification.Recipient == "$owner" {
