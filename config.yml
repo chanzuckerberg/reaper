@@ -36,6 +36,12 @@ accounts:
     role: czi-admin
     owner: alin@chanzuckerberg.com
 
+identity_map:
+  - email: shared-infra@chanzuckerberg.com
+    slack: "#org-shared-infra"
+  - email: meta-infra@chanzuckerberg.com
+    slack: "#meta-infra"
+
 policies:
   - name: owner
     resource_selector: "name in (s3, ec2_instance)"

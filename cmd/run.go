@@ -49,8 +49,13 @@ func Run(cmd *cobra.Command, args []string) error {
 		return errors.Wrap(err, "could not read config")
 	}
 
+	iMap, err := conf.GetIdentityMap()
+	if err != nil {
+		return err
+	}
+
 	ui := ui.NewInteractive()
-	notifier := notifier.New(os.Getenv("SLACK_TOKEN"), ui)
+	notifier := notifier.New(os.Getenv("SLACK_TOKEN"), ui, iMap)
 
 	runner := runner.New(conf)
 	violations, err := runner.Run()
