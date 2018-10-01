@@ -85,7 +85,7 @@
   name = "github.com/blend/go-sdk"
   packages = ["selector"]
   pruneopts = "UT"
-  revision = "e84d302c8c8a0e653237490ac62512d6ee210abb"
+  revision = "9e49da7d17fd24685ecb67bea63c24648adb4445"
 
 [[projects]]
   branch = "ryanking/vpc"
