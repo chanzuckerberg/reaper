@@ -58,7 +58,7 @@ func (c *Client) NewIAMUser(user *iam.User, accountID int64, roleName string) *I
 }
 
 // EvalIAMUser walks through all ec2 instances
-func (c *Client) EvalIAMUser(accounts []*Account, p policy.Policy, regions []string) ([]policy.Violation, error) {
+func (c *Client) EvalIAMUser(accounts []*policy.Account, p policy.Policy, regions []string) ([]policy.Violation, error) {
 	var violations []policy.Violation
 	var errs error
 	ctx := context.Background()
@@ -69,7 +69,7 @@ func (c *Client) EvalIAMUser(accounts []*Account, p policy.Policy, regions []str
 		client.IAM.ListAllUsers(ctx, func(user *iam.User) {
 			i := c.NewIAMUser(user, account.ID, account.Role)
 			if p.Match(i) {
-				violation := policy.NewViolation(p, i, false, account.ID, account.Name)
+				violation := policy.NewViolation(p, i, false, account)
 				violations = append(violations, violation)
 			}
 		})

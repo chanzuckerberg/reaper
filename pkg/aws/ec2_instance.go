@@ -59,19 +59,20 @@ func NewEc2Instance(instance *ec2.Instance) *EC2Instance {
 }
 
 // EvalEc2Instance walks through all ec2 instances
-func (c *Client) EvalEc2Instance(accounts []*Account, p policy.Policy, regions []string, f func(policy.Violation)) error {
+func (c *Client) EvalEc2Instance(accounts []*policy.Account, p policy.Policy, regions []string, f func(policy.Violation)) error {
 	var errs error
 	ctx := context.Background()
-	err := c.WalkAccountsAndRegions(accounts, regions, func(client *cziAws.Client, account *Account) {
+	err := c.WalkAccountsAndRegions(accounts, regions, func(client *cziAws.Client, account *policy.Account) {
 		err := client.EC2.GetAllInstances(ctx, func(instance *ec2.Instance) {
 			i := NewEc2Instance(instance)
 			if p.Match(i) {
-				violation := policy.NewViolation(p, i, false, account.ID, account.Name)
+				violation := policy.NewViolation(p, i, false, account)
 				f(violation)
 			}
 		})
 		errs = multierror.Append(errs, err)
 	})
 	errs = multierror.Append(errs, err)
+
 	return errs
 }

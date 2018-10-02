@@ -11,16 +11,18 @@ import (
 
 // Notifier handles sending of notifications
 type Notifier struct {
-	slack *slack.Client
-	ui    ui.UI
+	slack       *slack.Client
+	ui          ui.UI
+	identityMap map[string]string
 }
 
 // New will construct a new Notifier and return i
-func New(slackToken string, ui ui.UI) *Notifier {
+func New(slackToken string, ui ui.UI, iMap map[string]string) *Notifier {
 	api := slack.New(slackToken, log.New())
 	return &Notifier{
-		slack: api,
-		ui:    ui,
+		slack:       api,
+		ui:          ui,
+		identityMap: iMap,
 	}
 }
 
@@ -33,14 +35,50 @@ func (n *Notifier) Send(v policy.Violation) error {
 			return errors.Wrap(err, "could not get message for notification")
 		}
 
+		recipient, channel, err := n.Recipient(notif, v)
+		if err != nil {
+			return err
+		}
+
 		if n.ui.Prompt(msg, recipient, "slack") {
-			err = n.slack.SendMessageToUserByEmail(recipient, msg, []slackClient.Attachment{})
-			if err != nil {
-				log.Infof("error sending to slack for %s", recipient)
-				return errors.Wrapf(err, "could not send message to %s", recipient)
+			if channel {
+				resp, _, err := n.slack.Slack.PostMessage(recipient, msg, slackClient.NewPostMessageParameters())
+				log.Infof("slack PostMessage response: %s, err: %#v", resp, err)
+			} else {
+				err = n.slack.SendMessageToUserByEmail(recipient, msg, []slackClient.Attachment{})
+				if err != nil {
+					log.Infof("error sending to slack for %s", recipient)
+					return errors.Wrapf(err, "could not send message to %s", recipient)
+				}
+
 			}
 		}
 		// TODO sending to channels and owners
 	}
 	return nil
+}
+
+// Recipient is here because it requires querying slack. Second parameter will be true if the recipient is a channel, otherwise a user/IM.
+func (n *Notifier) Recipient(notification policy.Notification, v policy.Violation) (string, bool, error) {
+	var email string
+	if notification.Recipient == "$owner" {
+		owner := v.Subject.GetOwner()
+		if owner != "" {
+			email = owner
+		} else {
+			email = v.Account.Owner
+		}
+	} else {
+		email = notification.Recipient
+	}
+
+	if c, ok := n.identityMap[email]; ok {
+		return c, true, nil
+	}
+	slackChan, err := n.slack.GetSlackChannelID(email)
+	if err == nil {
+		log.Infof("slackChan: %#v", slackChan)
+		return email, false, nil
+	}
+	return "", false, nil
 }
