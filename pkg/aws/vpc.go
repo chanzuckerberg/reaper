@@ -56,14 +56,14 @@ func NewVpc(vpc *ec2.Vpc) *VPC {
 }
 
 // EvalVPC will evaluate policy for a vpc
-func (c *Client) EvalVPC(accounts []*Account, p policy.Policy, regions []string, f func(policy.Violation)) error {
+func (c *Client) EvalVPC(accounts []*policy.Account, p policy.Policy, regions []string, f func(policy.Violation)) error {
 	var errs error
 	ctx := context.Background()
-	c.WalkAccountsAndRegions(accounts, regions, func(client *cziAws.Client, account *Account) {
+	c.WalkAccountsAndRegions(accounts, regions, func(client *cziAws.Client, account *policy.Account) {
 		err := client.EC2.GetAllVPCs(ctx, func(vpc *ec2.Vpc) {
 			v := NewVpc(vpc)
 			if p.Match(v) {
-				violation := policy.NewViolation(p, v, false, account.ID, account.Name)
+				violation := policy.NewViolation(p, v, false, account)
 				f(violation)
 			}
 

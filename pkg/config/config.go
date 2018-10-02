@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/blend/go-sdk/selector"
-	"github.com/chanzuckerberg/reaper/pkg/aws"
 	"github.com/chanzuckerberg/reaper/pkg/policy"
 	"github.com/pkg/errors"
 	yaml "gopkg.in/yaml.v2"
@@ -68,16 +67,24 @@ type PolicyConfig struct {
 
 //AccountConfig identifies an AWS account we want to monitor
 type AccountConfig struct {
-	Name string `yaml:"name"`
-	ID   int64  `yaml:"id"`
-	Role string `yaml:"role"`
+	Name  string `yaml:"name"`
+	ID    int64  `yaml:"id"`
+	Role  string `yaml:"role"`
+	Owner string `yaml:"owner"`
+}
+
+//IdentityMapConfig will allow mapping group email lists to slack channels
+type IdentityMapConfig struct {
+	Email string `yaml:"email"`
+	Slack string `yaml:"slack"`
 }
 
 // Config is the configuration
 type Config struct {
-	Policies   []PolicyConfig  `yaml:"policies"`
-	AWSRegions []string        `yaml:"aws_regions"`
-	Accounts   []AccountConfig `yaml:"accounts"`
+	Policies    []PolicyConfig      `yaml:"policies"`
+	AWSRegions  []string            `yaml:"aws_regions"`
+	Accounts    []AccountConfig     `yaml:"accounts"`
+	IdentityMap []IdentityMapConfig `yaml:"identity_map"`
 }
 
 // GetPolicies gets the policies from a config
@@ -126,13 +133,22 @@ func (c *Config) GetPolicies() ([]policy.Policy, error) {
 	return policies, nil
 }
 
-//GetAccounts will return aws.Account objects
-func (c *Config) GetAccounts() ([]*aws.Account, error) {
-	var accounts []*aws.Account
+//GetAccounts will return policy.Account objects
+func (c *Config) GetAccounts() ([]*policy.Account, error) {
+	var accounts []*policy.Account
 	for _, a := range c.Accounts {
-		accounts = append(accounts, &aws.Account{Name: a.Name, ID: a.ID, Role: a.Role})
+		accounts = append(accounts, &policy.Account{Name: a.Name, ID: a.ID, Role: a.Role, Owner: a.Owner})
 	}
 	return accounts, nil
+}
+
+// GetIdentityMap will return a map of email -> slack identifier
+func (c *Config) GetIdentityMap() (map[string]string, error) {
+	m := make(map[string]string)
+	for _, i := range c.IdentityMap {
+		m[i.Email] = i.Slack
+	}
+	return m, nil
 }
 
 // FromFile reads a config from a file
