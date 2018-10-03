@@ -77,6 +77,14 @@ func (r *Runner) Run() ([]policy.Violation, error) {
 			}
 		}
 
+		if p.MatchResource(map[string]string{"name": "ebs_volume"}) {
+			log.Infof("Evaluating policy: %s", p.Name)
+			err := awsClient.EvalEbsVolume(accounts, p, regions, func(v policy.Violation) {
+				violations = append(violations, v)
+			})
+			errs = multierror.Append(errs, err)
+		}
+
 	}
 
 	return violations, errs.ErrorOrNil()
