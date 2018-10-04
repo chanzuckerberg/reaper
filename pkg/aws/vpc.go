@@ -2,6 +2,7 @@ package aws
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/aws/aws-sdk-go/service/ec2"
 	cziAws "github.com/chanzuckerberg/go-misc/aws"
@@ -19,16 +20,13 @@ func (v *VPC) GetID() string {
 	return v.ID
 }
 
-func (v *VPC) GetOwner() string {
-	o, ok := v.GetLabels()["owner"]
-	if ok {
-		return o
-	}
-	return ""
+func (v *VPC) GetConsoleURL() string {
+	urlTemplate := "https://%s.console.aws.amazon.com/vpc/home?region=%s#vpcs:filter=%s"
+	return fmt.Sprintf(urlTemplate, v.Region, v.Region, v.ID)
 }
 
 // NewVpc returns a new vpc entity
-func NewVpc(vpc *ec2.Vpc) *VPC {
+func NewVpc(vpc *ec2.Vpc, region string) *VPC {
 	entity := &VPC{
 		Entity: NewEntity(),
 	}
@@ -39,6 +37,8 @@ func NewVpc(vpc *ec2.Vpc) *VPC {
 	if vpc.VpcId != nil {
 		entity.ID = *vpc.VpcId
 	}
+
+	entity.Region = region
 
 	for _, tag := range vpc.Tags {
 		if tag == nil {
@@ -59,9 +59,9 @@ func NewVpc(vpc *ec2.Vpc) *VPC {
 func (c *Client) EvalVPC(accounts []*policy.Account, p policy.Policy, regions []string, f func(policy.Violation)) error {
 	var errs error
 	ctx := context.Background()
-	c.WalkAccountsAndRegions(accounts, regions, func(client *cziAws.Client, account *policy.Account) {
+	c.WalkAccountsAndRegions(accounts, regions, func(client *cziAws.Client, account *policy.Account, region string) {
 		err := client.EC2.GetAllVPCs(ctx, func(vpc *ec2.Vpc) {
-			v := NewVpc(vpc)
+			v := NewVpc(vpc, region)
 			if p.Match(v) {
 				violation := policy.NewViolation(p, v, false, account)
 				f(violation)

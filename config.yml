@@ -31,10 +31,10 @@ accounts:
     id: 382303590750
     role: czi-admin
     owner: shared-infra@chanzuckerberg.com
-  - name: czi-physec
-    id: 728896018347
-    role: czi-admin
-    owner: alin@chanzuckerberg.com
+  # - name: czi-physec
+  #   id: 728896018347
+  #   role: czi-admin
+  #   owner: alin@chanzuckerberg.com
 
 identity_map:
   - email: shared-infra@chanzuckerberg.com
@@ -43,8 +43,8 @@ identity_map:
     slack: meta-infra
 
 policies:
-  - name: owner
-    resource_selector: "name in (ec2_instance, s3)"
+  - name: owner-ec2
+    resource_selector: "name in (ec2_instance)"
     tag_selector: "!owner"
     label_selector: ""
     max_age: 20000h
@@ -52,26 +52,39 @@ policies:
     notifications:
       - recipient: $owner
         message_template: >
-          Resource {{.ResourceID}} in account `{{.AccountName}}` does not have an owner tag.
-          Resource was created approximately {{.Age}} ago.
-          It will be automatically deleted in {{.TTL}} if owner tag not added.
+          *WARNING*– EC2 Instance <{{.Resource.GetConsoleURL}}|{{.ResourceID}}> in account
+          `{{.AccountName}}` does not have an owner tag. See our <https://wiki.czi.team/display/SI/AWS+Usage+Policy|Usage Policy> for more information.
 
+          Note– you need to auth to the account before you click the link.
 
-  - name: ebs-owner
-    resource_selector: "name in (ebs_volume)"
+  - name: owner-s3
+    resource_selector: "name in (s3)"
     tag_selector: "!owner"
     label_selector: ""
     max_age: 20000h
 
     notifications:
-      - recipient: $owner
+      - recipient: rking@chanzuckerberg.com
         message_template: >
-          Resource {{.ResourceID}} in account `{{.AccountName}}` does not have an owner tag.
-          Resource was created approximately {{.Age}} ago.
-          It will be automatically deleted in {{.TTL}} if owner tag not added.
+          S3 Bucket <{{.Resource.GetConsoleURL}}|{{.ResourceID}}> in account `{{.AccountName}}`
+          does not have an owner tag. See our <https://wiki.czi.team/display/SI/AWS+Usage+Policy|Usage Policy> for more information.
+
+          Note– you need to auth to the account before you click the link.
 
 
-  - name: owner
+  # - name: owner-ebs
+  #   resource_selector: "name in (ebs_volume)"
+  #   tag_selector: "!owner"
+  #   label_selector: ""
+  #   max_age: 20000h
+
+  #   notifications:
+  #     - recipient: rking@chanzuckerberg.com
+  #       message_template: >
+  #         EBS Volume <{{.Resource.GetConsoleURL}}|{{.ResourceID}}> in account `{{.AccountName}}` does not have an owner tag.
+
+
+  - name: owner-vpc
     resource_selector: "name in (vpc)"
     tag_selector: "!owner"
     label_selector: ""
@@ -80,14 +93,11 @@ policies:
     notifications:
       - recipient: rking@chanzuckerberg.com
         message_template: >
-          A VPC in account `{{.AccountName}}` does not have an owner tag.
-          
-          Name:	{{.Resource.GetName}}
-          
-          ID:	{{.ResourceID}}  
-          
-          Default:	{{.Resource.GetLabelOr "is_default" "false"}}
-  
+          *WARNING*– VPC <{{.Resource.GetConsoleURL}}|{{.ResourceID}}> in account `{{.AccountName}}` does not have an owner tag.
+          See our <https://wiki.czi.team/display/SI/AWS+Usage+Policy|Usage Policy> for more information.
+
+          Note– you need to auth to the account before you click the link.
+
   - name: iam-user-mfa
     resource_selector: "name=iam_user"
     tag_selector: ""
@@ -96,7 +106,7 @@ policies:
     notifications:
       - recipient: rking@chanzuckerberg.com
         message_template: >
-          IAM User {{.ResourceID}} in account `{{.AccountName}}` has a password and no MFA device. <https://www.google.com/|google>
+          IAM User <{{.Resource.GetConsoleURL}}|{{.ResourceID}}> in account `{{.AccountName}}` has a password and no MFA device. <https://www.google.com/|google>
       - recipient: $owner
         message_template: >
           Your IAM user in account `{{.AccountName}}` has a password but no MFA device. Please add an MFA device ASAP.

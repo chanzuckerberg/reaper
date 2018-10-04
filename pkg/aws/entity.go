@@ -18,6 +18,7 @@ type Entity struct {
 	createdAt *time.Time
 	ID        string
 	Name      string
+	Region    string
 }
 
 // common labels

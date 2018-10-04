@@ -17,6 +17,7 @@ type Subject interface {
 	GetName() string
 	GetOwner() string
 	GetTags() map[string]string
+	GetConsoleURL() string
 }
 
 // Policy is an enforcement policy
