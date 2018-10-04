@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	reportCmd.Flags().StringP(flagConfig, "c", "config.yml", "Use this to override the reaper config file.")
+	addCommonFlags(reportCmd)
 	rootCmd.AddCommand(reportCmd)
 }
 
@@ -33,8 +33,13 @@ to quickly create a Cobra application.`,
 			return errors.Wrap(err, "could not read config")
 		}
 
+		only, err := cmd.Flags().GetStringArray(onlyFlag)
+		if err != nil {
+			return errors.Wrap(err, "error reading the `only` flag")
+		}
+
 		runner := runner.New(conf)
-		violations, err := runner.Run()
+		violations, err := runner.Run(only)
 
 		if err != nil {
 			return err
