@@ -12,14 +12,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const (
-	flagConfig = "config"
-	modeConfig = "mode"
-)
-
 func init() {
-	runCmd.Flags().StringP(flagConfig, "c", "config.yml", "Use this to override the reaper config file.")
-	runCmd.Flags().StringP(modeConfig, "m", "dry", "Run mode, must be one of [dry, interactive].")
+	addCommonFlags(runCmd)
+	runCmd.Flags().StringP(modeFlag, "m", "dry", "Run mode, must be one of [dry, interactive].")
+	// runCmd.Flags().StringA
 	rootCmd.AddCommand(runCmd)
 }
 
@@ -36,12 +32,18 @@ var runCmd = &cobra.Command{
 func Run(cmd *cobra.Command, args []string) error {
 
 	// TODO maybe turn this to an enum with https://github.com/alvaroloes/enumer
-	mode, err := cmd.Flags().GetString(modeConfig)
+	mode, err := cmd.Flags().GetString(modeFlag)
 	if err != nil {
 		return errors.Wrap(err, "Could not parse mode flag.")
 	}
 	if !(mode == "dry" || mode == "interactive") {
 		return errors.Wrap(err, "mode must be one of [dry, interactive].")
+	}
+
+	only, err := cmd.Flags().GetStringArray(onlyFlag)
+
+	if err != nil {
+		return errors.Wrap(err, "error when parsing `only` flag")
 	}
 
 	conf, err := getConfig(cmd)
@@ -58,7 +60,7 @@ func Run(cmd *cobra.Command, args []string) error {
 	notifier := notifier.New(os.Getenv("SLACK_TOKEN"), ui, iMap)
 
 	runner := runner.New(conf)
-	violations, err := runner.Run()
+	violations, err := runner.Run(only)
 	if err != nil {
 		return err
 	}
