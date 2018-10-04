@@ -68,6 +68,7 @@ func (e *Entity) GetCreatedAt() *time.Time {
 	return e.createdAt
 }
 
+// GetName returns a user-friendly string identifying the Entity
 func (e *Entity) GetName() string {
 	return e.Name
 }

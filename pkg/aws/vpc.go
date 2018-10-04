@@ -10,12 +10,14 @@ import (
 	multierror "github.com/hashicorp/go-multierror"
 )
 
+// VPC represents an AWS VPC
 type VPC struct {
 	Entity
 	ID   string
 	Name string
 }
 
+// GetID returns the id of the VPC
 func (v *VPC) GetID() string {
 	return v.ID
 }
@@ -23,6 +25,15 @@ func (v *VPC) GetID() string {
 func (v *VPC) GetConsoleURL() string {
 	urlTemplate := "https://%s.console.aws.amazon.com/vpc/home?region=%s#vpcs:filter=%s"
 	return fmt.Sprintf(urlTemplate, v.Region, v.Region, v.ID)
+}
+
+// GetOwner returns the value of the owner tag, if present.
+func (v *VPC) GetOwner() string {
+	o, ok := v.GetLabels()["owner"]
+	if ok {
+		return o
+	}
+	return ""
 }
 
 // NewVpc returns a new vpc entity
