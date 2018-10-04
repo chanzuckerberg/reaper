@@ -13,11 +13,11 @@ import (
 
 // ec2_instance specific labels
 const (
-	ec2EBSVolLabelAz          = "ec2_eba_vol_az"
-	ec2EBSVolLabelIsEncrypted = "ec2_eba_vol_is_encrypted"
-	ec2EBSVolLabelSize        = "ec2_eba_vol_size"
-	ec2EBSVolLabelType        = "ec2_eba_vol_type"
-	ec2EBSVolLabelState       = "ec2_eba_vol_state"
+	ec2EBSVolLabelAz          = "az"
+	ec2EBSVolLabelIsEncrypted = "is_encrypted"
+	ec2EBSVolLabelSize        = "size"
+	ec2EBSVolLabelType        = "type"
+	ec2EBSVolLabelState       = "state"
 )
 
 // EC2EBSVol is an evaluation entity representing an ec2 ebs volume
