@@ -1,14 +1,12 @@
 package aws
 
 import (
-	"fmt"
-	"sync"
+	"context"
 
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	cziAws "github.com/chanzuckerberg/go-misc/aws"
 	"github.com/chanzuckerberg/reaper/pkg/policy"
 	"github.com/hashicorp/go-multierror"
-	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -30,7 +28,7 @@ type EC2EBSVol struct {
 
 // GetID returns the ec2_ebs_vol id
 func (e *EC2EBSVol) GetID() string {
-	return fmt.Sprintf("ec2_ebs_vol: %s", e.ID)
+	return e.ID
 }
 
 // NewEc2EBSVol returns a new ec2 ebs vol entity
@@ -72,68 +70,27 @@ func (e *EC2EBSVol) Delete() error {
 	return nil
 }
 
-// EC2EBSVolClient is an ec2 ebs client
-type EC2EBSVolClient struct {
-	EC2Client
-}
+// EvalEbsVolume walks through all ec2 instances
+func (c *Client) EvalEbsVolume(accounts []*policy.Account, p policy.Policy, regions []string, f func(policy.Violation)) error {
+	var errs error
+	ctx := context.Background()
+	err := c.WalkAccountsAndRegions(accounts, regions, func(client *cziAws.Client, account *policy.Account) {
+		input := &ec2.DescribeVolumesInput{}
 
-// NewEC2EBSVolClient returns new ec2 ebs client
-func NewEC2EBSVolClient(s *session.Session, regions []string, numWorkers int) *EC2EBSVolClient {
-	ec2Client := NewEC2Client(s, regions, numWorkers)
-	return &EC2EBSVolClient{*ec2Client}
-}
-
-// Walk walks through all ec2 instances
-func (e *EC2EBSVolClient) Walk(p *policy.Policy, mode string) (errs error) {
-	log.Infof("Walking ec2_instance")
-	errChan := make(chan error)
-	wg := &sync.WaitGroup{}
-	for region := range e.RegionClients {
-		wg.Add(1)
-		go func(region string) {
-			e.worker(wg, p, region, errChan)
-		}(region)
-	}
-
-	// Wait till all the work is done
-	wg.Wait()
-	close(errChan)
-
-	// Accumulate errors
-	for err := range errChan {
+		err := client.EC2.Svc.DescribeVolumesPagesWithContext(ctx, input, func(output *ec2.DescribeVolumesOutput, cont bool) bool {
+			for _, vol := range output.Volumes {
+				v := NewEc2EBSVol(vol)
+				if p.Match(v) {
+					violation := policy.NewViolation(p, v, false, account)
+					f(violation)
+				}
+			}
+			return true
+		})
 		errs = multierror.Append(errs, err)
-	}
-	return
-}
 
-// worker does the work
-// TODO: probably will need to change concurrency model here at some point
-func (e *EC2EBSVolClient) worker(
-	wg *sync.WaitGroup,
-	p *policy.Policy,
-	region string,
-	errChan chan<- error) {
-	defer wg.Done()
-	client, ok := e.RegionClients[region]
-	if !ok {
-		errChan <- errors.Errorf("EC2 ebs vol unrecognized region %s", region)
-		return
-	}
-
-	input := &ec2.DescribeVolumesInput{}
-	err := client.DescribeVolumesPages(input, func(output *ec2.DescribeVolumesOutput, lastPage bool) bool {
-		for _, vol := range output.Volumes {
-			// ebsVolEntity := NewEc2EBSVol(vol)
-			NewEc2EBSVol(vol)
-			// _, err := p.Eval(ebsVolEntity)
-			// if err != nil {
-			// errChan <- err
-			// }
-		}
-		return true
 	})
-	if err != nil {
-		errChan <- errors.Wrap(err, "Error describing ec2 instances")
-	}
-	return
+	errs = multierror.Append(errs, err)
+
+	return errs
 }
