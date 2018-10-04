@@ -67,7 +67,8 @@ policies:
       - recipient: rking@chanzuckerberg.com
         message_template: >
           S3 Bucket <{{.Resource.GetConsoleURL}}|{{.ResourceID}}> in account `{{.AccountName}}`
-          does not have an owner tag. See our <https://wiki.czi.team/display/SI/AWS+Usage+Policy|Usage Policy> for more information.
+          does not have an owner tag. See our <https://wiki.czi.team/display/SI/AWS+Usage+Policy|Usage Policy>
+          for more information.
 
           Note– you need to auth to the account before you click the link.
 
@@ -82,6 +83,23 @@ policies:
   #     - recipient: rking@chanzuckerberg.com
   #       message_template: >
   #         EBS Volume <{{.Resource.GetConsoleURL}}|{{.ResourceID}}> in account `{{.AccountName}}` does not have an owner tag.
+
+  - name: unattached-ebs
+    resource_selector: "name in (ebs_volume)"
+    tag_selector: ""
+    label_selector: "state=available"
+    max_age: 20000h
+
+    notifications:
+      - recipient: rking@chanzuckerberg.com
+        message_template: >
+          *WARNING* – EBS Volume <{{.Resource.GetConsoleURL}}|{{.ResourceID}}> in account `{{.AccountName}}` and region {{.Resource.Region}} is unused.
+
+          It was created approximately {{.Age}} ago and it will be automatically deleted in {{.TTL}} if still unattached.
+
+          See our <https://wiki.czi.team/display/SI/AWS+Usage+Policy|Usage Policy> for more information.
+
+          Note– you need to auth to the account before you click the link.
 
 
   - name: owner-vpc
