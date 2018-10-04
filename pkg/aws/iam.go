@@ -2,6 +2,7 @@ package aws
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/chanzuckerberg/reaper/pkg/policy"
@@ -55,6 +56,12 @@ func (c *Client) NewIAMUser(user *iam.User, accountID int64, roleName string) *I
 	}
 
 	return entity
+}
+
+// GetConsoleURL will return a URL for this resource in the AWS console
+func (e *IAMUser) GetConsoleURL() string {
+	t := "https://console.aws.amazon.com/iam/home?region=us-east-1#/users/%s"
+	return fmt.Sprintf(t, e.ID)
 }
 
 // EvalIAMUser walks through all ec2 instances

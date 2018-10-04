@@ -60,6 +60,7 @@ func (c *Client) SendMessageToUserByEmail(email, message string, attachments []s
 	params := slackClient.PostMessageParameters{
 		UnfurlLinks: true,
 		Attachments: attachments,
+		Markdown:    true,
 	}
 	_, _, err = c.Slack.PostMessage(channelID, message, params)
 	return errors.Wrap(err, "could not post message")

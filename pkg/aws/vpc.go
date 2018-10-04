@@ -2,6 +2,7 @@ package aws
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/aws/aws-sdk-go/service/ec2"
 	cziAws "github.com/chanzuckerberg/go-misc/aws"
@@ -21,6 +22,12 @@ func (v *VPC) GetID() string {
 	return v.ID
 }
 
+// GetConsoleURL will return a URL for this resource in the AWS console
+func (v *VPC) GetConsoleURL() string {
+	urlTemplate := "https://%s.console.aws.amazon.com/vpc/home?region=%s#vpcs:filter=%s"
+	return fmt.Sprintf(urlTemplate, v.Region, v.Region, v.ID)
+}
+
 // GetOwner returns the value of the owner tag, if present.
 func (v *VPC) GetOwner() string {
 	o, ok := v.GetLabels()["owner"]
@@ -31,7 +38,7 @@ func (v *VPC) GetOwner() string {
 }
 
 // NewVpc returns a new vpc entity
-func NewVpc(vpc *ec2.Vpc) *VPC {
+func NewVpc(vpc *ec2.Vpc, region string) *VPC {
 	entity := &VPC{
 		Entity: NewEntity(),
 	}
@@ -42,6 +49,8 @@ func NewVpc(vpc *ec2.Vpc) *VPC {
 	if vpc.VpcId != nil {
 		entity.ID = *vpc.VpcId
 	}
+
+	entity.Region = region
 
 	for _, tag := range vpc.Tags {
 		if tag == nil {
@@ -62,9 +71,9 @@ func NewVpc(vpc *ec2.Vpc) *VPC {
 func (c *Client) EvalVPC(accounts []*policy.Account, p policy.Policy, regions []string, f func(policy.Violation)) error {
 	var errs error
 	ctx := context.Background()
-	c.WalkAccountsAndRegions(accounts, regions, func(client *cziAws.Client, account *policy.Account) {
+	err := c.WalkAccountsAndRegions(accounts, regions, func(client *cziAws.Client, account *policy.Account, region string) {
 		err := client.EC2.GetAllVPCs(ctx, func(vpc *ec2.Vpc) {
-			v := NewVpc(vpc)
+			v := NewVpc(vpc, region)
 			if p.Match(v) {
 				violation := policy.NewViolation(p, v, false, account)
 				f(violation)
@@ -73,5 +82,6 @@ func (c *Client) EvalVPC(accounts []*policy.Account, p policy.Policy, regions []
 		})
 		errs = multierror.Append(errs, err)
 	})
+	errs = multierror.Append(errs, err)
 	return nil
 }

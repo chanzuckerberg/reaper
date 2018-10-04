@@ -27,14 +27,22 @@ func (e *EC2Instance) GetID() string {
 	return fmt.Sprintf("%s", e.ID)
 }
 
+// GetConsoleURL will return a URL for this resource in the AWS console
+func (e *EC2Instance) GetConsoleURL() string {
+	t := "https://%s.console.aws.amazon.com/ec2/v2/home?&region=%s#Instances:search=%s;sort=desc:instanceState"
+	return fmt.Sprintf(t, e.Region, e.Region, e.ID)
+}
+
 // NewEc2Instance returns a new ec2 instance entity
-func NewEc2Instance(instance *ec2.Instance) *EC2Instance {
+func NewEc2Instance(instance *ec2.Instance, region string) *EC2Instance {
 	entity := &EC2Instance{
 		Entity: NewEntity(),
 	}
 	if instance == nil {
 		return entity
 	}
+
+	entity.Region = region
 	// otherwise populate with more info
 	if instance.InstanceId != nil {
 		entity.ID = *instance.InstanceId
@@ -62,9 +70,9 @@ func NewEc2Instance(instance *ec2.Instance) *EC2Instance {
 func (c *Client) EvalEc2Instance(accounts []*policy.Account, p policy.Policy, regions []string, f func(policy.Violation)) error {
 	var errs error
 	ctx := context.Background()
-	err := c.WalkAccountsAndRegions(accounts, regions, func(client *cziAws.Client, account *policy.Account) {
+	err := c.WalkAccountsAndRegions(accounts, regions, func(client *cziAws.Client, account *policy.Account, region string) {
 		err := client.EC2.GetAllInstances(ctx, func(instance *ec2.Instance) {
-			i := NewEc2Instance(instance)
+			i := NewEc2Instance(instance, region)
 			if p.Match(i) {
 				violation := policy.NewViolation(p, i, false, account)
 				f(violation)

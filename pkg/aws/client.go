@@ -51,11 +51,11 @@ func roleArn(accountID int64, roleName string) string {
 }
 
 // WalkAccountsAndRegions will invoke f for each region in each account supplied.
-func (c *Client) WalkAccountsAndRegions(accounts []*policy.Account, regions []string, f func(*cziAws.Client, *policy.Account)) error {
+func (c *Client) WalkAccountsAndRegions(accounts []*policy.Account, regions []string, f func(*cziAws.Client, *policy.Account, string)) error {
 	for _, account := range accounts {
 		for _, region := range regions {
 			client := c.Get(account.ID, account.Role, region)
-			f(client, account)
+			f(client, account, region)
 		}
 	}
 	return nil
