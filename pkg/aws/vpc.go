@@ -9,16 +9,19 @@ import (
 	multierror "github.com/hashicorp/go-multierror"
 )
 
+// VPC represents an AWS VPC
 type VPC struct {
 	Entity
 	ID   string
 	Name string
 }
 
+// GetID returns the id of the VPC
 func (v *VPC) GetID() string {
 	return v.ID
 }
 
+// GetOwner returns the value of the owner tag, if present.
 func (v *VPC) GetOwner() string {
 	o, ok := v.GetLabels()["owner"]
 	if ok {

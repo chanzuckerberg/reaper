@@ -11,6 +11,7 @@ import (
 )
 
 const (
+	// DefaultRegion is the AWS region we use for global resources, like IAM
 	DefaultRegion = "us-east-1" // TODO find this in the sdk
 )
 
@@ -26,6 +27,7 @@ func NewClient(accounts []*policy.Account, regions []string) (*Client, error) {
 	return &Client{}, nil
 }
 
+// Get will return a new account, region and role specific AWS client.
 func (c *Client) Get(accountID int64, roleName, region string) *cziAws.Client {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
@@ -48,6 +50,7 @@ func roleArn(accountID int64, roleName string) string {
 	return fmt.Sprintf("arn:aws:iam::%d:role/%s", accountID, roleName)
 }
 
+// WalkAccountsAndRegions will invoke f for each region in each account supplied.
 func (c *Client) WalkAccountsAndRegions(accounts []*policy.Account, regions []string, f func(*cziAws.Client, *policy.Account)) error {
 	for _, account := range accounts {
 		for _, region := range regions {
