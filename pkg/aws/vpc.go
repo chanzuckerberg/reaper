@@ -22,6 +22,7 @@ func (v *VPC) GetID() string {
 	return v.ID
 }
 
+// GetConsoleURL will return a URL for this resource in the AWS console
 func (v *VPC) GetConsoleURL() string {
 	urlTemplate := "https://%s.console.aws.amazon.com/vpc/home?region=%s#vpcs:filter=%s"
 	return fmt.Sprintf(urlTemplate, v.Region, v.Region, v.ID)
