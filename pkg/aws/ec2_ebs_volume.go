@@ -77,7 +77,7 @@ func (c *Client) EvalEbsVolume(accounts []*policy.Account, p policy.Policy, regi
 	err := c.WalkAccountsAndRegions(accounts, regions, func(client *cziAws.Client, account *policy.Account) {
 		input := &ec2.DescribeVolumesInput{}
 
-		client.EC2.Svc.DescribeVolumesPagesWithContext(ctx, input, func(output *ec2.DescribeVolumesOutput, cont bool) bool {
+		err := client.EC2.Svc.DescribeVolumesPagesWithContext(ctx, input, func(output *ec2.DescribeVolumesOutput, cont bool) bool {
 			for _, vol := range output.Volumes {
 				v := NewEc2EBSVol(vol)
 				if p.Match(v) {
@@ -87,6 +87,7 @@ func (c *Client) EvalEbsVolume(accounts []*policy.Account, p policy.Policy, regi
 			}
 			return true
 		})
+		errs = multierror.Append(errs, err)
 
 	})
 	errs = multierror.Append(errs, err)
