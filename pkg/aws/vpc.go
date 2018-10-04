@@ -59,7 +59,7 @@ func NewVpc(vpc *ec2.Vpc, region string) *VPC {
 func (c *Client) EvalVPC(accounts []*policy.Account, p policy.Policy, regions []string, f func(policy.Violation)) error {
 	var errs error
 	ctx := context.Background()
-	c.WalkAccountsAndRegions(accounts, regions, func(client *cziAws.Client, account *policy.Account, region string) {
+	err := c.WalkAccountsAndRegions(accounts, regions, func(client *cziAws.Client, account *policy.Account, region string) {
 		err := client.EC2.GetAllVPCs(ctx, func(vpc *ec2.Vpc) {
 			v := NewVpc(vpc, region)
 			if p.Match(v) {
@@ -70,5 +70,6 @@ func (c *Client) EvalVPC(accounts []*policy.Account, p policy.Policy, regions []
 		})
 		errs = multierror.Append(errs, err)
 	})
+	errs = multierror.Append(errs, err)
 	return nil
 }
