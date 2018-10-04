@@ -19,7 +19,7 @@ func New(c *config.Config) *Runner {
 }
 
 // Run will evaluate all the polices against the accounts in the config and return violations
-func (r *Runner) Run() ([]policy.Violation, error) {
+func (r *Runner) Run(only []string) ([]policy.Violation, error) {
 	policies, err := r.Config.GetPolicies()
 	if err != nil {
 		return nil, err
@@ -40,11 +40,15 @@ func (r *Runner) Run() ([]policy.Violation, error) {
 	var errs *multierror.Error
 	var violations []policy.Violation
 	for _, p := range policies {
+		if len(only) > 0 && !contains(only, p.Name) {
+			log.Infof("skipping %s", p.Name)
+			continue
+		}
 		log.Infof("Executing policy: \n%s \n=================", p.String())
 		if p.MatchResource(map[string]string{"name": "s3"}) {
 			v, err := awsClient.EvalS3(accounts, p)
 
-			err = multierror.Append(errs, err)
+			errs = multierror.Append(errs, err)
 
 			if v != nil {
 				violations = append(violations, v...)
@@ -88,4 +92,13 @@ func (r *Runner) Run() ([]policy.Violation, error) {
 	}
 
 	return violations, errs.ErrorOrNil()
+}
+
+func contains(haystack []string, needle string) bool {
+	for _, a := range haystack {
+		if a == needle {
+			return true
+		}
+	}
+	return false
 }
