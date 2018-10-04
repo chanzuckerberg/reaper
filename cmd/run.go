@@ -15,7 +15,6 @@ import (
 func init() {
 	addCommonFlags(runCmd)
 	runCmd.Flags().StringP(modeFlag, "m", "dry", "Run mode, must be one of [dry, interactive].")
-	// runCmd.Flags().StringA
 	rootCmd.AddCommand(runCmd)
 }
 
