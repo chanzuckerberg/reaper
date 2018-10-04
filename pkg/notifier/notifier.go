@@ -42,7 +42,9 @@ func (n *Notifier) Send(v policy.Violation) error {
 
 		if n.ui.Prompt(msg, recipient, "slack") {
 			if channel {
-				resp, _, err := n.slack.Slack.PostMessage(recipient, msg, slackClient.NewPostMessageParameters())
+				params := slackClient.NewPostMessageParameters()
+				params.Markdown = true
+				resp, _, err := n.slack.Slack.PostMessage(recipient, msg, params)
 				log.Infof("slack PostMessage response: %s, err: %#v", resp, err)
 			} else {
 				err = n.slack.SendMessageToUserByEmail(recipient, msg, []slackClient.Attachment{})

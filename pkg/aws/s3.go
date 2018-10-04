@@ -26,10 +26,12 @@ type S3Bucket struct {
 
 // NewS3Bucket returns a new s3 bucket entity
 func NewS3Bucket(name string) *S3Bucket {
-	return &S3Bucket{
+	bucket := &S3Bucket{
 		Entity: NewEntity(),
 		name:   name,
 	}
+	bucket.ID = name
+	return bucket
 }
 
 // Delete deletes this bucket
@@ -41,6 +43,12 @@ func (s *S3Bucket) Delete() error {
 // GetID returns the s3 bucket id
 func (s *S3Bucket) GetID() string {
 	return fmt.Sprintf("s3:%s", s.name)
+}
+
+// GetConsoleURL will return a URL for this resource in the AWS console
+func (e *S3Bucket) GetConsoleURL() string {
+	s := "https://s3.console.aws.amazon.com/s3/buckets/%s/"
+	return fmt.Sprintf(s, e.ID)
 }
 
 // EvalS3 walks through all s3 buckets

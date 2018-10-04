@@ -2,6 +2,7 @@ package aws
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/aws/aws-sdk-go/service/ec2"
 	cziAws "github.com/chanzuckerberg/go-misc/aws"
@@ -32,13 +33,16 @@ func (e *EC2EBSVol) GetID() string {
 }
 
 // NewEc2EBSVol returns a new ec2 ebs vol entity
-func NewEc2EBSVol(vol *ec2.Volume) *EC2EBSVol {
+func NewEc2EBSVol(vol *ec2.Volume, region string) *EC2EBSVol {
 	entity := &EC2EBSVol{
 		Entity: NewEntity(),
 	}
 	if vol == nil {
 		return entity
 	}
+
+	entity.Region = region
+
 	// otherwise populate with more info
 	if vol.VolumeId != nil {
 		entity.ID = *vol.VolumeId
@@ -64,6 +68,11 @@ func NewEc2EBSVol(vol *ec2.Volume) *EC2EBSVol {
 	return entity
 }
 
+func (e *EC2EBSVol) GetConsoleURL() string {
+	t := "https://%s.console.aws.amazon.com/ec2/v2/home?&region=%s#Volumes:search=%s;sort=state"
+	return fmt.Sprintf(t, e.Region, e.Region, e.ID)
+}
+
 // Delete deletes
 func (e *EC2EBSVol) Delete() error {
 	log.Warnf("Would delete ec2_ebs_vol %s", e.ID)
@@ -74,12 +83,12 @@ func (e *EC2EBSVol) Delete() error {
 func (c *Client) EvalEbsVolume(accounts []*policy.Account, p policy.Policy, regions []string, f func(policy.Violation)) error {
 	var errs error
 	ctx := context.Background()
-	err := c.WalkAccountsAndRegions(accounts, regions, func(client *cziAws.Client, account *policy.Account) {
+	err := c.WalkAccountsAndRegions(accounts, regions, func(client *cziAws.Client, account *policy.Account, region string) {
 		input := &ec2.DescribeVolumesInput{}
 
 		err := client.EC2.Svc.DescribeVolumesPagesWithContext(ctx, input, func(output *ec2.DescribeVolumesOutput, cont bool) bool {
 			for _, vol := range output.Volumes {
-				v := NewEc2EBSVol(vol)
+				v := NewEc2EBSVol(vol, region)
 				if p.Match(v) {
 					violation := policy.NewViolation(p, v, false, account)
 					f(violation)
