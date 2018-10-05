@@ -6,6 +6,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/chanzuckerberg/reaper/pkg/policy"
+	multierror "github.com/hashicorp/go-multierror"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -49,7 +50,10 @@ func (c *Client) NewIAMUser(user *iam.User, accountID int64, roleName string) *I
 		entity.AddLabel("has_mfa", &t)
 	}
 
-	login, e := client.IAM.GetLoginProfile(ctx, *user.UserName)
+	login, _ := client.IAM.GetLoginProfile(ctx, *user.UserName)
+	// if e != nil {
+	// return errors.Wrap(e, "error fetching login profile")
+	// }
 
 	if login != nil {
 		entity.AddLabel("has_password", &t)
@@ -59,9 +63,9 @@ func (c *Client) NewIAMUser(user *iam.User, accountID int64, roleName string) *I
 }
 
 // GetConsoleURL will return a URL for this resource in the AWS console
-func (e *IAMUser) GetConsoleURL() string {
+func (u *IAMUser) GetConsoleURL() string {
 	t := "https://console.aws.amazon.com/iam/home?region=us-east-1#/users/%s"
-	return fmt.Sprintf(t, e.ID)
+	return fmt.Sprintf(t, u.ID)
 }
 
 // EvalIAMUser walks through all ec2 instances
@@ -73,13 +77,14 @@ func (c *Client) EvalIAMUser(accounts []*policy.Account, p policy.Policy, region
 		log.Infof("Walking iam users for %s", account.Name)
 		region := DefaultRegion
 		client := c.Get(account.ID, account.Role, region)
-		client.IAM.ListAllUsers(ctx, func(user *iam.User) {
+		err := client.IAM.ListAllUsers(ctx, func(user *iam.User) {
 			i := c.NewIAMUser(user, account.ID, account.Role)
 			if p.Match(i) {
 				violation := policy.NewViolation(p, i, false, account)
 				violations = append(violations, violation)
 			}
 		})
+		errs = multierror.Append(errs, err)
 
 	}
 	return violations, errs
