@@ -47,11 +47,3 @@ func (n *Notification) GetMessage(v Violation) (string, error) {
 
 	return message, nil
 }
-
-// GetRecipient will figure out who should recieve the message
-func (n *Notification) GetRecipient(v Violation) string {
-	if n.Recipient == "$owner" {
-		return v.Subject.GetOwner()
-	}
-	return n.Recipient
-}

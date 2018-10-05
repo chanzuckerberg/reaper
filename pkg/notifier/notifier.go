@@ -30,7 +30,7 @@ func New(slackToken string, ui ui.UI, iMap map[string]string) *Notifier {
 func (n *Notifier) Send(v policy.Violation) error {
 	for _, notif := range v.Policy.Notifications {
 		msg, err := notif.GetMessage(v)
-		recipient := notif.GetRecipient(v)
+
 		if err != nil {
 			return errors.Wrap(err, "could not get message for notification")
 		}
@@ -44,7 +44,11 @@ func (n *Notifier) Send(v policy.Violation) error {
 			if channel {
 				params := slackClient.NewPostMessageParameters()
 				params.Markdown = true
-				resp, _, err := n.slack.Slack.PostMessage(recipient, msg, params)
+				resp, _, e := n.slack.Slack.PostMessage(recipient, msg, params)
+				if e != nil {
+					log.Errorf("error sending to slack %#v", e)
+					return errors.Wrap(e, "error sending message to slack")
+				}
 				log.Infof("slack PostMessage response: %s, err: %#v", resp, err)
 			} else {
 				err = n.slack.SendMessageToUserByEmail(recipient, msg, []slackClient.Attachment{})

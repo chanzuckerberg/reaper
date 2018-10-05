@@ -16,6 +16,7 @@ type Interactive struct {
 	prompt *input.UI
 }
 
+//NewInteractive will create a interactive ui object
 func NewInteractive() *Interactive {
 	prompt := &input.UI{
 		Writer: os.Stdout,
@@ -24,6 +25,7 @@ func NewInteractive() *Interactive {
 	return &Interactive{prompt: prompt}
 }
 
+// Prompt will give the user `msg` and prompt for confirmation
 func (i *Interactive) Prompt(msg, recipient, method string) bool {
 	log.Info(msg)
 

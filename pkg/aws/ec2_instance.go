@@ -24,7 +24,7 @@ type EC2Instance struct {
 
 // GetID returns the ec2_instance id
 func (e *EC2Instance) GetID() string {
-	return fmt.Sprintf("%s", e.ID)
+	return e.ID
 }
 
 // GetConsoleURL will return a URL for this resource in the AWS console

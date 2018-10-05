@@ -46,9 +46,9 @@ func (s *S3Bucket) GetID() string {
 }
 
 // GetConsoleURL will return a URL for this resource in the AWS console
-func (e *S3Bucket) GetConsoleURL() string {
-	s := "https://s3.console.aws.amazon.com/s3/buckets/%s/"
-	return fmt.Sprintf(s, e.ID)
+func (s *S3Bucket) GetConsoleURL() string {
+	t := "https://s3.console.aws.amazon.com/s3/buckets/%s/"
+	return fmt.Sprintf(t, s.ID)
 }
 
 // EvalS3 walks through all s3 buckets

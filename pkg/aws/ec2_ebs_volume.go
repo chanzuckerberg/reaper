@@ -68,6 +68,7 @@ func NewEc2EBSVol(vol *ec2.Volume, region string) *EC2EBSVol {
 	return entity
 }
 
+// GetConsoleURL will return a url to the AWS console for this volume
 func (e *EC2EBSVol) GetConsoleURL() string {
 	t := "https://%s.console.aws.amazon.com/ec2/v2/home?&region=%s#Volumes:search=%s;sort=state"
 	return fmt.Sprintf(t, e.Region, e.Region, e.ID)
