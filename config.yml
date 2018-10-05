@@ -131,6 +131,20 @@ policies:
           See AWS docs for this <https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa_enable_virtual.html|here>
           And ask in <#help-infra> if you need assistance.
 
+  # - name: owner-kms
+  #   resource_selector: "name in (kms_key)"
+  #   tag_selector: "!owner"
+  #   label_selector: ""
+  #   max_age: 20000h
+
+  #   notifications:
+  #     - recipient: rking@chanzuckerberg.com
+  #       message_template: >
+  #         *WARNING*– KMS Key <{{.Resource.GetConsoleURL}}|{{.ResourceID}}> in account `{{.AccountName}}` does not have an owner tag.
+  #         See our <https://wiki.czi.team/display/SI/AWS+Usage+Policy|Usage Policy> for more information.
+
+  #         Note– you need to auth to the account before you click the link.
+
 aws_regions:
   - us-east-1
   - us-west-1
