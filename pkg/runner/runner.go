@@ -89,6 +89,14 @@ func (r *Runner) Run(only []string) ([]policy.Violation, error) {
 			errs = multierror.Append(errs, err)
 		}
 
+		if p.MatchResource(map[string]string{"name": "kms_key"}) {
+			log.Infof("Evaluating policy: %s", p.Name)
+			err := awsClient.EvalKMSKey(accounts, p, regions, func(v policy.Violation) {
+				violations = append(violations, v)
+			})
+			errs = multierror.Append(errs, err)
+		}
+
 	}
 
 	return violations, errs.ErrorOrNil()
