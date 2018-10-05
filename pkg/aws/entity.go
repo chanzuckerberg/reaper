@@ -44,6 +44,11 @@ func (e *Entity) Delete() error {
 	return errors.New("Delete not implemented")
 }
 
+// GetRegion returns the region in which this entity exists
+func (e *Entity) GetRegion() string {
+	return e.Region
+}
+
 // GetLabels returns this entitie's labels
 func (e *Entity) GetLabels() map[string]string {
 	return e.labels
