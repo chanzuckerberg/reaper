@@ -88,6 +88,13 @@ func (r *Runner) Run(only []string) ([]policy.Violation, error) {
 			})
 			errs = multierror.Append(errs, err)
 		}
+		if p.MatchResource(map[string]string{"name": "ec2_security_group"}) {
+			log.Infof("Evaluating policy: %s", p.Name)
+			err := awsClient.EvalEC2SG(accounts, p, regions, func(v policy.Violation) {
+				violations = append(violations, v)
+			})
+			errs = multierror.Append(errs, err)
+		}
 
 	}
 
