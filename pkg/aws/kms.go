@@ -1,13 +1,13 @@
 package aws
 
 import (
+	"context"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
-	"github.com/aws/aws-sdk-go/service/kms/kmsiface"
+	cziAws "github.com/chanzuckerberg/go-misc/aws"
 	"github.com/chanzuckerberg/reaper/pkg/policy"
-	"github.com/pkg/errors"
+	multierror "github.com/hashicorp/go-multierror"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -17,78 +17,77 @@ const (
 	labelKMSKeyState       TypeEntityLabel = "key_state"
 )
 
-type kmsKey struct {
+type KmsKey struct {
 	Entity
 	keyID string
 }
 
 // Delete deletes this kms key
-func (k *kmsKey) Delete() error {
+func (k *KmsKey) Delete() error {
 	log.Warnf("Would delete KMS key %s", k.keyID)
 	return nil
 }
 
-func (k *kmsKey) GetID() string {
+func (k *KmsKey) GetID() string {
 	return fmt.Sprintf("kms: %s", k.keyID)
 }
-
-func newKMSKeyEntity(keyID string) *kmsKey {
-	return &kmsKey{keyID: keyID}
+func (k *KmsKey) GetConsoleURL() string {
+	s := "https://console.aws.amazon.com/iam/home?region=%s#/encryptionKeys/%s/%s"
+	return fmt.Sprintf(s, k.Region, k.Region, k.ID)
 }
 
-// KMSClient is a kms client
-type KMSClient struct {
-	Svc kmsiface.KMSAPI
+func NewKMSKey(keyMetadata *kms.KeyMetadata, tags []*kms.Tag) *KmsKey {
+	entity := &KmsKey{keyID: *keyMetadata.KeyId}
+	entity.
+		AddLabel(labelARN, keyMetadata.Arn).
+		AddLabel(labelID, keyMetadata.KeyId).
+		AddLabel(labelKMSKeyDescription, keyMetadata.Description).
+		AddLabel(labelKMSKeyState, keyMetadata.KeyState).
+		AddCreatedAt(keyMetadata.CreationDate)
+
+	for _, tag := range tags {
+		if tag == nil {
+			continue
+		}
+		if tag.TagKey != nil && tag.TagValue != nil && *tag.TagKey == "Name" {
+			entity.Name = *tag.TagValue
+		}
+		entity.AddTag(tag.TagKey, tag.TagValue)
+	}
+
+	return entity
 }
 
-// NewKMS returns a KMS client
-func NewKMS(s *session.Session) *KMSClient {
-	return &KMSClient{kms.New(s)}
-}
+// EvalKMSKey walks through all kms keys
+func (c *Client) EvalKMSKey(accounts []*policy.Account, p policy.Policy, regions []string, f func(policy.Violation)) error {
+	var errs error
+	ctx := context.Background()
+	err := c.WalkAccountsAndRegions(accounts, regions, func(client *cziAws.Client, account *policy.Account, region string) {
+		input := &kms.ListKeysInput{}
+		err := client.KMS.Svc.ListKeysPagesWithContext(ctx, input, func(output *kms.ListKeysOutput, done bool) bool {
+			for _, key := range output.Keys {
+				if key != nil && key.KeyId != nil {
+					input := &kms.DescribeKeyInput{}
+					input.SetKeyId(*key.KeyId)
+					output, _ := client.KMS.Svc.DescribeKey(input)
+					keyMetadata := output.KeyMetadata
 
-// Walk walks through all kms keys and applies the walkFun
-func (k *KMSClient) Walk(p policy.Policy) error {
-	input := &kms.ListKeysInput{}
-	keyIDs := []string{}
-	err := k.Svc.ListKeysPages(input, func(output *kms.ListKeysOutput, lastPage bool) bool {
-		for _, kmsKeyListEntry := range output.Keys {
-			if kmsKeyListEntry != nil && kmsKeyListEntry.KeyId != nil {
-				keyIDs = append(keyIDs, *kmsKeyListEntry.KeyId)
+					tagsInput := &kms.ListResourceTagsInput{KeyId: keyMetadata.KeyId}
+					tagsOutput, _ := client.KMS.Svc.ListResourceTags(tagsInput)
+					tags := tagsOutput.Tags
+
+					k := NewKMSKey(keyMetadata, tags)
+					if p.Match(k) {
+						violation := policy.NewViolation(p, k, false, account)
+						f(violation)
+					}
+				}
 			}
-		}
-		return true
+			return true
+		})
+		errs = multierror.Append(errs, err)
 	})
-	if err != nil {
-		return errors.Wrap(err, "Error listing KMS keys")
-	}
+	errs = multierror.Append(errs, err)
 
-	for _, keyID := range keyIDs {
-		keyMetadata, err := k.DescribeKey(keyID)
-
-		if err != nil {
-			return errors.Wrapf(err, "error describing kms key %s", keyID)
-		}
-		entity := newKMSKeyEntity(keyID)
-		entity.
-			AddLabel(labelARN, keyMetadata.Arn).
-			AddLabel(labelID, keyMetadata.KeyId).
-			AddLabel(labelKMSKeyDescription, keyMetadata.Description).
-			AddLabel(labelKMSKeyState, keyMetadata.KeyState).
-			AddCreatedAt(keyMetadata.CreationDate)
-
-		// Need to not fail on err here
-		// _, err = p.Eval(entity)
-		// if err != nil {
-		// return err
-		// }
-	}
-	return nil
-}
-
-// DescribeKey describes a key
-func (k *KMSClient) DescribeKey(keyID string) (*kms.KeyMetadata, error) {
-	input := &kms.DescribeKeyInput{}
-	input.SetKeyId(keyID)
-	output, err := k.Svc.DescribeKey(input)
-	return output.KeyMetadata, errors.Wrapf(err, "Could not describe kms key %s", keyID)
+	return errs
 }
