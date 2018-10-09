@@ -26,6 +26,14 @@
   version = "v1.0.1"
 
 [[projects]]
+  digest = "1:1929b21a34400d463a99336f8e2908d2a154dc525c52411a8d99bb519942dc4c"
+  name = "github.com/apparentlymart/go-cidr"
+  packages = ["cidr"]
+  pruneopts = "UT"
+  revision = "b1115bf8e14a60131a196f908223e4506b0ddc35"
+  version = "v1.0.0"
+
+[[projects]]
   digest = "1:094d0bf4c89cb517c538108d8d7abe0c47cfd575e5aaffcc8b31f1f513bf18c5"
   name = "github.com/aws/aws-sdk-go"
   packages = [
@@ -312,6 +320,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/Masterminds/sprig",
+    "github.com/apparentlymart/go-cidr/cidr",
     "github.com/aws/aws-sdk-go/aws",
     "github.com/aws/aws-sdk-go/aws/awserr",
     "github.com/aws/aws-sdk-go/aws/credentials/stscreds",
@@ -320,7 +329,6 @@
     "github.com/aws/aws-sdk-go/service/ec2/ec2iface",
     "github.com/aws/aws-sdk-go/service/iam",
     "github.com/aws/aws-sdk-go/service/kms",
-    "github.com/aws/aws-sdk-go/service/kms/kmsiface",
     "github.com/aws/aws-sdk-go/service/s3",
     "github.com/blend/go-sdk/selector",
     "github.com/chanzuckerberg/go-misc/aws",
@@ -332,6 +340,7 @@
     "github.com/pkg/errors",
     "github.com/sirupsen/logrus",
     "github.com/spf13/cobra",
+    "github.com/stretchr/testify/assert",
     "github.com/tcnksm/go-input",
     "gopkg.in/yaml.v2",
   ]
