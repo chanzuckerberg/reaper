@@ -159,6 +159,17 @@ policies:
 
   #         Note– you need to auth to the account before you click the link.
 
+  - name: public-sg
+    resource_selector: "name in (ec2_security_group)"
+    tag_selector: ""
+    label_selector: "public_ingress"
+    notifications:
+      - recipient: rking@chanzuckerberg.com
+        message_template: >
+          Security Group <{{.Resource.GetConsoleURL}}|{{.ResourceID}}> in account `{{.AccountName}}`
+          permits ingress from some public IP addresses.
+
+
 aws_regions:
   - us-east-1
   - us-west-1
