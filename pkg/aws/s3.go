@@ -15,7 +15,8 @@ import (
 
 // s3 specific labels
 const (
-	s3LabelIsPublic TypeEntityLabel = "s3_is_public"
+	s3LabelACLPublic     TypeEntityLabel = "s3_acl_public"
+	s3LabelACLPublicRead TypeEntityLabel = "s3_acl_public_read"
 )
 
 // S3Bucket is an evaluation entity representing an s3 bucket
@@ -133,16 +134,24 @@ func (c *Client) DescribeS3Bucket(accountID int64, roleName string, b *s3.Bucket
 		return nil, err
 	}
 
+	log.Debugf("reading grants for bucket %s", name)
 	for _, grant := range acl.Grants {
+
+		log.Debugf("grant %#v", grant)
+
 		if grant != nil &&
 			grant.Grantee != nil &&
-			grant.Grantee.ID != nil &&
-			acl != nil &&
-			acl.Owner != nil &&
-			acl.Owner.ID != nil &&
-			(*grant.Grantee.ID != *acl.Owner.ID) {
-			bucket.AddLabel(s3LabelIsPublic, aws.String(""))
-			break
+			grant.Grantee.Type != nil &&
+			*grant.Grantee.Type == "Group" &&
+			grant.Grantee.URI == "http://acs.amazonaws.com/groups/global/AllUsers" {
+
+			log.Debugf("public bucket %s", name)
+			bucket.AddLabel(s3LabelACLPublic, aws.String(""))
+
+			if grant.Permission != nil &&
+				*grant.Permission == "READ" {
+				bucket.AddLabel(s3LabelACLPublicRead, aws.String(""))
+			}
 		}
 	}
 	return bucket, nil

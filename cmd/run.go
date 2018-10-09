@@ -29,6 +29,13 @@ var runCmd = &cobra.Command{
 
 // Run runs the policies and potentially takes action on them.
 func Run(cmd *cobra.Command, args []string) error {
+	logLevel := log.InfoLevel
+	if debug { // debug overrides quiet
+		logLevel = log.DebugLevel
+	} else if quiet {
+		logLevel = log.FatalLevel
+	}
+	log.SetLevel(logLevel)
 
 	// TODO maybe turn this to an enum with https://github.com/alvaroloes/enumer
 	mode, err := cmd.Flags().GetString(modeFlag)
