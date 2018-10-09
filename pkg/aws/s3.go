@@ -143,7 +143,7 @@ func (c *Client) DescribeS3Bucket(accountID int64, roleName string, b *s3.Bucket
 			grant.Grantee != nil &&
 			grant.Grantee.Type != nil &&
 			*grant.Grantee.Type == "Group" &&
-			grant.Grantee.URI == "http://acs.amazonaws.com/groups/global/AllUsers" {
+			*grant.Grantee.URI == "http://acs.amazonaws.com/groups/global/AllUsers" {
 
 			log.Debugf("public bucket %s", name)
 			bucket.AddLabel(s3LabelACLPublic, aws.String(""))
