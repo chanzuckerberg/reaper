@@ -4,15 +4,18 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	cziAws "github.com/chanzuckerberg/go-misc/aws"
 	"github.com/chanzuckerberg/reaper/pkg/policy"
+	"github.com/chanzuckerberg/reaper/pkg/util"
 	"github.com/hashicorp/go-multierror"
 	log "github.com/sirupsen/logrus"
 )
 
 const (
-	vpcID = "vpc_id"
+	vpcID         = "vpc_id"
+	publicIngress = "public_ingress"
 )
 
 // EC2SG is an evaluation entity representing an ec2 security group
@@ -53,6 +56,14 @@ func NewEC2SG(sg *ec2.SecurityGroup, region string) *EC2SG {
 		entity.AddTag(tag.Key, tag.Value)
 	}
 	entity.AddLabel(vpcID, sg.VpcId)
+
+	for _, permission := range sg.IpPermissions {
+		for _, rang := range permission.IpRanges {
+			if rang.CidrIp != nil && util.ContainsPublicIps(*rang.CidrIp) {
+				entity.AddLabel(publicIngress, aws.String("true"))
+			}
+		}
+	}
 
 	return entity
 }
