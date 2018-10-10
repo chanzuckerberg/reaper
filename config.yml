@@ -164,9 +164,9 @@ policies:
     tag_selector: ""
     label_selector: "age > 10368000" # 120 days
     notifications:
-        - recipient: rking@chanzuckerberg.com
+        - recipient: $owner
           message_template: >
-            IAM User <{{.Resource.GetConsoleURL}}|{{.Resource.GetOwner}}> in account `{{.AccountName}}` has an old access key.
+            *WARNING*– IAM User <{{.Resource.GetConsoleURL}}|{{.Resource.GetOwner}}> in account `{{.AccountName}}` has an old access key.
             
             Our <https://wiki.czi.team/display/SI/AWS+Usage+Policy|Usage Policy> requires that
             keys are rotated every 120 days, but yours is {{.Age}} old.
