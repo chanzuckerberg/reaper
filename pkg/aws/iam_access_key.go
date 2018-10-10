@@ -47,8 +47,9 @@ func (c *Client) NewIAMAccessKey(ctx context.Context, key *iam.AccessKeyMetadata
 
 	if key.CreateDate != nil {
 		entity.AddCreatedAt(key.CreateDate)
-		age := time.Since(*key.CreateDate).Nanoseconds() / int64(10^9)
+		age := int64(time.Since(*key.CreateDate).Seconds())
 		entity.AddInt64Label("age", &age)
+		log.Debugf("user: %s age: %d", *key.UserName, age)
 	}
 
 	return entity
