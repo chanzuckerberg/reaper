@@ -131,6 +131,14 @@
   version = "v1.38.2"
 
 [[projects]]
+  branch = "master"
+  digest = "1:1ba1d79f2810270045c328ae5d674321db34e3aae468eb4233883b473c5c0467"
+  name = "github.com/golang/glog"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "23def4e6c14b4da8ac2ed8007337bc5eb5007998"
+
+[[projects]]
   digest = "1:3a26588bc48b96825977c1b3df964f8fd842cd6860cc26370588d3563433cf11"
   name = "github.com/google/uuid"
   packages = ["."]
@@ -315,6 +323,21 @@
   revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
   version = "v2.2.1"
 
+[[projects]]
+  branch = "master"
+  digest = "1:46efbe464d80b0168393d205d3ae0ffd8a924b87be03e3b084b4579d030495da"
+  name = "k8s.io/apimachinery"
+  packages = [
+    "pkg/labels",
+    "pkg/selection",
+    "pkg/util/errors",
+    "pkg/util/sets",
+    "pkg/util/validation",
+    "pkg/util/validation/field",
+  ]
+  pruneopts = "UT"
+  revision = "76721d167b7088b203cf9873c616b0cfec5c77bb"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
@@ -343,6 +366,7 @@
     "github.com/stretchr/testify/assert",
     "github.com/tcnksm/go-input",
     "gopkg.in/yaml.v2",
+    "k8s.io/apimachinery/pkg/labels",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
