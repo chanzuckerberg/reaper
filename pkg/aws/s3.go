@@ -101,6 +101,7 @@ func (c *Client) DescribeS3Bucket(accountID int64, roleName string, b *s3.Bucket
 	if err != nil {
 		return nil, err
 	}
+	bucket.Region = location
 
 	tagInput := &s3.GetBucketTaggingInput{}
 	tagInput.SetBucket(name)
