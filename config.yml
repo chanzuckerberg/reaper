@@ -159,16 +159,21 @@ policies:
 
   #         Note– you need to auth to the account before you click the link.
 
-  - name: public-sg
-    resource_selector: "name in (ec2_security_group)"
+  - name: access-key-age
+    resource_selector: "name in (iam_access_key)"
     tag_selector: ""
-    label_selector: "public_ingress"
+    label_selector: "age > 10368000" # 120 days
     notifications:
-      - recipient: rking@chanzuckerberg.com
-        message_template: >
-          Security Group <{{.Resource.GetConsoleURL}}|{{.ResourceID}}> in account `{{.AccountName}}`
-          permits ingress from some public IP addresses.
+        - recipient: rking@chanzuckerberg.com
+          message_template: >
+            *WARNING*– IAM User <{{.Resource.GetConsoleURL}}|{{.Resource.GetOwner}}> in account `{{.AccountName}}` has an old access key.
+            
+            Our <https://wiki.czi.team/display/SI/AWS+Usage+Policy|Usage Policy> requires that
+            keys are rotated every 120 days, but yours is {{.Age}} old.
 
+            To rotate keys used from your laptop, we reccomend <https://github.com/Fullscreen/aws-rotate-key|aws-rotate-key>
+
+            Ask in <#C94RQ5SBV> if you need help.
 
 aws_regions:
   - us-east-1
