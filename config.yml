@@ -159,13 +159,12 @@ policies:
 
   #         Note– you need to auth to the account before you click the link.
 
-<<<<<<< HEAD
   - name: access-key-age
     resource_selector: "name in (iam_access_key)"
     tag_selector: ""
     label_selector: "age > 10368000" # 120 days
     notifications:
-        - recipient: $owner
+        - recipient: rking@chanzuckerberg.com
           message_template: >
             *WARNING*– IAM User <{{.Resource.GetConsoleURL}}|{{.Resource.GetOwner}}> in account `{{.AccountName}}` has an old access key.
             
@@ -175,18 +174,6 @@ policies:
             To rotate keys used from your laptop, we reccomend <https://github.com/Fullscreen/aws-rotate-key|aws-rotate-key>
 
             Ask in <#C94RQ5SBV> if you need help.
-=======
-  - name: public-sg
-    resource_selector: "name in (ec2_security_group)"
-    tag_selector: ""
-    label_selector: "public_ingress"
-    notifications:
-      - recipient: rking@chanzuckerberg.com
-        message_template: >
-          Security Group <{{.Resource.GetConsoleURL}}|{{.ResourceID}}> in account `{{.AccountName}}`
-          permits ingress from some public IP addresses.
-
->>>>>>> origin/master
 
 aws_regions:
   - us-east-1
