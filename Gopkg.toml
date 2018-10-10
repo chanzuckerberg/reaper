@@ -3,10 +3,6 @@
   version = "1.15.36"
 
 [[constraint]]
-  branch = "master"
-  name = "github.com/blend/go-sdk"
-
-[[constraint]]
   branch = "ryanking/vpc"
   name = "github.com/chanzuckerberg/go-misc"
 
