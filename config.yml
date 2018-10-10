@@ -178,7 +178,7 @@ policies:
     tag_selector: ""
     label_selector: "age > 10368000" # 120 days
     notifications:
-        - recipient: rking@chanzuckerberg.com
+        - recipient: $owner
           message_template: >
             *WARNING*– IAM User <{{.Resource.GetConsoleURL}}|{{.Resource.GetOwner}}> in account `{{.AccountName}}` has an old access key.
             
