@@ -24,9 +24,8 @@ type Entity struct {
 
 // common labels
 const (
-	labelID        = "id"
-	labelARN       = "arn"
-	labelCreatedAt = "created_at"
+	labelID  = "id"
+	labelARN = "arn"
 )
 
 // TypeEntityLabel An EntityLabel

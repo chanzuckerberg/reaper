@@ -35,7 +35,6 @@ func (u *IAMAccessKey) GetConsoleURL() string {
 }
 
 // NewIAMAccessKey returns a new ec2 instance entity
-// I don't like that I have to pass accountId and roleName all the way down here.
 func (c *Client) NewIAMAccessKey(ctx context.Context, key *iam.AccessKeyMetadata) *IAMAccessKey {
 	entity := &IAMAccessKey{
 		Entity: NewEntity(),
@@ -55,7 +54,7 @@ func (c *Client) NewIAMAccessKey(ctx context.Context, key *iam.AccessKeyMetadata
 	return entity
 }
 
-// EvalIAMAccessKey walks through all ec2 instances
+// EvalIAMAccessKey walks through all IAM users' access keys
 func (c *Client) EvalIAMAccessKey(accounts []*policy.Account, p policy.Policy) ([]policy.Violation, error) {
 	var violations []policy.Violation
 	var errs error
