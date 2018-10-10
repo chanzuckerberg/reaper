@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/blend/go-sdk/selector"
+	"k8s.io/apimachinery/pkg/labels"
 )
 
 // Subject is gets evaluated by a policy
@@ -13,10 +13,10 @@ type Subject interface {
 	Delete() error
 	GetCreatedAt() *time.Time
 	GetID() string
-	GetLabels() map[string]string
+	GetLabels() labels.Set
 	GetName() string
 	GetOwner() string
-	GetTags() map[string]string
+	GetTags() labels.Set
 	GetConsoleURL() string
 	GetRegion() string
 }
@@ -25,11 +25,11 @@ type Subject interface {
 type Policy struct {
 	Name string
 	// ResourceSelector selects on aws services
-	ResourceSelector selector.Selector
+	ResourceSelector labels.Selector
 	// TagSelector selects on aws object tags
-	TagSelector selector.Selector
+	TagSelector labels.Selector
 	// LabelSelector selects on custom generated object labels
-	LabelSelector selector.Selector
+	LabelSelector labels.Selector
 	// MaxAge how old can this object be and still be selected by this policy
 	MaxAge        *time.Duration
 	Notifications []Notification
@@ -52,7 +52,7 @@ func (p *Policy) String() string {
 }
 
 // MatchResource determines if we match an aws resource such as s3 or cloudfront
-func (p *Policy) MatchResource(resource map[string]string) bool {
+func (p *Policy) MatchResource(resource labels.Set) bool {
 	return p.ResourceSelector.Matches(resource)
 }
 
@@ -85,7 +85,7 @@ func New() *Policy {
 
 // WithTagSelector adds a tag selector
 func (p *Policy) WithTagSelector(query string) (*Policy, error) {
-	s, err := selector.Parse(query)
+	s, err := labels.Parse(query)
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +95,7 @@ func (p *Policy) WithTagSelector(query string) (*Policy, error) {
 
 // AddLabelSelector adds a label selector
 func (p *Policy) AddLabelSelector(query string) (*Policy, error) {
-	s, err := selector.Parse(query)
+	s, err := labels.Parse(query)
 	if err != nil {
 		return nil, err
 	}
