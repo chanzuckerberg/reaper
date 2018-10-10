@@ -5,10 +5,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/blend/go-sdk/selector"
 	"github.com/chanzuckerberg/reaper/pkg/policy"
 	"github.com/pkg/errors"
 	yaml "gopkg.in/yaml.v2"
+	"k8s.io/apimachinery/pkg/labels"
 )
 
 // TypeResource describes the type of resource
@@ -91,22 +91,22 @@ type Config struct {
 func (c *Config) GetPolicies() ([]policy.Policy, error) {
 	policies := make([]policy.Policy, len(c.Policies))
 	for i, cp := range c.Policies {
-		rs, err := selector.Parse(cp.ResourceSelector)
+		rs, err := labels.Parse(cp.ResourceSelector)
 		if err != nil {
 			return nil, errors.Wrapf(err, "Invalid selector: %s", cp.ResourceSelector)
 		}
 
-		var ls selector.Selector
+		var ls labels.Selector
 		if cp.LabelSelector != nil {
-			ls, err = selector.Parse(*cp.LabelSelector)
+			ls, err = labels.Parse(*cp.LabelSelector)
 			if err != nil {
 				return nil, errors.Wrapf(err, "Invalid selector: %s", *cp.LabelSelector)
 			}
 		}
 
-		var ts selector.Selector
+		var ts labels.Selector
 		if cp.TagSelector != nil {
-			ts, err = selector.Parse(*cp.TagSelector)
+			ts, err = labels.Parse(*cp.TagSelector)
 			if err != nil {
 				return nil, errors.Wrapf(err, "Invalid selector: %s", *cp.TagSelector)
 			}

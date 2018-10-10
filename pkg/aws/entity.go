@@ -6,6 +6,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/pkg/errors"
+	"k8s.io/apimachinery/pkg/labels"
 )
 
 // Entity is an AWS entity s3 bucket, ec2 instance, etc
@@ -50,7 +51,7 @@ func (e *Entity) GetRegion() string {
 }
 
 // GetLabels returns this entitie's labels
-func (e *Entity) GetLabels() map[string]string {
+func (e *Entity) GetLabels() labels.Set {
 	return e.labels
 }
 
@@ -64,7 +65,7 @@ func (e *Entity) GetLabelOr(label string, or string) string {
 }
 
 // GetTags returns the tags
-func (e *Entity) GetTags() map[string]string {
+func (e *Entity) GetTags() labels.Set {
 	return e.tags
 }
 

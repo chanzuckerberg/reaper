@@ -52,7 +52,7 @@ func (c *Client) NewIAMUser(user *iam.User, accountID int64, roleName string) *I
 
 	login, _ := client.IAM.GetLoginProfile(ctx, *user.UserName)
 	// if e != nil {
-	// return errors.Wrap(e, "error fetching login profile")
+	// 	return errors.Wrap(e, "error fetching login profile")
 	// }
 
 	if login != nil {

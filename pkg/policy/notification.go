@@ -28,8 +28,11 @@ func (n *Notification) GetMessage(v Violation) (string, error) {
 		"AccountID":    strconv.FormatInt(v.AccountID, 10),
 		"Resource":     v.Subject,
 	}
-	if createdAt != nil && maxAge != nil {
+	if createdAt != nil {
 		data["Age"] = units.HumanDuration(time.Since(*createdAt))
+	}
+
+	if createdAt != nil && maxAge != nil {
 		data["TTL"] = units.HumanDuration(*maxAge - time.Since(*createdAt))
 	}
 	t, err := template.New("message").Parse(n.MessageTemplate)

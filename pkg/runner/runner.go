@@ -104,6 +104,15 @@ func (r *Runner) Run(only []string) ([]policy.Violation, error) {
 			errs = multierror.Append(errs, err)
 		}
 
+		if p.MatchResource(map[string]string{"name": "iam_access_key"}) {
+			log.Infof("Evaluating policy: %s", p.Name)
+			v, err := awsClient.EvalIAMAccessKey(accounts, p)
+			errs = multierror.Append(errs, err)
+			if v != nil {
+				violations = append(violations, v...)
+			}
+		}
+
 	}
 
 	return violations, errs.ErrorOrNil()
