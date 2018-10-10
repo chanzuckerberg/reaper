@@ -35,6 +35,10 @@ accounts:
   #   id: 728896018347
   #   role: czi-admin
   #   owner: alin@chanzuckerberg.com
+  # - name: sciencescape
+  #   id: 464320806260
+  #   role: czi-admin
+  #   owner: rking@chanzuckerberg.com
 
 identity_map:
   - email: shared-infra@chanzuckerberg.com
