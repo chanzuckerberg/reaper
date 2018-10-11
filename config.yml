@@ -162,6 +162,16 @@ policies:
   #         See our <https://wiki.czi.team/display/SI/AWS+Usage+Policy|Usage Policy> for more information.
 
   #         Note– you need to auth to the account before you click the link.
+  
+  - name: public-s3
+    resource_selector: "name in (s3)"
+    label_selector: "s3_acl_public"
+    tag_selector: ""
+    notifications:
+      - recipient: rking@chanzuckerberg.com
+        message_template: >
+          S3 Bucket <{{.Resource.GetConsoleURL}}|{{.ResourceID}}> in account `{{.AccountName}}` has a public read ACL.
+
 
   - name: access-key-age
     resource_selector: "name in (iam_access_key)"

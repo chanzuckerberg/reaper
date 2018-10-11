@@ -29,7 +29,6 @@ var runCmd = &cobra.Command{
 
 // Run runs the policies and potentially takes action on them.
 func Run(cmd *cobra.Command, args []string) error {
-
 	// TODO maybe turn this to an enum with https://github.com/alvaroloes/enumer
 	mode, err := cmd.Flags().GetString(modeFlag)
 	if err != nil {
