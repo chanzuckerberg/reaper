@@ -18,6 +18,17 @@ func init() {
 var rootCmd = &cobra.Command{
 	Use:   "reaper",
 	Short: "",
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		logLevel := log.InfoLevel
+		if debug { // debug overrides quiet
+			logLevel = log.DebugLevel
+		} else if quiet {
+			logLevel = log.FatalLevel
+		}
+		log.SetLevel(logLevel)
+		log.Infof("log level set to %s", log.GetLevel())
+		return nil
+	},
 }
 
 // Execute executes the command
