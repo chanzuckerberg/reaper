@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"github.com/aws/aws-sdk-go/service/support"
 	cziAws "github.com/chanzuckerberg/reaper/pkg/aws"
 	"github.com/chanzuckerberg/reaper/pkg/config"
 	"github.com/chanzuckerberg/reaper/pkg/policy"
@@ -39,6 +40,9 @@ func (r *Runner) Run(only []string) ([]policy.Violation, error) {
 
 	var errs *multierror.Error
 	var violations []policy.Violation
+
+	r.UpdateTrustedAdvisorChecks(awsClient, accounts)
+
 	for _, p := range policies {
 		if len(only) > 0 && !contains(only, p.Name) {
 			log.Infof("skipping %s", p.Name)
@@ -116,6 +120,39 @@ func (r *Runner) Run(only []string) ([]policy.Violation, error) {
 	}
 
 	return violations, errs.ErrorOrNil()
+}
+
+// UpdateTrustedAdvisorChecks will walk all accounts, all checks and update them if they are stale
+func (r *Runner) UpdateTrustedAdvisorChecks(client *cziAws.Client, accounts []*policy.Account) {
+	for _, a := range accounts {
+		log.Debugf("ta for %s", a.Name)
+		c := client.Get(a.ID, a.Role, "us-east-1")
+		en := "en"
+		input := &support.DescribeTrustedAdvisorChecksInput{
+			Language: &en,
+		}
+		output, _ := c.Support.Svc.DescribeTrustedAdvisorChecks(input)
+		checkIds := []*string{}
+		for _, check := range output.Checks {
+			// log.Debugf("check: %#v", check)
+			checkIds = append(checkIds, check.Id)
+		}
+		refreshStatusInput := &support.DescribeTrustedAdvisorCheckRefreshStatusesInput{
+			CheckIds: checkIds,
+		}
+		out, _ := c.Support.Svc.DescribeTrustedAdvisorCheckRefreshStatuses(refreshStatusInput)
+		for _, status := range out.Statuses {
+			log.Debug("status: %#v", status)
+			if status.MillisUntilNextRefreshable != nil && *status.MillisUntilNextRefreshable == 0 {
+				log.Debugf("refreshing %s", *status.CheckId)
+				refreshInput := &support.RefreshTrustedAdvisorCheckInput{
+					CheckId: status.CheckId,
+				}
+				c.Support.Svc.RefreshTrustedAdvisorCheck(refreshInput)
+				// TODO wait until no longer pending
+			}
+		}
+	}
 }
 
 func contains(haystack []string, needle string) bool {

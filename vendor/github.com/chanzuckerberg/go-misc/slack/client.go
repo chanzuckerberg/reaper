@@ -74,6 +74,7 @@ func (c *Client) SendMessageToUser(userID, message string) error {
 	}
 	params := slackClient.PostMessageParameters{
 		UnfurlLinks: true,
+		Markdown:    true,
 	}
 	_, _, err = c.Slack.PostMessage(channelID, message, params)
 	return err

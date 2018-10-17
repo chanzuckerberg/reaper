@@ -3,7 +3,7 @@
   version = "1.15.36"
 
 [[constraint]]
-  branch = "ryanking/vpc"
+  branch = "ryanking/aws_support"
   name = "github.com/chanzuckerberg/go-misc"
 
 [[constraint]]

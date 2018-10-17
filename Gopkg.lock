@@ -34,7 +34,7 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:094d0bf4c89cb517c538108d8d7abe0c47cfd575e5aaffcc8b31f1f513bf18c5"
+  digest = "1:39e141b994bb575a552fd401814367594b9cfd1db711c94f107bb7e3c785ffc5"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -54,6 +54,7 @@
     "aws/request",
     "aws/session",
     "aws/signer/v4",
+    "internal/s3err",
     "internal/sdkio",
     "internal/sdkrand",
     "internal/sdkuri",
@@ -80,31 +81,27 @@
     "service/lambda/lambdaiface",
     "service/s3",
     "service/s3/s3iface",
+    "service/secretsmanager",
+    "service/secretsmanager/secretsmanageriface",
     "service/sts",
     "service/sts/stsiface",
+    "service/support",
+    "service/support/supportiface",
   ]
   pruneopts = "UT"
-  revision = "3dd4f56d3cb9d194293525540562216f81bd3f27"
-  version = "v1.15.37"
+  revision = "66832f7f150914a46ffbfc03210f3b9cb0e4c005"
+  version = "v1.15.57"
 
 [[projects]]
-  branch = "master"
-  digest = "1:a9f3db0b4a5e114347ea072d43d06478ce9403aa6b1376f7e69e1cb0021a78df"
-  name = "github.com/blend/go-sdk"
-  packages = ["selector"]
-  pruneopts = "UT"
-  revision = "e84d302c8c8a0e653237490ac62512d6ee210abb"
-
-[[projects]]
-  branch = "ryanking/vpc"
-  digest = "1:48727c23763a6a92b1ea098d95f0d64b365b983f014db71237b2398b6579542b"
+  branch = "ryanking/aws_support"
+  digest = "1:af5e8d6accb94eb881ed95de468b86b15d3646caa6848b8315c4b94df9d950a9"
   name = "github.com/chanzuckerberg/go-misc"
   packages = [
     "aws",
     "slack",
   ]
   pruneopts = "UT"
-  revision = "4defae1e4ba114ff781171c2db673260bab64b43"
+  revision = "2837a7c9afafaf5801580e31e79554f4c5674d12"
 
 [[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
@@ -202,6 +199,14 @@
   revision = "0b12d6b5"
 
 [[projects]]
+  digest = "1:0a69a1c0db3591fcefb47f115b224592c8dfa4368b7ba9fae509d5e16cdc95c8"
+  name = "github.com/konsorten/go-windows-terminal-sequences"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "5c8c8bd35d3832f5d134ae1e1e375b69a4d25242"
+  version = "v1.0.1"
+
+[[projects]]
   digest = "1:cdb899c199f907ac9fb50495ec71212c95cb5b0e0a8ee0800da0238036091033"
   name = "github.com/mattn/go-runewidth"
   packages = ["."]
@@ -242,12 +247,12 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:36a75ab002c1cfb43bcc5d2ec10fbdc2a1136e9246a65e535f1d827435f28f17"
+  digest = "1:3f53e9e4dfbb664cd62940c9c4b65a2171c66acd0b7621a1a6b8e78513525a52"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
   pruneopts = "UT"
-  revision = "418b41d23a1bf978c06faea5313ba194650ac088"
-  version = "v0.8.7"
+  revision = "ad15b42461921f1fb3529b058c6786c6a45d5162"
+  version = "v1.1.1"
 
 [[projects]]
   digest = "1:645cabccbb4fa8aab25a956cbcbdf6a6845ca736b2c64e197ca7cbb9d210b939"
@@ -353,7 +358,6 @@
     "github.com/aws/aws-sdk-go/service/iam",
     "github.com/aws/aws-sdk-go/service/kms",
     "github.com/aws/aws-sdk-go/service/s3",
-    "github.com/blend/go-sdk/selector",
     "github.com/chanzuckerberg/go-misc/aws",
     "github.com/chanzuckerberg/go-misc/slack",
     "github.com/docker/go-units",

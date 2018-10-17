@@ -10,12 +10,14 @@ type Client struct {
 	session *session.Session
 
 	// services
-	EC2    *EC2
-	IAM    *IAM
-	KMS    *KMS
-	Lambda *Lambda
-	S3     *S3
-	STS    *STS
+	EC2            *EC2
+	IAM            *IAM
+	KMS            *KMS
+	Lambda         *Lambda
+	S3             *S3
+	SecretsManager *SecretsManager
+	STS            *STS
+	Support        *Support
 }
 
 // New returns a new aws client
@@ -26,13 +28,25 @@ func New(sess *session.Session) *Client {
 // WithAllServices Convenience method that configures all services with the same aws.Config
 func (c *Client) WithAllServices(conf *aws.Config) *Client {
 	return c.
+		WithEC2(conf).
 		WithIAM(conf).
-		WithSTS(conf).
-		WithLambda(conf).
 		WithKMS(conf).
+		WithLambda(conf).
 		WithS3(conf).
-		WithEC2(conf)
+		WithSecretsManager(conf).
+		WithSTS(conf).
+		WithSupport(conf)
 }
+
+// ------- SecretsManager -----------
+
+// WithSecretsManager configures a secrets manager
+func (c *Client) WithSecretsManager(conf *aws.Config) *Client {
+	c.SecretsManager = NewSecretsManager(c.session, conf)
+	return c
+}
+
+// TODO secretsmanager mock
 
 // ------- S3 -----------
 
@@ -109,5 +123,13 @@ func (c *Client) WithMockKMS() (*Client, *MockKMSSvc) {
 // WithEC2 configures an EC2 svc
 func (c *Client) WithEC2(conf *aws.Config) *Client {
 	c.EC2 = NewEC2(c.session, conf)
+	return c
+}
+
+// ------- Support -----------
+
+// WithSupport configures an Support svc
+func (c *Client) WithSupport(conf *aws.Config) *Client {
+	c.Support = NewSupport(c.session, conf)
 	return c
 }
