@@ -49,6 +49,12 @@ func Run(cmd *cobra.Command, args []string) error {
 		return errors.Wrap(err, "could not read config")
 	}
 
+	valid := validateConfigVersion(conf.Version, validConfigVersions)
+
+	if !valid {
+		return errors.Errorf("invalid config version: %d. Valid options are %v", conf.Version, validConfigVersions)
+	}
+
 	iMap, err := conf.GetIdentityMap()
 	if err != nil {
 		return err
