@@ -81,6 +81,7 @@ type IdentityMapConfig struct {
 
 // Config is the configuration
 type Config struct {
+	Version     int                 `yaml:version`
 	Policies    []PolicyConfig      `yaml:"policies"`
 	AWSRegions  []string            `yaml:"aws_regions"`
 	Accounts    []AccountConfig     `yaml:"accounts"`

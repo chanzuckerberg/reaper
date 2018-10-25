@@ -32,6 +32,12 @@ to quickly create a Cobra application.`,
 			return errors.Wrap(err, "could not read config")
 		}
 
+		valid := validateConfigVersion(conf.Version, validConfigVersions)
+
+		if !valid {
+			return errors.Errorf("invalid config version: %d. Valid options are %v", conf.Version, validConfigVersions)
+		}
+
 		only, err := cmd.Flags().GetStringArray(onlyFlag)
 		if err != nil {
 			return errors.Wrap(err, "error reading the `only` flag")
