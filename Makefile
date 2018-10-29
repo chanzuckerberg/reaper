@@ -16,22 +16,21 @@ lint: ## run the fast go linters
 lint-slow: ## run all linters, even the slow ones
 	gometalinter --vendor --disable gocyclo --deadline 120s ./...
 
-# packr: ## run the packr tool to generate our static files
-# 	packr
-
-release: #packr
+release: ## release a new version of the tool on Github
+	./release
+	git push
 	goreleaser release --rm-dist
 
-build: #packr ## build the binary
+build: ## build the binary
 	go build ${LDFLAGS} .
 
 coverage: ## run the go coverage tool, reading file coverage.out
 	go tool cover -html=coverage.out
 
-test: #packr ## run the tests
+test: ## run the tests
 	gotest -cover ./...
 
-install: #packr ## install the reaper binary in $GOPATH/bin
+install: ## install the reaper binary in $GOPATH/bin
 	go install ${LDFLAGS} .
 
 help: ## display help for this makefile
