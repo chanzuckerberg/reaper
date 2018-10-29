@@ -142,7 +142,7 @@ func (r *Runner) UpdateTrustedAdvisorChecks(client *cziAws.Client, accounts []*p
 		}
 		out, _ := c.Support.Svc.DescribeTrustedAdvisorCheckRefreshStatuses(refreshStatusInput)
 		for _, status := range out.Statuses {
-			log.Debug("status: %#v", status)
+			log.Debugf("status: %#v", status)
 			if status.MillisUntilNextRefreshable != nil && *status.MillisUntilNextRefreshable == 0 {
 				log.Debugf("refreshing %s", *status.CheckId)
 				refreshInput := &support.RefreshTrustedAdvisorCheckInput{
