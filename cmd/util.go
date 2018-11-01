@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/chanzuckerberg/reaper/pkg/config"
 	"github.com/pkg/errors"
+	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 )
 
@@ -25,7 +26,8 @@ func getConfig(cmd *cobra.Command) (*config.Config, error) {
 	if err != nil {
 		return nil, errors.Wrapf(err, "Missing required argument %s", configFlag)
 	}
-	return config.FromFile(configFile)
+	fs := afero.NewOsFs()
+	return config.FromFile(fs, configFile)
 }
 
 func validateConfigVersion(version int, validVersions []int) bool {

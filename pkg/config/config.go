@@ -2,22 +2,17 @@ package config
 
 import (
 	"io/ioutil"
-	"os"
 	"time"
 
 	"github.com/chanzuckerberg/reaper/pkg/policy"
 	"github.com/pkg/errors"
+	"github.com/spf13/afero"
 	yaml "gopkg.in/yaml.v2"
 	"k8s.io/apimachinery/pkg/labels"
 )
 
 // TypeResource describes the type of resource
 type TypeResource string
-
-const (
-	// TypeResourceS3 is an s3 resource
-	TypeResourceS3 TypeResource = "s3"
-)
 
 // Duration because I really love writing time un/marshal logic
 type Duration time.Duration
@@ -62,7 +57,11 @@ type PolicyConfig struct {
 	// If it matches the policy and exceeds MaxAge remediation will be taken.
 	MaxAge *Duration `yaml:"max_age"`
 
-	Notifications []NotificationConfig `yaml:"notifications"`
+	Notifications NotificationsConfig `yaml:"notifications"`
+}
+
+type NotificationsConfig struct {
+	Warnings []NotificationConfig `yaml:"warnings"`
 }
 
 //AccountConfig identifies an AWS account we want to monitor
@@ -113,8 +112,8 @@ func (c *Config) GetPolicies() ([]policy.Policy, error) {
 			}
 		}
 
-		notifications := make([]policy.Notification, len(cp.Notifications))
-		for j, n := range cp.Notifications {
+		notifications := make([]policy.Notification, len(cp.Notifications.Warnings))
+		for j, n := range cp.Notifications.Warnings {
 			notification := policy.Notification{}
 			notification.MessageTemplate = n.MessageTemplate
 			notification.Recipient = n.Recipient
@@ -153,8 +152,8 @@ func (c *Config) GetIdentityMap() (map[string]string, error) {
 }
 
 // FromFile reads a config from a file
-func FromFile(fileName string) (*Config, error) {
-	f, err := os.Open(fileName)
+func FromFile(fs afero.Fs, fileName string) (*Config, error) {
+	f, err := fs.Open(fileName)
 	if err != nil {
 		return nil, errors.Wrapf(err, "Could not open file %s", fileName)
 	}
@@ -164,5 +163,5 @@ func FromFile(fileName string) (*Config, error) {
 	}
 	config := &Config{}
 	err = yaml.Unmarshal(bytes, config)
-	return config, errors.Wrapf(err, "Could not Unmarshal config %s", fileName)
+	return nil, errors.Wrapf(err, "Could not Unmarshal config %s", fileName)
 }
