@@ -61,7 +61,11 @@ func Run(cmd *cobra.Command, args []string) error {
 	}
 
 	ui := ui.NewInteractive()
-	notifier := notifier.New(os.Getenv("SLACK_TOKEN"), ui, iMap)
+	slackToken := os.Getenv("SLACK_TOKEN")
+	if slackToken == "" {
+		return errors.New("please supply a SLACK_TOKEN environment variable")
+	}
+	notifier := notifier.New(slackToken, ui, iMap)
 
 	runner := runner.New(conf)
 	violations, err := runner.Run(only)
