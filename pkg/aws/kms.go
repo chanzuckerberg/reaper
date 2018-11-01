@@ -36,8 +36,11 @@ func (k *KmsKey) GetConsoleURL() string {
 	return fmt.Sprintf(s, k.Region, k.Region, k.ID)
 }
 
-func NewKMSKey(keyMetadata *kms.KeyMetadata, tags []*kms.Tag) *KmsKey {
-	entity := &KmsKey{keyID: *keyMetadata.KeyId}
+func NewKMSKey(keyMetadata *kms.KeyMetadata, tags []*kms.Tag, region string) *KmsKey {
+	entity := &KmsKey{
+		keyID: *keyMetadata.KeyId,
+	}
+	entity.Region = region
 	entity.
 		AddLabel(labelARN, keyMetadata.Arn).
 		AddLabel(labelID, keyMetadata.KeyId).
@@ -76,7 +79,7 @@ func (c *Client) EvalKMSKey(accounts []*policy.Account, p policy.Policy, regions
 					tagsOutput, _ := client.KMS.Svc.ListResourceTags(tagsInput)
 					tags := tagsOutput.Tags
 
-					k := NewKMSKey(keyMetadata, tags)
+					k := NewKMSKey(keyMetadata, tags, region)
 					if p.Match(k) {
 						violation := policy.NewViolation(p, k, false, account)
 						f(violation)
