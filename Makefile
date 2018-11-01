@@ -9,6 +9,7 @@ all: test install
 setup:
 	go get github.com/rakyll/gotest
 	go install github.com/rakyll/gotest
+	curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 
 dep:
 	dep ensure
