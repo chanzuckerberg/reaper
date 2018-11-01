@@ -9,10 +9,6 @@ all: test install
 setup:
 	go get github.com/rakyll/gotest
 	go install github.com/rakyll/gotest
-	curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-
-dep:
-	dep ensure
 
 lint: ## run the fast go linters
 	gometalinter --vendor --fast ./...
@@ -25,19 +21,19 @@ release: ## release a new version of the tool on Github
 	git push
 	goreleaser release --rm-dist
 
-build: dep ## build the binary
+build: ## build the binary
 	go build ${LDFLAGS} .
 
 coverage: ## run the go coverage tool, reading file coverage.out
 	go tool cover -html=coverage.out
 
-test: dep ## run the tests
+test: ## run the tests
 	gotest -cover ./...
 
-install: dep ## install the reaper binary in $GOPATH/bin
+install: ## install the reaper binary in $GOPATH/bin
 	go install ${LDFLAGS} .
 
 help: ## display help for this makefile
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-.PHONY: build coverage dep test install lint lint-slow packr release help
+.PHONY: build coverage test install lint lint-slow packr release help
