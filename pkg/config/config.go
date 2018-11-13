@@ -163,5 +163,5 @@ func FromFile(fs afero.Fs, fileName string) (*Config, error) {
 	}
 	config := &Config{}
 	err = yaml.Unmarshal(bytes, config)
-	return nil, errors.Wrapf(err, "Could not Unmarshal config %s", fileName)
+	return config, errors.Wrapf(err, "Could not Unmarshal config %s", fileName)
 }
