@@ -3,6 +3,7 @@ go:
 - '1.11'
 install:
   - npm install -g snyk
+  - make setup
 jobs:
   include:
     - stage: check
