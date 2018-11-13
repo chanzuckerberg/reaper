@@ -7,8 +7,6 @@ LDFLAGS=-ldflags "-w -s -X github.com/chanzuckerberg/reaper/util.GitSha=${SHA} -
 all: test install
 
 setup:
-	go get github.com/rakyll/gotest
-	go install github.com/rakyll/gotest
 
 lint: ## run the fast go linters
 	gometalinter --vendor --fast ./...
@@ -28,7 +26,7 @@ coverage: ## run the go coverage tool, reading file coverage.out
 	go tool cover -html=coverage.out
 
 test: ## run the tests
-	gotest -cover ./...
+	go test -race -coverprofile=coverage.txt -covermode=atomic ./...
 
 install: ## install the reaper binary in $GOPATH/bin
 	go install ${LDFLAGS} .
