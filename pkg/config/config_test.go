@@ -22,8 +22,7 @@ func TestFromFileInvalidYaml(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	writeFile(fs, "config.yml", "asdf")
 
-	c, err := config.FromFile(fs, "config.yml")
-	a.Nil(c)
+	_, err := config.FromFile(fs, "config.yml")
 	a.Error(err)
 }
 
