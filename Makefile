@@ -6,7 +6,8 @@ LDFLAGS=-ldflags "-w -s -X github.com/chanzuckerberg/reaper/util.GitSha=${SHA} -
 
 all: test install
 
-setup:
+setup: ## setup development dependencies
+	curl -L https://raw.githubusercontent.com/chanzuckerberg/bff/master/download.sh | sh
 
 lint: ## run the fast go linters
 	gometalinter --vendor --fast ./...
@@ -15,7 +16,7 @@ lint-slow: ## run all linters, even the slow ones
 	gometalinter --vendor --disable gocyclo --deadline 120s ./...
 
 release: ## release a new version of the tool on Github
-	./release
+	./bin/bff bump
 	git push
 	goreleaser release --rm-dist
 

@@ -2,3 +2,4 @@ reaper
 .vscode
 .env
 coverage.txt
+bin
