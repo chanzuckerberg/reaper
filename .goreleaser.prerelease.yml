@@ -21,3 +21,13 @@ archive:
 
 release:
   prerelease: true
+
+dockers:
+  -
+    goos: linux
+    goarch: amd64
+    binaries:
+    - reaper
+    image_templates:
+    - "chanzuckerberg/reaper:latest"
+    - "chanzuckerberg/reaper:{{ .Version }}"
