@@ -13,7 +13,11 @@ builds:
     goarch:
       - amd64
     ldflags:
-      - "-w -s -X github.com/chanzuckerberg/reaper/util.GitSha={{.Commit}} -X github.com/chanzuckerberg/reaper/util.Version={{.Version}} -X github.com/chanzuckerberg/reaper/util.Dirty=false -X github.com/chanzuckerberg/reaper/util.Release=true"
+      - >
+        -w -s -X github.com/chanzuckerberg/reaper/cmd.GitSha={{.Commit}} \
+        -X github.com/chanzuckerberg/reaper/cmd.Version={{.Version}} \
+        -X github.com/chanzuckerberg/reaper/cmd.Dirty=false \
+        -X github.com/chanzuckerberg/reaper/cmd.Release=true
 
 archive:
   files:
