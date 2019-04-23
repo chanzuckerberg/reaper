@@ -1,3 +1,7 @@
+before:
+  hooks:
+    - make clean
+
 builds:
   - binary: reaper
     env:
@@ -16,12 +20,10 @@ archive:
   - none*
 
 release:
-  github:
-    owner: chanzuckerberg
-    name: reaper
+  prerelease: false
 
 brew:
-  description: "Don't fear..."
+  description: "Don't fear."
   github:
     owner: chanzuckerberg
     name: homebrew-tap

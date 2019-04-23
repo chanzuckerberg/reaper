@@ -93,6 +93,14 @@
   version = "v1.15.57"
 
 [[projects]]
+  digest = "1:b6d886569181ec96ca83d529f4d6ba0cbf92ace7bb6f633f90c5f34d9bba7aab"
+  name = "github.com/blang/semver"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "ba2c2ddd89069b46a7011d4106f6868f17ee1705"
+  version = "v3.6.1"
+
+[[projects]]
   branch = "ryanking/aws_support"
   digest = "1:af5e8d6accb94eb881ed95de468b86b15d3646caa6848b8315c4b94df9d950a9"
   name = "github.com/chanzuckerberg/go-misc"
@@ -118,6 +126,14 @@
   pruneopts = "UT"
   revision = "47565b4f722fb6ceae66b95f853feed578a4a51c"
   version = "v0.3.3"
+
+[[projects]]
+  digest = "1:aacef5f5e45685f2aeda5534d0a750dee6859de7e9088cdd06192787bb01ae6d"
+  name = "github.com/go-errors/errors"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "a6af135bd4e28680facf08a3d206b454abc877a4"
+  version = "v1.0.1"
 
 [[projects]]
   digest = "1:5abd6a22805b1919f6a6bca0ae58b13cef1f3412812f38569978f43ef02743d4"
@@ -385,9 +401,11 @@
     "github.com/aws/aws-sdk-go/service/kms",
     "github.com/aws/aws-sdk-go/service/s3",
     "github.com/aws/aws-sdk-go/service/support",
+    "github.com/blang/semver",
     "github.com/chanzuckerberg/go-misc/aws",
     "github.com/chanzuckerberg/go-misc/slack",
     "github.com/docker/go-units",
+    "github.com/go-errors/errors",
     "github.com/hashicorp/go-multierror",
     "github.com/nlopes/slack",
     "github.com/olekukonko/tablewriter",
