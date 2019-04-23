@@ -29,3 +29,16 @@ brew:
     name: homebrew-tap
   homepage: "https://github.com/chanzuckerberg/reaper"
   test: system "#{bin}/reaper version"
+
+dockers:
+  -
+    goos: linux
+    goarch: amd64
+    dockerfile: Dockerfile.release
+    binaries:
+    - reaper
+    image_templates:
+    - "chanzuckerberg/reaper:latest"
+    - "chanzuckerberg/reaper:{{ .Version }}"
+    - "myuser/myimage:v{{ .Major }}"
+    - "myuser/myimage:v{{ .Major }}.{{ .Minor }}"
