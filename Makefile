@@ -69,3 +69,7 @@ clean: ## clean the repo
 	go clean
 	rm -rf dist
 .PHONY: clean
+
+docker: dep ## build docker image
+	docker build .
+.PHONY: docker
