@@ -1,0 +1,38 @@
+before:
+  hooks:
+    - make clean
+
+builds:
+  - binary: reaper
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - amd64
+    ldflags:
+      - >
+        -w -s -X github.com/chanzuckerberg/reaper/cmd.GitSha={{.Commit}} \
+        -X github.com/chanzuckerberg/reaper/cmd.Version={{.Version}} \
+        -X github.com/chanzuckerberg/reaper/cmd.Dirty=false \
+        -X github.com/chanzuckerberg/reaper/cmd.Release=true
+
+archive:
+  files:
+  - none*
+
+release:
+  prerelease: true
+
+dockers:
+  -
+    goos: linux
+    goarch: amd64
+    dockerfile: Dockerfile.release
+    binaries:
+    - reaper
+    image_templates:
+    - "chanzuckerberg/reaper:latest"
+    - "chanzuckerberg/reaper:{{ .Version }}"

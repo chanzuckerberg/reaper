@@ -1,3 +1,7 @@
+before:
+  hooks:
+    - make clean
+
 builds:
   - binary: reaper
     env:
@@ -9,21 +13,36 @@ builds:
     goarch:
       - amd64
     ldflags:
-      - "-w -s -X github.com/chanzuckerberg/reaper/pkg/util.GitSha={{.Commit}} -X github.com/chanzuckerberg/reaper/pkg/util.Version={{.Version}} -X github.com/chanzuckerberg/reaper/pkg/util.Dirty=false -X github.com/chanzuckerberg/reaper/pkg/util.Release=true"
+      - >
+        -w -s -X github.com/chanzuckerberg/reaper/pkg/cmd.GitSha={{.Commit}} \
+        -X github.com/chanzuckerberg/reaper/pkg/cmd.Version={{.Version}} \
+        -X github.com/chanzuckerberg/reaper/pkg/cmd.Dirty=false \
+        -X github.com/chanzuckerberg/reaper/pkg/cmd.Release=true
 
 archive:
   files:
   - none*
 
 release:
-  github:
-    owner: chanzuckerberg
-    name: reaper
+  prerelease: false
 
 brew:
-  description: "Don't fear..."
+  description: "Don't fear."
   github:
     owner: chanzuckerberg
     name: homebrew-tap
   homepage: "https://github.com/chanzuckerberg/reaper"
   test: system "#{bin}/reaper version"
+
+dockers:
+  -
+    goos: linux
+    goarch: amd64
+    dockerfile: Dockerfile.release
+    binaries:
+    - reaper
+    image_templates:
+    - "chanzuckerberg/reaper:latest"
+    - "chanzuckerberg/reaper:{{ .Version }}"
+    - "myuser/myimage:v{{ .Major }}"
+    - "myuser/myimage:v{{ .Major }}.{{ .Minor }}"

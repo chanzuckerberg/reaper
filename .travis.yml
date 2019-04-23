@@ -4,6 +4,8 @@ go:
 install:
   - npm install -g snyk
   - make setup
+  - curl -o $HOME/bin/docker-helper https://raw.githubusercontent.com/chanzuckerberg/infra-tools/bce0b2c3fe924b2ac7a98ce6e74805bfbebc4690/docker-helper
+  - chmod +x $HOME/bin/docker-helper
 jobs:
   include:
     - stage: check
@@ -14,3 +16,7 @@ jobs:
       script:
         - snyk monitor --org=czi
         - snyk test
+    - stage: build and push
+      script:
+        - docker-helper build chanzuckerberg/reaper . $TRAVIS_BRANCH ${TRAVIS_COMMIT::8} $TRAVIS_BUILD_NUMBER
+        - docker-helper push chanzuckerberg/reaper

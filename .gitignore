@@ -3,3 +3,4 @@ reaper
 .env
 coverage.txt
 bin
+dist
