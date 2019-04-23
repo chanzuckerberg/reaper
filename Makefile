@@ -8,6 +8,7 @@ all: test install
 .PHONY:all
 
 setup: ## setup development dependencies
+	curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 	go get github.com/rakyll/gotest
 	go install github.com/rakyll/gotest
 	curl -L https://raw.githubusercontent.com/chanzuckerberg/bff/master/download.sh | sh
