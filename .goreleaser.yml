@@ -43,6 +43,6 @@ dockers:
     - reaper
     image_templates:
     - "chanzuckerberg/reaper:latest"
-    - "chanzuckerberg/reaper:{{ .Version }}"
-    - "myuser/myimage:v{{ .Major }}"
-    - "myuser/myimage:v{{ .Major }}.{{ .Minor }}"
+    - "chanzuckerberg/reaper:v{{ .Version }}"
+    - "chanzuckerberg/reaper:v{{ .Major }}"
+    - "chanzuckerberg/reaper:v{{ .Major }}.{{ .Minor }}"
