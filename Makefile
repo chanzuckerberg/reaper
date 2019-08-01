@@ -1,28 +1,23 @@
 SHA=$(shell git rev-parse --short HEAD)
 VERSION=$(shell cat VERSION)
-DIRTY=$(shell if `git diff-index --quiet HEAD --`; then echo false; else echo true;  fi)
+DIRTY=$(shell if `git diff-index --quiet HEAD --`; then echo false; else echo true; fi)
 # TODO add release flag
 LDFLAGS=-ldflags "-w -s -X github.com/chanzuckerberg/reaper/cmd.GitSha=${SHA} -X github.com/chanzuckerberg/reaper/cmd.Version=${VERSION} -X github.com/chanzuckerberg/reaper/cmd.Dirty=${DIRTY}"
 
 all: test install
 .PHONY:all
 
-setup: ## setup development dependencies
-	curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+setup: ## setup development endencies
 	go get github.com/rakyll/gotest
 	go install github.com/rakyll/gotest
 	curl -L https://raw.githubusercontent.com/chanzuckerberg/bff/master/download.sh | sh
 .PHONY: setup
 
-dep: ## ensure dependencies are up to date
-	dep ensure
-.PHONEY: dep
-
-lint: dep ## run the fast go linters
+lint: ## run the fast go linters
 	gometalinter --vendor --fast ./...
 .PHONY: lint
 
-lint-slow: dep ## run all linters, even the slow ones
+lint-slow: ## run all linters, even the slow ones
 	gometalinter --vendor --deadline 120s ./...
 .PHONY:lint-slow
 
@@ -44,7 +39,7 @@ release-snapshot: ## run a release
 	goreleaser release --snapshot
 .PHONY: release-snapshot
 
-build: dep ## build the binary
+build: ## build the binary
 	go build ${LDFLAGS} .
 .PHONY: build
 
@@ -52,11 +47,11 @@ coverage: ## run the go coverage tool, reading file coverage.out
 	go tool cover -html=coverage.out
 .PHONY: coverage
 
-test: dep ## run the tests
+test: ## run the tests
 	gotest -race -coverprofile=coverage.txt -covermode=atomic ./...
 .PHONY: test
 
-install: dep ## install the reaper binary in $GOPATH/bin
+install: ## install the reaper binary in $GOPATH/bin
 	go install ${LDFLAGS} .
 .PHONY: install
 
@@ -70,6 +65,6 @@ clean: ## clean the repo
 	rm -rf dist
 .PHONY: clean
 
-docker: dep ## build docker image
+docker: ## build docker image
 	docker build .
 .PHONY: docker
