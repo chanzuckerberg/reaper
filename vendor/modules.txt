@@ -67,7 +67,7 @@ github.com/chanzuckerberg/go-misc/aws
 github.com/chanzuckerberg/go-misc/slack
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
-# github.com/docker/go-units v0.3.3
+# github.com/docker/go-units v0.4.0
 github.com/docker/go-units
 # github.com/go-errors/errors v1.0.1
 github.com/go-errors/errors
@@ -98,7 +98,7 @@ github.com/nlopes/slack
 github.com/nlopes/slack/slackutilsx
 # github.com/olekukonko/tablewriter v0.0.0-20180912035003-be2c049b30cc
 github.com/olekukonko/tablewriter
-# github.com/pkg/errors v0.8.0
+# github.com/pkg/errors v0.8.1
 github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
