@@ -80,11 +80,12 @@ func Run(cmd *cobra.Command, args []string) error {
 	log.Info("VIOLATIONS")
 	for _, v := range violations {
 		fmt.Printf("resource %s is in violation of policy %s\n", v.Subject.GetID(), v.Policy.Name)
-		if mode != "dry" {
-			err = notifier.Send(v, mode == "non-interactive")
-			if err != nil {
-				return err
-			}
+		if mode == "dry" {
+			continue
+		}
+		err = notifier.Send(v, mode == "non-interactive")
+		if err != nil {
+			return err
 		}
 	}
 	return nil
