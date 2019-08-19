@@ -14,7 +14,7 @@ import (
 
 func init() {
 	addCommonFlags(runCmd)
-	runCmd.Flags().StringP(modeFlag, "m", "dry", "Run mode, must be one of [dry, interactive].")
+	runCmd.Flags().StringP(modeFlag, "m", "dry", "Run mode, must be one of [dry, interactive, non-interactive].")
 	rootCmd.AddCommand(runCmd)
 }
 
@@ -34,8 +34,8 @@ func Run(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return errors.Wrap(err, "Could not parse mode flag.")
 	}
-	if !(mode == "dry" || mode == "interactive") {
-		return errors.Wrap(err, "mode must be one of [dry, interactive].")
+	if !(mode == "dry" || mode == "interactive" || mode == "non-interactive") {
+		return errors.Wrap(err, "mode must be one of [dry, interactive, non-interactive].")
 	}
 
 	only, err := cmd.Flags().GetStringArray(onlyFlag)
@@ -80,7 +80,10 @@ func Run(cmd *cobra.Command, args []string) error {
 	log.Info("VIOLATIONS")
 	for _, v := range violations {
 		fmt.Printf("resource %s is in violation of policy %s\n", v.Subject.GetID(), v.Policy.Name)
-		err = notifier.Send(v)
+		if mode == "dry" {
+			continue
+		}
+		err = notifier.Send(v, mode == "non-interactive")
 		if err != nil {
 			return err
 		}
