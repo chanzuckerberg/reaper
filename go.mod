@@ -32,6 +32,6 @@ require (
 	github.com/stretchr/testify v1.2.2
 	github.com/tcnksm/go-input v0.0.0-20180404061846-548a7d7a8ee8
 	golang.org/x/net v0.0.0-20190724013045-ca1201d0de80 // indirect
-	gopkg.in/yaml.v2 v2.2.1
+	gopkg.in/yaml.v2 v2.2.2
 	k8s.io/apimachinery v0.0.0-20181009084401-76721d167b70
 )
