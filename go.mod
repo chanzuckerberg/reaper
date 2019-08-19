@@ -3,9 +3,9 @@ module github.com/chanzuckerberg/reaper
 go 1.12
 
 require (
+	github.com/Masterminds/goutils v1.1.0 // indirect
 	github.com/Masterminds/semver v1.4.2 // indirect
-	github.com/Masterminds/sprig v2.16.0+incompatible
-	github.com/aokoli/goutils v1.0.1 // indirect
+	github.com/Masterminds/sprig v2.20.0+incompatible
 	github.com/apparentlymart/go-cidr v1.0.0
 	github.com/aws/aws-sdk-go v1.19.15
 	github.com/blang/semver v0.0.0-20190414102917-ba2c2ddd8906 // indirect
