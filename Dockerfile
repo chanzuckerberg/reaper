@@ -15,7 +15,7 @@ FROM alpine:latest
 RUN apk update && apk --no-cache add ca-certificates
 WORKDIR /root/
 
-COPY --from=0 /go/src/github.com/chanzuckerberg/reaper/reaper .
+COPY --from=0 /go/src/github.com/chanzuckerberg/reaper/reaper /bin/reaper
 COPY --from=0 /bin/chamber /bin/chamber
 
 CMD ["./reaper"]
