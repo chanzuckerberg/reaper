@@ -4,7 +4,7 @@ go 1.12
 
 require (
 	github.com/Masterminds/semver v1.4.2 // indirect
-	github.com/Masterminds/sprig v2.16.0+incompatible
+	github.com/Masterminds/sprig v2.20.0+incompatible
 	github.com/aokoli/goutils v1.0.1 // indirect
 	github.com/apparentlymart/go-cidr v1.0.0
 	github.com/aws/aws-sdk-go v1.19.15
