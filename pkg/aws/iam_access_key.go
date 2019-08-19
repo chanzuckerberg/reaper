@@ -44,6 +44,7 @@ func (c *Client) NewIAMAccessKey(ctx context.Context, key *iam.AccessKeyMetadata
 	entity.UserName = *key.UserName
 
 	entity.AddLabel("status", key.Status)
+	entity.AddLabel("username", key.UserName)
 
 	if key.CreateDate != nil {
 		entity.AddCreatedAt(key.CreateDate)

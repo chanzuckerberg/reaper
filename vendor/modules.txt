@@ -1,9 +1,9 @@
+# github.com/Masterminds/goutils v1.1.0
+github.com/Masterminds/goutils
 # github.com/Masterminds/semver v1.4.2
 github.com/Masterminds/semver
-# github.com/Masterminds/sprig v2.16.0+incompatible
+# github.com/Masterminds/sprig v2.20.0+incompatible
 github.com/Masterminds/sprig
-# github.com/aokoli/goutils v1.0.1
-github.com/aokoli/goutils
 # github.com/apparentlymart/go-cidr v1.0.0
 github.com/apparentlymart/go-cidr/cidr
 # github.com/aws/aws-sdk-go v1.19.15
@@ -104,7 +104,7 @@ github.com/pkg/errors
 github.com/pmezard/go-difflib/difflib
 # github.com/sirupsen/logrus v1.4.1
 github.com/sirupsen/logrus
-# github.com/spf13/afero v1.1.2
+# github.com/spf13/afero v1.2.2
 github.com/spf13/afero
 github.com/spf13/afero/mem
 # github.com/spf13/cobra v0.0.3
@@ -113,7 +113,7 @@ github.com/spf13/cobra
 github.com/spf13/pflag
 # github.com/stretchr/objx v0.1.1
 github.com/stretchr/objx
-# github.com/stretchr/testify v1.2.2
+# github.com/stretchr/testify v1.4.0
 github.com/stretchr/testify/mock
 github.com/stretchr/testify/assert
 # github.com/tcnksm/go-input v0.0.0-20180404061846-548a7d7a8ee8
@@ -128,7 +128,7 @@ golang.org/x/sys/windows
 # golang.org/x/text v0.3.0
 golang.org/x/text/transform
 golang.org/x/text/unicode/norm
-# gopkg.in/yaml.v2 v2.2.1
+# gopkg.in/yaml.v2 v2.2.2
 gopkg.in/yaml.v2
 # k8s.io/apimachinery v0.0.0-20181009084401-76721d167b70
 k8s.io/apimachinery/pkg/labels
