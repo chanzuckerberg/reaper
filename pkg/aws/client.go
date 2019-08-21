@@ -28,7 +28,7 @@ func NewClient(accounts []*policy.Account, regions []string) (*Client, error) {
 }
 
 // Get will return a new account, region and role specific AWS client.
-func (c *Client) Get(accountID int64, roleName, region string) *cziAws.Client {
+func (c *Client) Get(accountID int64, roleName, externalID string, region string) *cziAws.Client {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
@@ -36,6 +36,9 @@ func (c *Client) Get(accountID int64, roleName, region string) *cziAws.Client {
 		sess,
 		roleArn(accountID, roleName), func(p *stscreds.AssumeRoleProvider) {
 			p.TokenProvider = stscreds.StdinTokenProvider
+			if externalID != "" {
+				p.ExternalID = &externalID
+			}
 		},
 	)
 
@@ -54,7 +57,7 @@ func roleArn(accountID int64, roleName string) string {
 func (c *Client) WalkAccountsAndRegions(accounts []*policy.Account, regions []string, f func(*cziAws.Client, *policy.Account, string)) error {
 	for _, account := range accounts {
 		for _, region := range regions {
-			client := c.Get(account.ID, account.Role, region)
+			client := c.Get(account.ID, account.Role, account.ExternalID, region)
 			f(client, account, region)
 		}
 	}

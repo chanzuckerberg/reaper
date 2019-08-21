@@ -29,7 +29,7 @@ func (u *IAMUser) GetOwner() string {
 
 // NewIAMUser returns a new ec2 instance entity
 // I don't like that I have to pass accountId and roleName all the way down here.
-func (c *Client) NewIAMUser(user *iam.User, accountID int64, roleName string) *IAMUser {
+func (c *Client) NewIAMUser(user *iam.User, accountID int64, roleName string, externalID string) *IAMUser {
 	ctx := context.Background()
 	t := "true"
 	entity := &IAMUser{
@@ -43,7 +43,7 @@ func (c *Client) NewIAMUser(user *iam.User, accountID int64, roleName string) *I
 		entity.ID = *user.UserName
 	}
 
-	client := c.Get(accountID, roleName, DefaultRegion)
+	client := c.Get(accountID, roleName, externalID, DefaultRegion)
 	_, e := client.IAM.GetAnMFASerial(ctx, user.UserName)
 
 	if !(e != nil && e.Error() == "No MFA serial Configured") {
@@ -76,9 +76,9 @@ func (c *Client) EvalIAMUser(accounts []*policy.Account, p policy.Policy, region
 	for _, account := range accounts {
 		log.Infof("Walking iam users for %s", account.Name)
 		region := DefaultRegion
-		client := c.Get(account.ID, account.Role, region)
+		client := c.Get(account.ID, account.Role, account.ExternalID, region)
 		err := client.IAM.ListAllUsers(ctx, func(user *iam.User) {
-			i := c.NewIAMUser(user, account.ID, account.Role)
+			i := c.NewIAMUser(user, account.ID, account.Role, account.ExternalID)
 			if p.Match(i) {
 				violation := policy.NewViolation(p, i, false, account)
 				violations = append(violations, violation)

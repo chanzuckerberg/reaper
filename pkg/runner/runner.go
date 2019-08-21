@@ -126,7 +126,7 @@ func (r *Runner) Run(only []string) ([]policy.Violation, error) {
 func (r *Runner) UpdateTrustedAdvisorChecks(client *cziAws.Client, accounts []*policy.Account) {
 	for _, a := range accounts {
 		log.Debugf("ta for %s", a.Name)
-		c := client.Get(a.ID, a.Role, "us-east-1")
+		c := client.Get(a.ID, a.Role, a.ExternalID, "us-east-1")
 		en := "en"
 		input := &support.DescribeTrustedAdvisorChecksInput{
 			Language: &en,
