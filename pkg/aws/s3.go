@@ -60,12 +60,12 @@ func (c *Client) EvalS3(accounts []*policy.Account, p policy.Policy) ([]policy.V
 	ctx := context.Background()
 	for _, account := range accounts {
 		log.Infof("walking account %s (%d)", account.Name, account.ID)
-		listOutput, err := c.Get(account.ID, account.Role, DefaultRegion).S3.ListBuckets(ctx)
+		listOutput, err := c.Get(account.ID, account.Role, account.ExternalID, DefaultRegion).S3.ListBuckets(ctx)
 		if err != nil {
 			return nil, errors.Wrap(err, "Could not list buckets")
 		}
 		for _, bucket := range listOutput.Buckets {
-			res, err := c.DescribeS3Bucket(account.ID, account.Role, bucket)
+			res, err := c.DescribeS3Bucket(account.ID, account.Role, account.ExternalID, bucket)
 			// accumulate errors
 			if err != nil {
 				errs = multierror.Append(errs, err)
@@ -87,7 +87,7 @@ func (c *Client) EvalS3(accounts []*policy.Account, p policy.Policy) ([]policy.V
 }
 
 // DescribeS3Bucket describes the bucket
-func (c *Client) DescribeS3Bucket(accountID int64, roleName string, b *s3.Bucket) (*S3Bucket, error) {
+func (c *Client) DescribeS3Bucket(accountID int64, roleName string, externalID string, b *s3.Bucket) (*S3Bucket, error) {
 	ctx := context.Background()
 	if b.Name == nil {
 		return nil, errors.New("Nil bucket name")
@@ -97,7 +97,7 @@ func (c *Client) DescribeS3Bucket(accountID int64, roleName string, b *s3.Bucket
 	bucket := NewS3Bucket(name)
 	bucket.AddCreatedAt(b.CreationDate)
 
-	location, err := c.Get(accountID, roleName, DefaultRegion).S3.GetBucketLocation(ctx, name)
+	location, err := c.Get(accountID, roleName, externalID, DefaultRegion).S3.GetBucketLocation(ctx, name)
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +105,7 @@ func (c *Client) DescribeS3Bucket(accountID int64, roleName string, b *s3.Bucket
 
 	tagInput := &s3.GetBucketTaggingInput{}
 	tagInput.SetBucket(name)
-	regionalClient := c.Get(accountID, roleName, location)
+	regionalClient := c.Get(accountID, roleName, externalID, location)
 	if regionalClient == nil {
 		log.Debugf("Skipping over bucket %s because it is in unknown region %s", name, location)
 		return nil, nil

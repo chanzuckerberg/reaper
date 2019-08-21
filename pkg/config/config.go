@@ -66,10 +66,11 @@ type NotificationsConfig struct {
 
 //AccountConfig identifies an AWS account we want to monitor
 type AccountConfig struct {
-	Name  string `yaml:"name"`
-	ID    int64  `yaml:"id"`
-	Role  string `yaml:"role"`
-	Owner string `yaml:"owner"`
+	Name       string `yaml:"name"`
+	ID         int64  `yaml:"id"`
+	Role       string `yaml:"role"`
+	Owner      string `yaml:"owner"`
+	ExternalID string `yaml:"external_id"`
 }
 
 //IdentityMapConfig will allow mapping group email lists to slack channels
@@ -137,7 +138,7 @@ func (c *Config) GetPolicies() ([]policy.Policy, error) {
 func (c *Config) GetAccounts() ([]*policy.Account, error) {
 	var accounts []*policy.Account
 	for _, a := range c.Accounts {
-		accounts = append(accounts, &policy.Account{Name: a.Name, ID: a.ID, Role: a.Role, Owner: a.Owner})
+		accounts = append(accounts, &policy.Account{Name: a.Name, ID: a.ID, Role: a.Role, Owner: a.Owner, ExternalID: a.ExternalID})
 	}
 	return accounts, nil
 }

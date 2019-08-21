@@ -64,7 +64,7 @@ func (c *Client) EvalIAMAccessKey(accounts []*policy.Account, p policy.Policy) (
 	for _, account := range accounts {
 		log.Infof("Walking iam access key for %s", account.Name)
 		region := DefaultRegion
-		client := c.Get(account.ID, account.Role, region)
+		client := c.Get(account.ID, account.Role, account.ExternalID, region)
 		err := client.IAM.ListAllUsers(ctx, func(user *iam.User) {
 			input := &iam.ListAccessKeysInput{
 				UserName: user.UserName,
