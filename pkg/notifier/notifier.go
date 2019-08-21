@@ -27,7 +27,7 @@ func New(slackToken string, ui ui.UI, iMap map[string]string) *Notifier {
 }
 
 // Send will transmit all violations for the given violation
-func (n *Notifier) Send(v policy.Violation) error {
+func (n *Notifier) Send(v policy.Violation, skipPrompt bool) error {
 	for _, notif := range v.Policy.Notifications {
 		msg, err := notif.GetMessage(v)
 
@@ -40,7 +40,7 @@ func (n *Notifier) Send(v policy.Violation) error {
 			return err
 		}
 
-		if n.ui.Prompt(msg, recipient, "slack") {
+		if skipPrompt || n.ui.Prompt(msg, recipient, "slack") {
 			if channel {
 				params := slackClient.NewPostMessageParameters()
 				params.Markdown = true
