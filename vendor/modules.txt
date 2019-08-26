@@ -4,7 +4,7 @@ github.com/Masterminds/goutils
 github.com/Masterminds/semver
 # github.com/Masterminds/sprig v2.20.0+incompatible
 github.com/Masterminds/sprig
-# github.com/apparentlymart/go-cidr v1.0.0
+# github.com/apparentlymart/go-cidr v1.0.1
 github.com/apparentlymart/go-cidr/cidr
 # github.com/aws/aws-sdk-go v1.19.15
 github.com/aws/aws-sdk-go/aws
