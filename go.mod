@@ -7,7 +7,7 @@ require (
 	github.com/Masterminds/semver v1.4.2 // indirect
 	github.com/Masterminds/sprig v2.20.0+incompatible
 	github.com/apparentlymart/go-cidr v1.0.1
-	github.com/aws/aws-sdk-go v1.23.13
+	github.com/aws/aws-sdk-go v1.23.17
 	github.com/blang/semver v0.0.0-20190414102917-ba2c2ddd8906 // indirect
 	github.com/chanzuckerberg/go-misc v0.0.0-20190123171328-d35073050757
 	github.com/docker/go-units v0.4.0
