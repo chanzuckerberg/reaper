@@ -48,11 +48,11 @@ coverage: ## run the go coverage tool, reading file coverage.out
 .PHONY: coverage
 
 test: deps ## run the tests
-	gotest -race -coverprofile=coverage.txt -covermode=atomic ./...
+	go test -race -coverprofile=coverage.txt -covermode=atomic ./...
 .PHONY: test
 
 test-ci: ## run the tests
-	gotest -race -coverprofile=coverage.txt -covermode=atomic ./...
+	go test -race -coverprofile=coverage.txt -covermode=atomic ./...
 .PHONY: test
 
 deps:
