@@ -3,13 +3,13 @@ VERSION=$(shell cat VERSION)
 DIRTY=$(shell if `git diff-index --quiet HEAD --`; then echo false; else echo true; fi)
 # TODO add release flag
 LDFLAGS=-ldflags "-w -s -X github.com/chanzuckerberg/reaper/cmd.GitSha=${SHA} -X github.com/chanzuckerberg/reaper/cmd.Version=${VERSION} -X github.com/chanzuckerberg/reaper/cmd.Dirty=${DIRTY}"
+export GOFLAGS=-mod=vendor
+export GO111MODULE=on
 
 all: test install
 .PHONY:all
 
 setup: ## setup development endencies
-	go get github.com/rakyll/gotest
-	go install github.com/rakyll/gotest
 	curl -L https://raw.githubusercontent.com/chanzuckerberg/bff/master/download.sh | sh
 .PHONY: setup
 
@@ -39,7 +39,7 @@ release-snapshot: ## run a release
 	goreleaser release --snapshot
 .PHONY: release-snapshot
 
-build: ## build the binary
+build: deps ## build the binary
 	go build ${LDFLAGS} .
 .PHONY: build
 
@@ -47,11 +47,20 @@ coverage: ## run the go coverage tool, reading file coverage.out
 	go tool cover -html=coverage.out
 .PHONY: coverage
 
-test: ## run the tests
+test: deps ## run the tests
 	gotest -race -coverprofile=coverage.txt -covermode=atomic ./...
 .PHONY: test
 
-install: ## install the reaper binary in $GOPATH/bin
+test-ci: ## run the tests
+	gotest -race -coverprofile=coverage.txt -covermode=atomic ./...
+.PHONY: test
+
+deps:
+	go mod tidy
+	go mod vendor
+.PHONY: deps
+
+install: deps ## install the reaper binary in $GOPATH/bin
 	go install ${LDFLAGS} .
 .PHONY: install
 
