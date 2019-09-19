@@ -4,7 +4,7 @@ go:
 install:
   - npm install -g snyk
   - make setup
-  - curl -o $HOME/bin/docker-helper https://raw.githubusercontent.com/chanzuckerberg/infra-tools/4a23692/docker-helper
+  - curl -o $HOME/bin/docker-helper https://raw.githubusercontent.com/chanzuckerberg/infra-tools/513be64/docker-helper
   - chmod +x $HOME/bin/docker-helper
 jobs:
   include:
