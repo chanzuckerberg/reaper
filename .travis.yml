@@ -1,7 +1,7 @@
 dist: bionic
 language: go
 go:
-  - "1.13.1"
+  - '1.13.1'
 install:
   - npm install -g snyk
   - make setup
@@ -19,5 +19,5 @@ jobs:
         - snyk test
     - stage: build and push
       script:
-        - docker-helper build docker.pkg.github.com/chanzuckerberg/reaper . $TRAVIS_BRANCH ${TRAVIS_COMMIT::8} $TRAVIS_BUILD_NUMBER
-        - docker-helper push docker.pkg.github.com/chanzuckerberg/reaper
+        - docker-helper build docker.pkg.github.com/chanzuckerberg/reaper/reaper . $TRAVIS_BRANCH ${TRAVIS_COMMIT::8} $TRAVIS_BUILD_NUMBER
+        - docker-helper push docker.pkg.github.com/chanzuckerberg/reaper/reaper
