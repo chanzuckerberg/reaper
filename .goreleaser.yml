@@ -15,30 +15,29 @@ builds:
     ldflags:
       - -w -s -X github.com/chanzuckerberg/reaper/cmd.GitSha={{.Commit}} -X github.com/chanzuckerberg/reaper/cmd.Version={{.Version}} -X github.com/chanzuckerberg/reaper/cmd.Dirty=false -X github.com/chanzuckerberg/reaper/cmd.Release=true
 
-archive:
-  files:
-  - none*
+archives:
+  - files:
+      - none*
 
 release:
   prerelease: false
 
-brew:
-  description: "Don't fear."
-  github:
-    owner: chanzuckerberg
-    name: homebrew-tap
-  homepage: "https://github.com/chanzuckerberg/reaper"
-  test: system "#{bin}/reaper version"
+brews:
+  - description: "Don't fear."
+    github:
+      owner: chanzuckerberg
+      name: homebrew-tap
+    homepage: "https://github.com/chanzuckerberg/reaper"
+    test: system "#{bin}/reaper version"
 
 dockers:
-  -
-    goos: linux
+  - goos: linux
     goarch: amd64
     dockerfile: Dockerfile.release
     binaries:
-    - reaper
+      - reaper
     image_templates:
-    - "chanzuckerberg/reaper:latest"
-    - "chanzuckerberg/reaper:v{{ .Version }}"
-    - "chanzuckerberg/reaper:v{{ .Major }}"
-    - "chanzuckerberg/reaper:v{{ .Major }}.{{ .Minor }}"
+      - "chanzuckerberg/reaper:latest"
+      - "chanzuckerberg/reaper:v{{ .Version }}"
+      - "chanzuckerberg/reaper:v{{ .Major }}"
+      - "chanzuckerberg/reaper:v{{ .Major }}.{{ .Minor }}"
