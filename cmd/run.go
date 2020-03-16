@@ -84,9 +84,8 @@ func Run(cmd *cobra.Command, args []string) error {
 			continue
 		}
 		err = notifier.Send(v, mode == "non-interactive")
-		if err != nil {
-			return err
-		}
+		// TODO report this to sentry
+		log.Error(err)
 	}
 	return nil
 }
