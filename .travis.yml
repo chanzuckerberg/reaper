@@ -17,6 +17,10 @@ jobs:
       script:
         - snyk monitor --org=czi
         - snyk test
+    - stage: check
+      name: linter check
+      script:
+        - make lint-ci
     - stage: build and push
       script:
         - docker-helper build docker.pkg.github.com/chanzuckerberg/reaper/reaper . $TRAVIS_BRANCH ${TRAVIS_COMMIT::8} $TRAVIS_BUILD_NUMBER
