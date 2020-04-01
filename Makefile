@@ -11,6 +11,8 @@ all: test install
 
 setup: ## setup development endencies
 	curl -L https://raw.githubusercontent.com/chanzuckerberg/bff/master/download.sh | sh
+	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh
+	curl -sfL https://raw.githubusercontent.com/reviewdog/reviewdog/master/install.sh| sh
 .PHONY: setup
 
 lint: ## run the fast go linters
@@ -20,6 +22,10 @@ lint: ## run the fast go linters
 lint-slow: ## run all linters, even the slow ones
 	gometalinter --vendor --deadline 120s ./...
 .PHONY:lint-slow
+
+lint-ci: ## run the fast go linters
+	./bin/reviewdog -conf .reviewdog.yml  -reporter=github-pr-review
+.PHONY: lint-ci
 
 release: ## run a release
 	./bin/bff bump
