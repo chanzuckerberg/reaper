@@ -10,9 +10,10 @@ github.com/Masterminds/sprig
 # github.com/apparentlymart/go-cidr v1.0.1
 ## explicit
 github.com/apparentlymart/go-cidr/cidr
-# github.com/aws/aws-sdk-go v1.23.13
+# github.com/aws/aws-sdk-go v1.30.1
 ## explicit
 github.com/aws/aws-sdk-go/aws
+github.com/aws/aws-sdk-go/aws/arn
 github.com/aws/aws-sdk-go/aws/awserr
 github.com/aws/aws-sdk-go/aws/awsutil
 github.com/aws/aws-sdk-go/aws/client
@@ -30,6 +31,7 @@ github.com/aws/aws-sdk-go/aws/endpoints
 github.com/aws/aws-sdk-go/aws/request
 github.com/aws/aws-sdk-go/aws/session
 github.com/aws/aws-sdk-go/aws/signer/v4
+github.com/aws/aws-sdk-go/internal/context
 github.com/aws/aws-sdk-go/internal/ini
 github.com/aws/aws-sdk-go/internal/s3err
 github.com/aws/aws-sdk-go/internal/sdkio
@@ -37,6 +39,8 @@ github.com/aws/aws-sdk-go/internal/sdkmath
 github.com/aws/aws-sdk-go/internal/sdkrand
 github.com/aws/aws-sdk-go/internal/sdkuri
 github.com/aws/aws-sdk-go/internal/shareddefaults
+github.com/aws/aws-sdk-go/internal/strings
+github.com/aws/aws-sdk-go/internal/sync/singleflight
 github.com/aws/aws-sdk-go/private/protocol
 github.com/aws/aws-sdk-go/private/protocol/ec2query
 github.com/aws/aws-sdk-go/private/protocol/eventstream
@@ -49,8 +53,12 @@ github.com/aws/aws-sdk-go/private/protocol/rest
 github.com/aws/aws-sdk-go/private/protocol/restjson
 github.com/aws/aws-sdk-go/private/protocol/restxml
 github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil
+github.com/aws/aws-sdk-go/service/autoscaling
+github.com/aws/aws-sdk-go/service/autoscaling/autoscalingiface
 github.com/aws/aws-sdk-go/service/ec2
 github.com/aws/aws-sdk-go/service/ec2/ec2iface
+github.com/aws/aws-sdk-go/service/firehose
+github.com/aws/aws-sdk-go/service/firehose/firehoseiface
 github.com/aws/aws-sdk-go/service/iam
 github.com/aws/aws-sdk-go/service/iam/iamiface
 github.com/aws/aws-sdk-go/service/kms
@@ -58,19 +66,24 @@ github.com/aws/aws-sdk-go/service/kms/kmsiface
 github.com/aws/aws-sdk-go/service/lambda
 github.com/aws/aws-sdk-go/service/lambda/lambdaiface
 github.com/aws/aws-sdk-go/service/s3
+github.com/aws/aws-sdk-go/service/s3/internal/arn
 github.com/aws/aws-sdk-go/service/s3/s3iface
+github.com/aws/aws-sdk-go/service/s3/s3manager
+github.com/aws/aws-sdk-go/service/s3/s3manager/s3manageriface
 github.com/aws/aws-sdk-go/service/secretsmanager
 github.com/aws/aws-sdk-go/service/secretsmanager/secretsmanageriface
+github.com/aws/aws-sdk-go/service/ssm
+github.com/aws/aws-sdk-go/service/ssm/ssmiface
 github.com/aws/aws-sdk-go/service/sts
 github.com/aws/aws-sdk-go/service/sts/stsiface
 github.com/aws/aws-sdk-go/service/support
 github.com/aws/aws-sdk-go/service/support/supportiface
-# github.com/blang/semver v0.0.0-20190414102917-ba2c2ddd8906
-## explicit
+# github.com/blang/semver v3.5.1+incompatible
 github.com/blang/semver
-# github.com/chanzuckerberg/go-misc v0.0.0-20190123171328-d35073050757
+# github.com/chanzuckerberg/go-misc v0.0.0-20200401135417-0c78554600ba
 ## explicit
 github.com/chanzuckerberg/go-misc/aws
+github.com/chanzuckerberg/go-misc/aws/mocks
 github.com/chanzuckerberg/go-misc/slack
 github.com/chanzuckerberg/go-misc/ver
 # github.com/davecgh/go-spew v1.1.1
@@ -84,11 +97,12 @@ github.com/go-errors/errors
 # github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 ## explicit
 github.com/golang/glog
+# github.com/golang/mock v1.4.3
+github.com/golang/mock/gomock
 # github.com/google/uuid v1.0.0
 ## explicit
 github.com/google/uuid
-# github.com/gorilla/websocket v1.4.0
-## explicit
+# github.com/gorilla/websocket v1.4.2
 github.com/gorilla/websocket
 # github.com/hashicorp/errwrap v1.0.0
 github.com/hashicorp/errwrap
@@ -103,30 +117,28 @@ github.com/huandu/xstrings
 github.com/imdario/mergo
 # github.com/inconshreveable/mousetrap v1.0.0
 github.com/inconshreveable/mousetrap
-# github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af
+# github.com/jmespath/go-jmespath v0.3.0
 github.com/jmespath/go-jmespath
-# github.com/konsorten/go-windows-terminal-sequences v1.0.1
+# github.com/konsorten/go-windows-terminal-sequences v1.0.2
 github.com/konsorten/go-windows-terminal-sequences
-# github.com/lusis/go-slackbot v0.0.0-20180109053408-401027ccfef5
-## explicit
-# github.com/lusis/slack-test v0.0.0-20190426140909-c40012f20018
-## explicit
 # github.com/mattn/go-runewidth v0.0.3
 ## explicit
 github.com/mattn/go-runewidth
-# github.com/nlopes/slack v0.4.0
+# github.com/nlopes/slack v0.6.0
 ## explicit
 github.com/nlopes/slack
+github.com/nlopes/slack/internal/errorsx
+github.com/nlopes/slack/internal/timex
 github.com/nlopes/slack/slackutilsx
 # github.com/olekukonko/tablewriter v0.0.0-20180912035003-be2c049b30cc
 ## explicit
 github.com/olekukonko/tablewriter
-# github.com/pkg/errors v0.8.1
+# github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
-# github.com/sirupsen/logrus v1.4.2
+# github.com/sirupsen/logrus v1.5.0
 ## explicit
 github.com/sirupsen/logrus
 # github.com/spf13/afero v1.2.2
@@ -138,28 +150,26 @@ github.com/spf13/afero/mem
 github.com/spf13/cobra
 # github.com/spf13/pflag v1.0.3
 github.com/spf13/pflag
-# github.com/stretchr/objx v0.1.1
+# github.com/stretchr/objx v0.2.0
 github.com/stretchr/objx
-# github.com/stretchr/testify v1.4.0
+# github.com/stretchr/testify v1.5.1
 ## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/mock
 # github.com/tcnksm/go-input v0.0.0-20180404061846-548a7d7a8ee8
 ## explicit
 github.com/tcnksm/go-input
-# golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
+# golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59
 golang.org/x/crypto/pbkdf2
 golang.org/x/crypto/scrypt
 golang.org/x/crypto/ssh/terminal
-# golang.org/x/net v0.0.0-20190724013045-ca1201d0de80
-## explicit
-# golang.org/x/sys v0.0.0-20190422165155-953cdadca894
+# golang.org/x/sys v0.0.0-20200331124033-c3d80250170d
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/text v0.3.0
+# golang.org/x/text v0.3.2
 golang.org/x/text/transform
 golang.org/x/text/unicode/norm
-# gopkg.in/yaml.v2 v2.2.2
+# gopkg.in/yaml.v2 v2.2.8
 ## explicit
 gopkg.in/yaml.v2
 # k8s.io/apimachinery v0.0.0-20181009084401-76721d167b70

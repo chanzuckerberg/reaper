@@ -44,7 +44,7 @@ func (n *Notifier) Send(v policy.Violation, skipPrompt bool) error {
 			if channel {
 				params := slackClient.NewPostMessageParameters()
 				params.Markdown = true
-				resp, _, e := n.slack.Slack.PostMessage(recipient, msg, params)
+				resp, _, e := n.slack.Slack.PostMessage(recipient, slackClient.MsgOptionText(msg, false), slackClient.MsgOptionPostMessageParameters(params))
 				if e != nil {
 					log.Errorf("error sending to slack %#v", e)
 					return errors.Wrap(e, "error sending message to slack")
