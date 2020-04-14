@@ -3,7 +3,6 @@ VERSION=$(shell cat VERSION)
 DIRTY=$(shell if `git diff-index --quiet HEAD --`; then echo false; else echo true; fi)
 # TODO add release flag
 LDFLAGS=-ldflags "-w -s -X github.com/chanzuckerberg/reaper/cmd.GitSha=${SHA} -X github.com/chanzuckerberg/reaper/cmd.Version=${VERSION} -X github.com/chanzuckerberg/reaper/cmd.Dirty=${DIRTY}"
-export GOFLAGS=-mod=vendor
 export GO111MODULE=on
 
 all: test install
@@ -16,11 +15,11 @@ setup: ## setup development endencies
 .PHONY: setup
 
 lint: ## run the fast go linters
-	gometalinter --vendor --fast ./...
+	gometalinter --fast ./...
 .PHONY: lint
 
 lint-slow: ## run all linters, even the slow ones
-	gometalinter --vendor --deadline 120s ./...
+	gometalinter --deadline 120s ./...
 .PHONY:lint-slow
 
 lint-ci: ## run the fast go linters
@@ -63,7 +62,6 @@ test-ci: ## run the tests
 
 deps:
 	go mod tidy
-	go mod vendor
 .PHONY: deps
 
 install: deps ## install the reaper binary in $GOPATH/bin
@@ -83,3 +81,8 @@ clean: ## clean the repo
 docker: ## build docker image
 	docker build .
 .PHONY: docker
+
+check-mod:
+	go mod tidy
+	git diff --exit-code -- go.mod go.sum
+.PHONY: check-mod
